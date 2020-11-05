@@ -20,9 +20,7 @@ public class Player extends UUIDHolder {
     }
 
     public Player(UUID uuid, String username) {
-        super(uuid);
-        this.username = username;
-        this.nickname = username;
+        this(uuid, username, username);
     }
 
     public String getUsername() {
