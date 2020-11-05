@@ -1,2 +1,2 @@
-# quizz
-An API for multiplayer Quizz games provided with a discord implementation
+# quiz
+An API for multiplayer Quiz games provided with a discord implementation
