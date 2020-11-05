@@ -35,7 +35,7 @@ public class Player extends UUIDHolder {
         return score;
     }
 
-    public void setScore(Score score) {
-        this.score = score;
+    public void addScore(double increment) {
+        this.score.increment(increment);
     }
 }
