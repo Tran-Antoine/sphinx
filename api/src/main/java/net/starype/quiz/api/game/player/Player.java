@@ -9,7 +9,6 @@ import java.util.UUID;
 public class Player extends UUIDHolder {
     private String username;
     private String nickname;
-    private Map<QuestionTag, Score> scoreByTags;
     private Score score;
 
     public Player(UUID uuid, String username, String nickname) {
