@@ -31,10 +31,6 @@ public class Player extends UUIDHolder {
         return nickname;
     }
 
-    public Score getScoreByTags(QuestionTag tag) {
-        return scoreByTags.getOrDefault(tag, new Score());
-    }
-
     public Score getScore() {
         return score;
     }
