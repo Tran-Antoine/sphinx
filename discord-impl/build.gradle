@@ -1,0 +1,5 @@
+group 'net.starype.quiz.api'
+
+dependencies {
+    compile project(':api')
+}
