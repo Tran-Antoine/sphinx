@@ -1,6 +1,7 @@
 package net.starype.quiz.api.game;
 
-import java.util.UUID;
+
+import net.starype.quiz.api.game.player.UUIDHolder;
 
 public interface QuizGame {
 
@@ -12,5 +13,5 @@ public interface QuizGame {
     boolean isCurrentRoundFinished();
     void nextRound();
 
-    void sendInput(UUID id, String message);
+    void sendInput(UUIDHolder player, String message);
 }
