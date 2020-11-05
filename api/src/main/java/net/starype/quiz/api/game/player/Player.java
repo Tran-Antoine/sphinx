@@ -10,12 +10,12 @@ public class Player implements UUIDHolder {
     private String username;
     private String nickname;
     private Score score;
+    private UUID uuid;
 
     public Player(UUID uuid, String username, String nickname) {
-        super(uuid);
         this.username = username;
         this.nickname = nickname;
-        scoreByTags = new HashMap<QuestionTag, Score>();
+        this.uuid = uuid;
     }
 
     public Player(UUID uuid, String username) {
@@ -37,4 +37,9 @@ public class Player implements UUIDHolder {
     public void addScore(double increment) {
         this.score.increment(increment);
     }
+
+    public UUID getUUID() {
+        return uuid;
+    }
+
 }
