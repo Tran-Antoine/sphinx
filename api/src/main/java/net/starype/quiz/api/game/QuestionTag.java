@@ -3,14 +3,17 @@ package net.starype.quiz.api.game;
 public class QuestionTag {
     private String tag;
 
-    public QuestionTag(String tag) {
-        this.tag = tag
+    public QuestionTag(String rawTag) {
+        this.tag = formatTag(rawTag);
+    }
+    
+    private String formatTag(String rawTag) {
+        return rawTag
                 .strip()
                 .replaceAll(" ", "-")
                 .replaceAll("[^a-zA-Z0-9 -]", "");
     }
-
-    String getTag() {
+    public String getTag() {
         return tag;
     }
 }
