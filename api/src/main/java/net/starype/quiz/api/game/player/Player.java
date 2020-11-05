@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class Player extends PlayerUuidHolder {
+public class Player extends UUIDHolder {
     private String username;
     private String nickname;
     private Map<QuestionTag, Score> scoreByTags;

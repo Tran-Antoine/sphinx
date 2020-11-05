@@ -2,10 +2,10 @@ package net.starype.quiz.api.game.player;
 
 import java.util.UUID;
 
-public class PlayerUuidHolder {
+public class UUIDHolder {
     private UUID uuid;
 
-    public PlayerUuidHolder(UUID uuid) {
+    public UUIDHolder(UUID uuid) {
         this.uuid = uuid;
     }
 
