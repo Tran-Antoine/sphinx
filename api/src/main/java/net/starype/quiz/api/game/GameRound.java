@@ -1,11 +1,11 @@
 package net.starype.quiz.api.game;
 
-import java.util.UUID;
+import net.starype.quiz.api.game.player.PlayerUuidHolder;
 
 public interface GameRound {
 
     void start();
-    void onInputReceived(UUID source, String message);
+    void onInputReceived(PlayerUuidHolder source, String message);
 
     RoundEndingPredicate endingCondition();
     ScoreDistribution createScoreDistribution();

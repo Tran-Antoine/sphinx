@@ -1,4 +1,6 @@
-package net.starype.quiz.api.game;
+package net.starype.quiz.api.game.player;
+
+import net.starype.quiz.api.game.QuestionTag;
 
 import java.util.HashMap;
 import java.util.Map;

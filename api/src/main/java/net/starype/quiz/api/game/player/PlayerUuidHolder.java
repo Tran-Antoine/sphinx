@@ -1,4 +1,4 @@
-package net.starype.quiz.api.game;
+package net.starype.quiz.api.game.player;
 
 import java.util.UUID;
 

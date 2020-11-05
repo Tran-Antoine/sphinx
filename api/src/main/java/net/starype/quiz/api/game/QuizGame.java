@@ -1,6 +1,8 @@
 package net.starype.quiz.api.game;
 
 
+import net.starype.quiz.api.game.player.PlayerUuidHolder;
+
 public interface QuizGame {
 
     void start();
