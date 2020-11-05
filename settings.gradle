@@ -1,4 +1,3 @@
-rootProject.name = 'quizz'
+rootProject.name = 'quiz'
 include 'api'
 include 'discord-impl'
-

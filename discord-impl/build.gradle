@@ -1,4 +1,4 @@
-group 'net.starype.quizz.api'
+group 'net.starype.quiz.api'
 
 dependencies {
     compile project(':api')
