@@ -21,8 +21,8 @@ public class Score {
         this.answeredQuestion = answeredQuestion;
     }
 
-    public void setPoints(double points) {
-        this.points = points;
+    public void increment(double increment) {
+        this.points += increment;
     }
 
     public void setAccuracy(double accuracy) {
