@@ -4,6 +4,6 @@ import java.util.UUID;
 
 public interface UUIDHolder {
 
-    public UUID getUUID();
+    UUID getUUID();
 
 }

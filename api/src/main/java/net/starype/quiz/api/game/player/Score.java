@@ -1,32 +1,42 @@
 package net.starype.quiz.api.game.player;
 
 public class Score {
-    private int answeredQuestion;
-    private double points;
-    private double accuracy;
 
-    public int getAnsweredQuestion() {
-        return answeredQuestion;
-    }
+    private double score;
 
-    public double getPoints() {
-        return points;
+    private int answeredQuestions;
+    private int correctAnsweredQuestions;
+
+    public Score() {
+        this.score = 0;
+        this.answeredQuestions = 0;
+        this.correctAnsweredQuestions = 0;
     }
 
     public double getAccuracy() {
-        return accuracy;
+        return (double)correctAnsweredQuestions / answeredQuestions;
     }
 
-    public void setAnsweredQuestion(int answeredQuestion) {
-        this.answeredQuestion = answeredQuestion;
+    public double getScore() {
+        return score;
     }
 
-    public void increment(double increment) {
-        this.points += increment;
+    public int getAnsweredQuestions() {
+        return answeredQuestions;
     }
 
-    public void setAccuracy(double accuracy) {
-        this.accuracy = accuracy;
+    public int getCorrectAnsweredQuestions() {
+        return correctAnsweredQuestions;
     }
 
+    public void incrementScore(double increment) {
+        this.score += increment;
+    }
+
+    public void incrementAnsweredQuestionCount(boolean isAnswerCorrect) {
+        this.answeredQuestions++;
+        if(isAnswerCorrect) {
+            this.correctAnsweredQuestions++;
+        }
+    }
 }

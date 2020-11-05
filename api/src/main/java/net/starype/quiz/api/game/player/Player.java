@@ -1,12 +1,9 @@
 package net.starype.quiz.api.game.player;
 
-import net.starype.quiz.api.game.QuestionTag;
-
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 public class Player implements UUIDHolder {
+
     private String username;
     private String nickname;
     private Score score;
@@ -16,6 +13,7 @@ public class Player implements UUIDHolder {
         this.username = username;
         this.nickname = nickname;
         this.uuid = uuid;
+        this.score = new Score();
     }
 
     public Player(UUID uuid, String username) {
@@ -35,7 +33,7 @@ public class Player implements UUIDHolder {
     }
 
     public void addScore(double increment) {
-        this.score.increment(increment);
+        this.score.incrementScore(increment);
     }
 
     public UUID getUUID() {
