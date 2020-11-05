@@ -1,6 +1,6 @@
 package net.starype.quiz.api.server;
 
-import net.starype.quiz.api.user.Player;
+import net.starype.quiz.api.game.player.Player;
 
 public interface GameServer {
 
