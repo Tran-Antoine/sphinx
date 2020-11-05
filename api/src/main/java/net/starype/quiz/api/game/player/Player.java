@@ -35,10 +35,6 @@ public class Player extends UUIDHolder {
         return score;
     }
 
-    public void setScoreByTags(QuestionTag tag, Score score) {
-        this.scoreByTags.put(tag, score);
-    }
-
     public void setScore(Score score) {
         this.score = score;
     }
