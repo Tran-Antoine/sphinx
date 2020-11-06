@@ -18,7 +18,7 @@ public interface Question extends UUIDHolder {
 
     QuestionDifficulty getDifficulty();
 
-    String getQuestion();
+    String getRawQuestion();
 
     String getCorrectAnswer();
 
