@@ -11,7 +11,7 @@ public class WordCorrectAnswerFactory implements CorrectAnswerFactory {
 
     @Override
     public CorrectAnswer createCorrectAnswer(Set<String> answer) throws RuntimeException {
-        if(answer.stream()
+        if(!answer.stream()
                 .allMatch(s ->
                         WordCandidateValidityEvaluator.getInstance().isValidCandidate(new Answer(s))
                 ))
