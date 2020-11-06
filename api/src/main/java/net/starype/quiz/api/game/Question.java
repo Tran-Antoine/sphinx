@@ -1,6 +1,6 @@
 package net.starype.quiz.api.game;
 
-import net.starype.quiz.api.game.answer.CorrectAnswer;
+import net.starype.quiz.api.game.answer.Answer;
 import net.starype.quiz.api.game.player.UUIDHolder;
 
 import java.util.Optional;
@@ -25,6 +25,6 @@ public interface Question extends UUIDHolder {
 
     String getDisplayableCorrectAnswer();
 
-    Optional<Double> evaluateAnswer(String answer);
+    Optional<Double> evaluateAnswer(Answer answer);
 
 }
