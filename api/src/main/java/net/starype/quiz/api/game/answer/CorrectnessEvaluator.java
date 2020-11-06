@@ -1,6 +1,6 @@
 package net.starype.quiz.api.game.answer;
 
-public interface AnswerCorrectnessEvaluator {
+public interface CorrectnessEvaluator {
 
     double getCorrectness(Answer answer);
 
