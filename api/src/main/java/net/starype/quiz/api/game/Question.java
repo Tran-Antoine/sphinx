@@ -14,7 +14,7 @@ public interface Question extends UUIDHolder {
 
     void registerTag(QuestionTag tag);
 
-    void forgetTag(QuestionTag tag);
+    void unregisterTag(QuestionTag tag);
 
     QuestionDifficulty getDifficulty();
 
