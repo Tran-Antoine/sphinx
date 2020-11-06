@@ -16,7 +16,7 @@ public class WordCorrectAnswerFactory implements CorrectAnswerFactory {
                         WordCandidateValidityEvaluator.getInstance().isValidCandidate(new Answer(s))
                 ))
         {
-            throw new RuntimeException("At least one of the proposed answers doesn't statify the format specification");
+            throw new RuntimeException("At least one of the proposed answers doesn't satisfy the format specification");
         }
 
         return new WordCorrectAnswer(new WordCorrectnessEvaluator(answer));
