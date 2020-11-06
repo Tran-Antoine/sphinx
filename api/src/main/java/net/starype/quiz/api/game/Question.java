@@ -2,7 +2,7 @@ package net.starype.quiz.api.game;
 
 import net.starype.quiz.api.game.player.UUIDHolder;
 
-import java.util.List;
+import java.util.Set;
 
 public interface Question extends UUIDHolder {
 
