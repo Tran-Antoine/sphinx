@@ -24,13 +24,4 @@ public interface Question extends UUIDHolder {
 
     int getMaxTrialAmount();
 
-    boolean trySubmitAnswer(UUIDHolder entity, String answer);
-
-    int getEntityTrialAmount(UUIDHolder entity);
-
-    default boolean doesEntityStillHaveTrialLeft(UUIDHolder entity) {
-        return getEntityTrialAmount(entity) >= getMaxTrialAmount() ||
-                getMaxTrialAmount() == Integer.MAX_VALUE;
-    }
-
 }
