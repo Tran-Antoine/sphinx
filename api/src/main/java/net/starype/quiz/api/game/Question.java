@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface Question extends UUIDHolder {
 
-    List<QuestionTag> getTags();
+    Set<QuestionTag> getTags();
 
     default boolean isTagAttached(QuestionTag tag) {
         return getTags().contains(tag);
