@@ -5,8 +5,6 @@ import net.starype.quiz.api.util.ObjectContainer;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
 
 public class RaceRound implements GameRound {
 

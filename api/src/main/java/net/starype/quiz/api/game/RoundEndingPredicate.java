@@ -1,7 +1,5 @@
 package net.starype.quiz.api.game;
 
-import java.util.function.Supplier;
-
 public interface RoundEndingPredicate {
 
     boolean ends();
