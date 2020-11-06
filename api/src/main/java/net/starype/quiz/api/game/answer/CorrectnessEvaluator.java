@@ -2,6 +2,6 @@ package net.starype.quiz.api.game.answer;
 
 public interface CorrectnessEvaluator {
 
-    double getCorrectness(Answer answer);
+    double getCorrectness(Answer answer) throws RuntimeException;
 
 }
