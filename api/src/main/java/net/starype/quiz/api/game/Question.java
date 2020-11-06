@@ -20,8 +20,6 @@ public interface Question extends UUIDHolder {
 
     String getRawQuestion();
 
-    String getCorrectAnswer();
-
-    int getMaxTrialAmount();
+    String getDisplayableCorrectAnswer();
 
 }
