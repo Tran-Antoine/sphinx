@@ -18,7 +18,6 @@ public class RaceRoundTest {
         GameRound round = new RaceRound.Builder()
                 .withMaxGuessesPerPlayer(1)
                 .withQuestion(new MockQuestion())
-                .withPointsToAward(1)
                 .withPlayers(players)
                 .build();
 
@@ -39,7 +38,6 @@ public class RaceRoundTest {
         GameRound round = new RaceRound.Builder()
                 .withMaxGuessesPerPlayer(3)
                 .withQuestion(new MockQuestion())
-                .withPointsToAward(1)
                 .withPlayers(Collections.singletonList(player))
                 .build();
         round.init();
@@ -53,10 +51,24 @@ public class RaceRoundTest {
     }
 
     @Test
+    public void game_ends_when_players_give_up() {
+        Player player = new MockPlayer();
+        GameRound round = new RaceRound.Builder()
+                .withMaxGuessesPerPlayer(10)
+                .withPlayers(Collections.singletonList(player))
+                .build();
+        round.init();
+        RoundEndingPredicate endingCondition = round.createContext().getEndingCondition();
+        Assert.assertFalse(endingCondition.ends());
+        round.onGiveUpReceived(player);
+        Assert.assertTrue(endingCondition.ends());
+    }
+
+    @Test
     public void score_was_awarded() {
         double pointsToAward = 3.5;
-        Player player1 = new MockPlayer(UUID.randomUUID());
-        Player player2 = new MockPlayer(UUID.randomUUID());
+        Player player1 = new MockPlayer();
+        Player player2 = new MockPlayer();
 
         GameRound round = new RaceRound.Builder()
                 .withMaxGuessesPerPlayer(1)
@@ -86,8 +98,8 @@ public class RaceRoundTest {
 
     private static class MockPlayer extends Player {
 
-        public MockPlayer(UUID uuid) {
-            super(uuid, "");
+        public MockPlayer() {
+            super(UUID.randomUUID(), "");
         }
     }
 
