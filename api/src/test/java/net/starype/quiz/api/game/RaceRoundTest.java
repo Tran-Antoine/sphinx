@@ -26,7 +26,7 @@ public class RaceRoundTest {
         GameRoundContext context = round.createContext();
 
         for(UUIDHolder player : players) {
-            round.onInputReceived(player, "INCORRECT ANSWER");
+            round.onGuessReceived(player, "INCORRECT ANSWER");
         }
 
         Assert.assertTrue(context.getEndingCondition().ends());
@@ -46,9 +46,9 @@ public class RaceRoundTest {
         RoundEndingPredicate endingPredicate = round.createContext().getEndingCondition();
 
         Assert.assertFalse(endingPredicate.ends());
-        round.onInputReceived(player, "INCORRECT ANSWER");
+        round.onGuessReceived(player, "INCORRECT ANSWER");
         Assert.assertFalse(endingPredicate.ends());
-        round.onInputReceived(player, "CORRECT");
+        round.onGuessReceived(player, "CORRECT");
         Assert.assertTrue(endingPredicate.ends());
     }
 
@@ -66,7 +66,7 @@ public class RaceRoundTest {
                 .build();
 
         round.init();
-        round.onInputReceived(player1, "CORRECT");
+        round.onGuessReceived(player1, "CORRECT");
         ScoreDistribution scoreDistribution = round.createContext().getScoreDistributionCreator();
 
         double score1 = scoreDistribution.apply(player1);

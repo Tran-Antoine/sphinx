@@ -19,6 +19,10 @@ public class MaxGuessCounter implements AnswerEligibility {
         guessesPerPlayer.put(holder, guessesPerPlayer.getOrDefault(holder, 0) + 1);
     }
 
+    public void giveUp(UUIDHolder holder) {
+        guessesPerPlayer.put(holder, maxGuesses);
+    }
+
     @Override
     public boolean isEligible(UUIDHolder player) {
         return guessesPerPlayer.getOrDefault(player, 0) < maxGuesses;

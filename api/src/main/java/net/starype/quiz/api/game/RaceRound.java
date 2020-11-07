@@ -29,7 +29,7 @@ public class RaceRound implements GameRound {
     }
 
     @Override
-    public void onInputReceived(UUIDHolder source, String message) {
+    public void onGuessReceived(UUIDHolder source, String message) {
 
         // eligibility checks are performed in the game class
         if(pickedQuestion.submitAnswer(message) != 1) {
@@ -38,6 +38,11 @@ public class RaceRound implements GameRound {
         }
 
         winnerContainer.set(source);
+    }
+
+    @Override
+    public void onGiveUpReceived(UUIDHolder source) {
+        counter.giveUp(source);
     }
 
     @Override
