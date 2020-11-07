@@ -32,6 +32,7 @@ public class IntegerCorrectnessEvaluator implements CorrectnessEvaluator {
                 .map(n -> (int) Math.abs(proposedAnswer - n))
                 .filter(n -> n <= acceptedRange)
                 .min(Integer::compareTo)
+                .map(n -> acceptedRange - n)
                 .orElse(0) / (double) acceptedRange;
     }
 }
