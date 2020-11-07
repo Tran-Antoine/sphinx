@@ -25,7 +25,7 @@ public class IntegerCorrectAnswerFactory implements CorrectRangedAnswerFactory {
 
     @Override
     public CorrectRangedAnswerFactory setAcceptedRange(Number range) {
-        this.range = range.intValue();
+        this.range = Math.abs(range.intValue()) + 1;
         return this;
     }
 }

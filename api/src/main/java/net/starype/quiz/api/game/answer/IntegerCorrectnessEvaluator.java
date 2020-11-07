@@ -18,11 +18,12 @@ public class IntegerCorrectnessEvaluator implements CorrectnessEvaluator {
                         s -> Integer.valueOf(s.strip())
                 )
                 .collect(Collectors.toSet());
+        this.acceptedRange = Math.max(Math.abs(acceptedRange), 1);
     }
 
     @Override
     public double getCorrectness(Answer answer) throws RuntimeException {
-        if(!WordCandidateValidityEvaluator
+        if(!IntegerCandidateValidityEvaluator
                 .getInstance()
                 .isValidCandidate(answer)) {
             throw new RuntimeException("The given answer doesn't satisfy formats specifications");
@@ -30,9 +31,9 @@ public class IntegerCorrectnessEvaluator implements CorrectnessEvaluator {
         int proposedAnswer = Integer.valueOf(answer.getAnswer().strip());
         return (double) acceptedAnswers.stream()
                 .map(n -> (int) Math.abs(proposedAnswer - n))
-                .filter(n -> n <= acceptedRange)
+                .filter(n -> n < acceptedRange)
                 .min(Integer::compareTo)
-                .map(n -> acceptedRange - n)
-                .orElse(0) / (double) acceptedRange;
+                .map(n -> Math.abs(acceptedRange - n))
+                .orElse(0) / (double) (acceptedRange);
     }
 }
