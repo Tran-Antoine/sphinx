@@ -22,4 +22,8 @@ public interface Question extends UUIDHolder {
 
     String getDisplayableCorrectAnswer();
 
+    default double submitAnswer(String answer) {
+        return 1; // TODO: Use answer matcher
+    }
+
 }
