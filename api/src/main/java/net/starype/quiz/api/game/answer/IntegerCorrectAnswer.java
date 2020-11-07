@@ -5,7 +5,7 @@ public class IntegerCorrectAnswer implements CorrectAnswer {
     private CorrectnessEvaluator correctnessEvaluator;
 
     public IntegerCorrectAnswer(IntegerCorrectnessEvaluator integerCorrectnessEvaluator) {
-        validityEvaluator = WordValidityEvaluator.getInstance();
+        validityEvaluator = IntegerValidityEvaluator.getInstance();
         correctnessEvaluator = (CorrectnessEvaluator) integerCorrectnessEvaluator;
     }
 
