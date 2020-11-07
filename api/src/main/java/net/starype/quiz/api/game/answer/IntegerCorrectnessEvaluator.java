@@ -1,6 +1,5 @@
 package net.starype.quiz.api.game.answer;
 
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -11,8 +10,8 @@ public class IntegerCorrectnessEvaluator implements CorrectnessEvaluator {
     public IntegerCorrectnessEvaluator(Set<String> acceptedAnswers, int acceptedRange) {
         this.acceptedAnswers = acceptedAnswers.stream()
                 .filter(
-                        s -> IntegerCandidateValidityEvaluator.getInstance()
-                                .isValidCandidate(new Answer(s))
+                        s -> IntegerValidityEvaluator.getInstance()
+                                .isValid(new Answer(s))
                 )
                 .map(
                         s -> Integer.valueOf(s.strip())
@@ -22,12 +21,7 @@ public class IntegerCorrectnessEvaluator implements CorrectnessEvaluator {
     }
 
     @Override
-    public double getCorrectness(Answer answer) throws RuntimeException {
-        if(!IntegerCandidateValidityEvaluator
-                .getInstance()
-                .isValidCandidate(answer)) {
-            throw new RuntimeException("The given answer doesn't satisfy formats specifications");
-        }
+    public double getCorrectness(Answer answer) {
         int proposedAnswer = Integer.valueOf(answer.getAnswer().strip());
         return (double) acceptedAnswers.stream()
                 .map(n -> (int) Math.abs(proposedAnswer - n))

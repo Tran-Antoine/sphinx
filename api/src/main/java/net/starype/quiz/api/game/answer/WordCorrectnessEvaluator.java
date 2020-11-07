@@ -1,7 +1,5 @@
 package net.starype.quiz.api.game.answer;
 
-import java.util.HashSet;
-import java.util.IllegalFormatException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -14,19 +12,14 @@ public class WordCorrectnessEvaluator implements CorrectnessEvaluator {
                         s -> s.strip().toLowerCase()
                 )
                 .filter(
-                        s -> WordCandidateValidityEvaluator.getInstance()
-                                .isValidCandidate(new Answer(s))
+                        s -> WordValidityEvaluator.getInstance()
+                                .isValid(new Answer(s))
                 )
                 .collect(Collectors.toSet());
     }
 
     @Override
-    public double getCorrectness(Answer answer) throws RuntimeException {
-        if(!WordCandidateValidityEvaluator
-                .getInstance()
-                .isValidCandidate(answer)) {
-            throw new RuntimeException("The given answer doesn't satisfy formats specifications");
-        }
+    public double getCorrectness(Answer answer) {
         return acceptedAnswers.contains(
                     answer.getAnswer().strip().toLowerCase()
                 ) ? (1.0) : (0.0);

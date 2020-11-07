@@ -1,6 +1,5 @@
 package net.starype.quiz.api.game.answer;
 
-import net.starype.quiz.api.game.answer.*;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -11,47 +10,47 @@ public class IntegerCorrectAnswerTest {
 
         Assert.assertTrue(factory
                 .getValidityEvaluator()
-                .isValidCandidate(new Answer("1651")));
+                .isValid(new Answer("1651")));
         Assert.assertTrue(factory
                 .getValidityEvaluator()
-                .isValidCandidate(new Answer("-1")));
+                .isValid(new Answer("-1")));
         Assert.assertTrue(factory
                 .getValidityEvaluator()
-                .isValidCandidate(new Answer("-546")));
+                .isValid(new Answer("-546")));
         Assert.assertTrue(factory
                 .getValidityEvaluator()
-                .isValidCandidate(new Answer(" +546 ")));
+                .isValid(new Answer(" +546 ")));
         Assert.assertTrue(factory
                 .getValidityEvaluator()
-                .isValidCandidate(new Answer("  0123456789  ")));
+                .isValid(new Answer("  0123456789  ")));
         Assert.assertTrue(factory
                 .getValidityEvaluator()
-                .isValidCandidate(new Answer(" -0123456789")));
+                .isValid(new Answer(" -0123456789")));
         Assert.assertTrue(factory
                 .getValidityEvaluator()
-                .isValidCandidate(new Answer("0")));
+                .isValid(new Answer("0")));
 
         Assert.assertFalse(factory
                 .getValidityEvaluator()
-                .isValidCandidate(new Answer("1 2")));
+                .isValid(new Answer("1 2")));
         Assert.assertFalse(factory
                 .getValidityEvaluator()
-                .isValidCandidate(new Answer("1+2")));
+                .isValid(new Answer("1+2")));
         Assert.assertFalse(factory
                 .getValidityEvaluator()
-                .isValidCandidate(new Answer("1-2")));
+                .isValid(new Answer("1-2")));
         Assert.assertFalse(factory
                 .getValidityEvaluator()
-                .isValidCandidate(new Answer("1a6564")));
+                .isValid(new Answer("1a6564")));
         Assert.assertFalse(factory
                 .getValidityEvaluator()
-                .isValidCandidate(new Answer("c 16564")));
+                .isValid(new Answer("c 16564")));
         Assert.assertFalse(factory
                 .getValidityEvaluator()
-                .isValidCandidate(new Answer("c16564")));
+                .isValid(new Answer("c16564")));
         Assert.assertFalse(factory
                 .getValidityEvaluator()
-                .isValidCandidate(new Answer("This is some raw text")));
+                .isValid(new Answer("This is some raw text")));
     }
 
     @Test
@@ -91,32 +90,5 @@ public class IntegerCorrectAnswerTest {
                 .createCorrectAnswer(" +921  ")
                 .getCorrectnessEvaluator()
                 .getCorrectness(new Answer(" +923  ")) > 0);
-    }
-
-    @Test(expected =  RuntimeException.class)
-    public void test_correctness_evaluator_throw_on_alphabet() {
-        IntegerCorrectAnswerFactory factory = new IntegerCorrectAnswerFactory();
-        factory.setAcceptedRange(1)
-                .createCorrectAnswer("54")
-                .getCorrectnessEvaluator()
-                .getCorrectness(new Answer("Plane"));
-    }
-
-    @Test(expected = RuntimeException.class)
-    public void test_correctness_evaluator_throw_on_space() {
-        IntegerCorrectAnswerFactory factory = new IntegerCorrectAnswerFactory();
-        factory.setAcceptedRange(1)
-                .createCorrectAnswer("54")
-                .getCorrectnessEvaluator()
-                .getCorrectness(new Answer("5 2"));
-    }
-
-    @Test(expected = RuntimeException.class)
-    public void test_correctness_evaluator_throw_on_misplaced_sign() {
-        IntegerCorrectAnswerFactory factory = new IntegerCorrectAnswerFactory();
-        factory.setAcceptedRange(1)
-                .createCorrectAnswer("54")
-                .getCorrectnessEvaluator()
-                .getCorrectness(new Answer("5+2"));
     }
 }

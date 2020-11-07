@@ -1,17 +1,17 @@
 package net.starype.quiz.api.game.answer;
 
 public class IntegerCorrectAnswer implements CorrectAnswer {
-    private CandidateValidityEvaluator candidateValidityEvaluator;
+    private ValidityEvaluator validityEvaluator;
     private CorrectnessEvaluator correctnessEvaluator;
 
     public IntegerCorrectAnswer(IntegerCorrectnessEvaluator integerCorrectnessEvaluator) {
-        candidateValidityEvaluator = WordCandidateValidityEvaluator.getInstance();
+        validityEvaluator = WordValidityEvaluator.getInstance();
         correctnessEvaluator = (CorrectnessEvaluator) integerCorrectnessEvaluator;
     }
 
     @Override
-    public CandidateValidityEvaluator getCandidateValidityEvaluator() {
-        return candidateValidityEvaluator;
+    public ValidityEvaluator getCandidateValidityEvaluator() {
+        return validityEvaluator;
     }
 
     @Override

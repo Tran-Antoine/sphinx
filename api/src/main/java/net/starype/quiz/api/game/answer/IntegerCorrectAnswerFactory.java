@@ -6,20 +6,12 @@ public class IntegerCorrectAnswerFactory implements CorrectRangedAnswerFactory {
     private int range = 0;
 
     @Override
-    public CandidateValidityEvaluator getValidityEvaluator() {
-        return IntegerCandidateValidityEvaluator.getInstance();
+    public ValidityEvaluator getValidityEvaluator() {
+        return IntegerValidityEvaluator.getInstance();
     }
 
     @Override
-    public CorrectAnswer createCorrectAnswer(Set<String> answer) throws RuntimeException {
-        if(!answer.stream()
-                .allMatch(s ->
-                        IntegerCandidateValidityEvaluator.getInstance().isValidCandidate(new Answer(s))
-                ))
-        {
-            throw new RuntimeException("At least one of the proposed answers doesn't satisfy the format specification");
-        }
-
+    public CorrectAnswer createCorrectAnswer(Set<String> answer) {
         return new IntegerCorrectAnswer(new IntegerCorrectnessEvaluator(answer, range));
     }
 

@@ -5,20 +5,12 @@ import java.util.Set;
 public class WordCorrectAnswerFactory implements CorrectAnswerFactory {
 
     @Override
-    public CandidateValidityEvaluator getValidityEvaluator() {
-        return WordCandidateValidityEvaluator.getInstance();
+    public ValidityEvaluator getValidityEvaluator() {
+        return WordValidityEvaluator.getInstance();
     }
 
     @Override
-    public CorrectAnswer createCorrectAnswer(Set<String> answer) throws RuntimeException {
-        if(!answer.stream()
-                .allMatch(s ->
-                        WordCandidateValidityEvaluator.getInstance().isValidCandidate(new Answer(s))
-                ))
-        {
-            throw new RuntimeException("At least one of the proposed answers doesn't satisfy the format specification");
-        }
-
+    public CorrectAnswer createCorrectAnswer(Set<String> answer) {
         return new WordCorrectAnswer(new WordCorrectnessEvaluator(answer));
     }
 
