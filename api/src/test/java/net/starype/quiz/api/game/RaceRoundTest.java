@@ -26,7 +26,6 @@ public class RaceRoundTest {
                 .withMaxGuessesPerPlayer(1)
                 .withQuestion(new MockQuestion(factory.createCorrectAnswer("CORRECT")))
                 .withPlayers(players)
-                .withBadFormattingCountHasAnswer()
                 .build();
 
         round.init();
@@ -47,7 +46,6 @@ public class RaceRoundTest {
                 .withMaxGuessesPerPlayer(3)
                 .withQuestion(new MockQuestion(factory.createCorrectAnswer("CORRECT")))
                 .withPlayers(Collections.singletonList(player))
-                .withBadFormattingCountHasAnswer()
                 .build();
         round.init();
         RoundEndingPredicate endingPredicate = round.createContext().getEndingCondition();
@@ -84,7 +82,6 @@ public class RaceRoundTest {
                 .withQuestion(new MockQuestion(factory.createCorrectAnswer("CORRECT")))
                 .withPointsToAward(pointsToAward)
                 .withPlayers(Arrays.asList(player1, player2))
-                .withBadFormattingCountHasAnswer()
                 .build();
 
         round.init();

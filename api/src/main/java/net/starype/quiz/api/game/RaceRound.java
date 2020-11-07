@@ -15,17 +15,15 @@ public class RaceRound implements GameRound {
     private AtomicReference<UUIDHolder> winnerContainer;
     private Collection<? extends UUIDHolder> players;
     private double pointsToAward;
-    private boolean badFormattingCountHasAnswer;
 
     private MaxGuessCounter counter;
 
     public RaceRound(int maxGuessesPerPlayer, Question pickedQuestion, double pointsToAward,
-                     Collection<? extends UUIDHolder> players, boolean badFormattingCountHasAnswer) {
+                     Collection<? extends UUIDHolder> players) {
         this.counter = new MaxGuessCounter(maxGuessesPerPlayer);
         this.pickedQuestion = pickedQuestion;
         this.pointsToAward = pointsToAward;
         this.players = players;
-        this.badFormattingCountHasAnswer = badFormattingCountHasAnswer;
     }
 
     @Override
@@ -38,12 +36,8 @@ public class RaceRound implements GameRound {
 
         // eligibility checks are performed in the game class
         Optional<Double> correctness = pickedQuestion.evaluateAnswer(new Answer(message));
-        if((correctness.isEmpty() && badFormattingCountHasAnswer)
-                || correctness.get() != 1.0) {
+        if(correctness.isEmpty() || correctness.get() != 1.0) {
             counter.wrongGuess(source);
-            return;
-        }
-        else if(correctness.isEmpty()) {
             return;
         }
 
@@ -83,7 +77,6 @@ public class RaceRound implements GameRound {
         private Question pickedQuestion;
         private double pointsToAward;
         private Collection<? extends UUIDHolder> players;
-        private boolean badFormattingCountHasAnswer = false;
 
         public Builder withMaxGuessesPerPlayer(int maxGuessesPerPlayer) {
             this.maxGuessesPerPlayer = maxGuessesPerPlayer;
@@ -105,18 +98,8 @@ public class RaceRound implements GameRound {
             return this;
         }
 
-        public Builder withBadFormattingCountHasAnswer() {
-            this.badFormattingCountHasAnswer = true;
-            return this;
-        }
-
-        public Builder withoutBadFormattingCountHasAnswer() {
-            this.badFormattingCountHasAnswer = false;
-            return this;
-        }
-
         public RaceRound build() {
-            return new RaceRound(maxGuessesPerPlayer, pickedQuestion, pointsToAward, players, badFormattingCountHasAnswer);
+            return new RaceRound(maxGuessesPerPlayer, pickedQuestion, pointsToAward, players);
         }
     }
 }
