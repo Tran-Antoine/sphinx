@@ -4,91 +4,63 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class IntegerCorrectAnswerTest {
+
+    private static IntegerCorrectAnswerFactory factory = new IntegerCorrectAnswerFactory();
+
+    private void assertFormatValid(String answer) {
+        Assert.assertTrue(factory
+                .getValidityEvaluator()
+                .isValid(new Answer(answer)));
+    }
+
+    private void assertFormatInvalid(String answer) {
+        Assert.assertFalse(factory
+                .getValidityEvaluator()
+                .isValid(new Answer(answer)));
+    }
+
+    private void assertAnswerCorrectness(double expected, int range, String expectedAnswer, String answer) {
+        Assert.assertEquals(expected, factory.setAcceptedRange(range)
+                .createCorrectAnswer(expectedAnswer)
+                .getCorrectnessEvaluator()
+                .getCorrectness(new Answer(answer)), 0.001);
+    }
+
+    private void assertAnswerIncorrect(int range, String expectedAnswer, String answer) {
+        Assert.assertFalse(factory.setAcceptedRange(range)
+                .createCorrectAnswer(expectedAnswer)
+                .getCorrectnessEvaluator()
+                .getCorrectness(new Answer(answer)) > 0);
+    }
+
     @Test
     public void test_answer_validity_evaluator() {
-        IntegerCorrectAnswerFactory factory = new IntegerCorrectAnswerFactory();
+        assertFormatValid("1651");
+        assertFormatValid("-1");
+        assertFormatValid("-546");
+        assertFormatValid(" +546 ");
+        assertFormatValid("  0123456789  ");
+        assertFormatValid(" -0123456789");
+        assertFormatValid("0");
 
-        Assert.assertTrue(factory
-                .getValidityEvaluator()
-                .isValid(new Answer("1651")));
-        Assert.assertTrue(factory
-                .getValidityEvaluator()
-                .isValid(new Answer("-1")));
-        Assert.assertTrue(factory
-                .getValidityEvaluator()
-                .isValid(new Answer("-546")));
-        Assert.assertTrue(factory
-                .getValidityEvaluator()
-                .isValid(new Answer(" +546 ")));
-        Assert.assertTrue(factory
-                .getValidityEvaluator()
-                .isValid(new Answer("  0123456789  ")));
-        Assert.assertTrue(factory
-                .getValidityEvaluator()
-                .isValid(new Answer(" -0123456789")));
-        Assert.assertTrue(factory
-                .getValidityEvaluator()
-                .isValid(new Answer("0")));
-
-        Assert.assertFalse(factory
-                .getValidityEvaluator()
-                .isValid(new Answer("1 2")));
-        Assert.assertFalse(factory
-                .getValidityEvaluator()
-                .isValid(new Answer("1+2")));
-        Assert.assertFalse(factory
-                .getValidityEvaluator()
-                .isValid(new Answer("1-2")));
-        Assert.assertFalse(factory
-                .getValidityEvaluator()
-                .isValid(new Answer("1a6564")));
-        Assert.assertFalse(factory
-                .getValidityEvaluator()
-                .isValid(new Answer("c 16564")));
-        Assert.assertFalse(factory
-                .getValidityEvaluator()
-                .isValid(new Answer("c16564")));
-        Assert.assertFalse(factory
-                .getValidityEvaluator()
-                .isValid(new Answer("This is some raw text")));
+        assertFormatInvalid(" 1 2");
+        assertFormatInvalid("1+2");
+        assertFormatInvalid("1-2");
+        assertFormatInvalid("1a6564");
+        assertFormatInvalid("c 16564");
+        assertFormatInvalid("c16564");
+        assertFormatInvalid("This is some raw text");
     }
 
     @Test
     public void test_correctness_evaluator() {
-        IntegerCorrectAnswerFactory factory = new IntegerCorrectAnswerFactory();
+        assertAnswerCorrectness(1.0, 3, " +51  ", "  51  ");
+        assertAnswerCorrectness(0.75, 3, "-51", "-50");
+        assertAnswerCorrectness(0.25, 3, " 50", " 53");
 
-        Assert.assertEquals(1.0, factory.setAcceptedRange(3)
-                .createCorrectAnswer("  +51  ")
-                .getCorrectnessEvaluator()
-                .getCorrectness(new Answer("  51  ")), 0.001);
-        Assert.assertEquals(0.75, factory.setAcceptedRange(3)
-                .createCorrectAnswer("-51")
-                .getCorrectnessEvaluator()
-                .getCorrectness(new Answer("-50")), 0.001);
-        Assert.assertEquals(0.75, factory.setAcceptedRange(3)
-                .createCorrectAnswer("-51")
-                .getCorrectnessEvaluator()
-                .getCorrectness(new Answer("-50")), 0.001);
-        Assert.assertEquals(0.25, factory.setAcceptedRange(3)
-                .createCorrectAnswer(" 50")
-                .getCorrectnessEvaluator()
-                .getCorrectness(new Answer(" 53")), 0.001);
-
-        Assert.assertFalse(factory.setAcceptedRange(3)
-                .createCorrectAnswer(" 50")
-                .getCorrectnessEvaluator()
-                .getCorrectness(new Answer(" 54  ")) > 0);
-        Assert.assertFalse(factory.setAcceptedRange(3)
-                .createCorrectAnswer(" 50")
-                .getCorrectnessEvaluator()
-                .getCorrectness(new Answer(" -50  ")) > 0);
-        Assert.assertFalse(factory.setAcceptedRange(0)
-                .createCorrectAnswer(" +921  ")
-                .getCorrectnessEvaluator()
-                .getCorrectness(new Answer(" 922  ")) > 0);
-        Assert.assertFalse(factory.setAcceptedRange(1)
-                .createCorrectAnswer(" +921  ")
-                .getCorrectnessEvaluator()
-                .getCorrectness(new Answer(" +923  ")) > 0);
+        assertAnswerIncorrect(3, "50", " 54  ");
+        assertAnswerIncorrect(3, "50", " -50  ");
+        assertAnswerIncorrect(0, " +921  ", " 922  ");
+        assertAnswerIncorrect(1, " +921  ", " +923  ");
     }
 }
