@@ -6,7 +6,7 @@ public class WordCorrectAnswer implements CorrectAnswer {
 
     public WordCorrectAnswer(WordCorrectnessEvaluator wordCorrectnessEvaluator) {
         validityEvaluator = WordValidityEvaluator.getInstance();
-        correctnessEvaluator = (CorrectnessEvaluator) wordCorrectnessEvaluator;
+        correctnessEvaluator = wordCorrectnessEvaluator;
     }
 
     @Override
