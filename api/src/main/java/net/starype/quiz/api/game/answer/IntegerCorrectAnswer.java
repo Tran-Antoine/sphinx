@@ -6,7 +6,7 @@ public class IntegerCorrectAnswer implements CorrectAnswer {
 
     public IntegerCorrectAnswer(IntegerCorrectnessEvaluator integerCorrectnessEvaluator) {
         validityEvaluator = IntegerValidityEvaluator.getInstance();
-        correctnessEvaluator = (CorrectnessEvaluator) integerCorrectnessEvaluator;
+        correctnessEvaluator = integerCorrectnessEvaluator;
     }
 
     @Override
