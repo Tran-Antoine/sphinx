@@ -20,6 +20,6 @@ public class WordValidityEvaluator implements ValidityEvaluator {
         return answer
                 .getAnswer()
                 .strip()
-                .matches("[a-zA-Z'à-ÿ]+");
+                .matches("[a-zA-Z'0-9]+");
     }
 }

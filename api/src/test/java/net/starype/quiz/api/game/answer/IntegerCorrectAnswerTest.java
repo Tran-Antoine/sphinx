@@ -34,7 +34,7 @@ public class IntegerCorrectAnswerTest {
     }
 
     @Test
-    public void test_answer_validity_evaluator() {
+    public void answer_validity_evaluator() {
         assertFormatValid("1651");
         assertFormatValid("-1");
         assertFormatValid("-546");
@@ -53,7 +53,7 @@ public class IntegerCorrectAnswerTest {
     }
 
     @Test
-    public void test_correctness_evaluator() {
+    public void correctness_evaluator() {
         assertAnswerCorrectness(1.0, 3, " +51  ", "  51  ");
         assertAnswerCorrectness(0.75, 3, "-51", "-50");
         assertAnswerCorrectness(0.25, 3, " 50", " 53");

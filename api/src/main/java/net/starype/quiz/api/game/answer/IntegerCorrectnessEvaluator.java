@@ -9,13 +9,9 @@ public class IntegerCorrectnessEvaluator implements CorrectnessEvaluator {
 
     public IntegerCorrectnessEvaluator(Set<String> acceptedAnswers, int acceptedRange) {
         this.acceptedAnswers = acceptedAnswers.stream()
-                .filter(
-                        s -> IntegerValidityEvaluator.getInstance()
-                                .isValid(new Answer(s))
-                )
-                .map(
-                        s -> Integer.valueOf(s.strip())
-                )
+                .filter(s -> IntegerValidityEvaluator.getInstance()
+                                .isValid(new Answer(s)))
+                .map(s -> Integer.valueOf(s.strip()))
                 .collect(Collectors.toSet());
         this.acceptedRange = Math.max(Math.abs(acceptedRange), 1);
     }
