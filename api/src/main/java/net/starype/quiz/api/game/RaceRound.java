@@ -1,0 +1,122 @@
+package net.starype.quiz.api.game;
+
+import net.starype.quiz.api.game.answer.Answer;
+import net.starype.quiz.api.game.player.UUIDHolder;
+
+import javax.swing.text.html.Option;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
+
+public class RaceRound implements GameRound {
+
+    private Question pickedQuestion;
+    private AtomicReference<UUIDHolder> winnerContainer;
+    private Collection<? extends UUIDHolder> players;
+    private double pointsToAward;
+    private boolean badFormattingCountHasAnswer;
+
+    private MaxGuessCounter counter;
+
+    public RaceRound(int maxGuessesPerPlayer, Question pickedQuestion, double pointsToAward,
+                     Collection<? extends UUIDHolder> players, boolean badFormattingCountHasAnswer) {
+        this.counter = new MaxGuessCounter(maxGuessesPerPlayer);
+        this.pickedQuestion = pickedQuestion;
+        this.pointsToAward = pointsToAward;
+        this.players = players;
+        this.badFormattingCountHasAnswer = badFormattingCountHasAnswer;
+    }
+
+    @Override
+    public void init() {
+        this.winnerContainer = new AtomicReference<>();
+    }
+
+    @Override
+    public void onGuessReceived(UUIDHolder source, String message) {
+
+        // eligibility checks are performed in the game class
+        Optional<Double> correctness = pickedQuestion.evaluateAnswer(new Answer(message));
+        if((correctness.isEmpty() && badFormattingCountHasAnswer)
+                || correctness.get() != 1.0) {
+            counter.wrongGuess(source);
+            return;
+        }
+        else if(correctness.isEmpty()) {
+            return;
+        }
+
+        winnerContainer.set(source);
+    }
+
+    @Override
+    public void onGiveUpReceived(UUIDHolder source) {
+        counter.giveUp(source);
+    }
+
+    @Override
+    public EntityEligibility playerEligibility() {
+        return counter;
+    }
+
+    @Override
+    public RoundEndingPredicate endingCondition() {
+        return new WinnerExists(winnerContainer).or(new NoGuessLeft(counter, players));
+    }
+
+    @Override
+    public ScoreDistribution createScoreDistribution() {
+        return new SingleWinnerDistribution(winnerContainer, pointsToAward);
+    }
+
+    @Override
+    public GameRoundReport createReport() {
+        return () -> Arrays.asList(
+                winnerContainer.get().getUUID().toString(),
+                Double.toString(pointsToAward));
+    }
+
+    public static class Builder {
+
+        private int maxGuessesPerPlayer;
+        private Question pickedQuestion;
+        private double pointsToAward;
+        private Collection<? extends UUIDHolder> players;
+        private boolean badFormattingCountHasAnswer = false;
+
+        public Builder withMaxGuessesPerPlayer(int maxGuessesPerPlayer) {
+            this.maxGuessesPerPlayer = maxGuessesPerPlayer;
+            return this;
+        }
+
+        public Builder withQuestion(Question pickedQuestion) {
+            this.pickedQuestion = pickedQuestion;
+            return this;
+        }
+
+        public Builder withPointsToAward(double pointsToAward) {
+            this.pointsToAward = pointsToAward;
+            return this;
+        }
+
+        public Builder withPlayers(Collection<? extends UUIDHolder> players) {
+            this.players = players;
+            return this;
+        }
+
+        public Builder withBadFormattingCountHasAnswer() {
+            this.badFormattingCountHasAnswer = true;
+            return this;
+        }
+
+        public Builder withoutBadFormattingCountHasAnswer() {
+            this.badFormattingCountHasAnswer = false;
+            return this;
+        }
+
+        public RaceRound build() {
+            return new RaceRound(maxGuessesPerPlayer, pickedQuestion, pointsToAward, players, badFormattingCountHasAnswer);
+        }
+    }
+}
