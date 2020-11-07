@@ -2,6 +2,9 @@ package net.starype.quiz.api.game;
 
 
 import net.starype.quiz.api.game.player.UUIDHolder;
+import net.starype.quiz.api.server.GameServer;
+
+import java.util.function.Consumer;
 
 public interface QuizGame {
 
@@ -13,5 +16,6 @@ public interface QuizGame {
     boolean isCurrentRoundFinished();
     void nextRound();
 
-    void sendInput(UUIDHolder player, String message);
+    void onInputReceived(UUIDHolder player, String message);
+    void sendInputToServer(Consumer<GameServer> action);
 }

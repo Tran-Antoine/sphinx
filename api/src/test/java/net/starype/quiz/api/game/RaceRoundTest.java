@@ -18,11 +18,10 @@ public class RaceRoundTest {
         GameRound round = new RaceRound.Builder()
                 .withMaxGuessesPerPlayer(1)
                 .withQuestion(new MockQuestion())
-                .withPlayers(players)
                 .build();
 
-        round.init();
-        GameRoundContext context = round.createContext();
+        round.init(null, players);
+        GameRoundContext context = round.getContext();
 
         for(UUIDHolder player : players) {
             round.onGuessReceived(player, "INCORRECT ANSWER");
@@ -38,10 +37,9 @@ public class RaceRoundTest {
         GameRound round = new RaceRound.Builder()
                 .withMaxGuessesPerPlayer(3)
                 .withQuestion(new MockQuestion())
-                .withPlayers(Collections.singletonList(player))
                 .build();
-        round.init();
-        RoundEndingPredicate endingPredicate = round.createContext().getEndingCondition();
+        round.init(null, Collections.singletonList(player));
+        RoundEndingPredicate endingPredicate = round.getContext().getEndingCondition();
 
         Assert.assertFalse(endingPredicate.ends());
         round.onGuessReceived(player, "INCORRECT ANSWER");
@@ -55,10 +53,9 @@ public class RaceRoundTest {
         Player player = new MockPlayer();
         GameRound round = new RaceRound.Builder()
                 .withMaxGuessesPerPlayer(10)
-                .withPlayers(Collections.singletonList(player))
                 .build();
-        round.init();
-        RoundEndingPredicate endingCondition = round.createContext().getEndingCondition();
+        round.init(null, Collections.singletonList(player));
+        RoundEndingPredicate endingCondition = round.getContext().getEndingCondition();
         Assert.assertFalse(endingCondition.ends());
         round.onGiveUpReceived(player);
         Assert.assertTrue(endingCondition.ends());
@@ -74,12 +71,11 @@ public class RaceRoundTest {
                 .withMaxGuessesPerPlayer(1)
                 .withQuestion(new MockQuestion())
                 .withPointsToAward(pointsToAward)
-                .withPlayers(Arrays.asList(player1, player2))
                 .build();
 
-        round.init();
+        round.init(null, Arrays.asList(player1, player2));
         round.onGuessReceived(player1, "CORRECT");
-        ScoreDistribution scoreDistribution = round.createContext().getScoreDistributionCreator();
+        ScoreDistribution scoreDistribution = round.getContext().getScoreDistribution();
 
         double score1 = scoreDistribution.apply(player1);
         double score2 = scoreDistribution.apply(player2);
@@ -88,50 +84,4 @@ public class RaceRoundTest {
         Assert.assertEquals(score2, 0, 0.01);
     }
 
-    private static class MockUUIDHolder implements UUIDHolder {
-        private UUID id = UUID.randomUUID();
-        @Override
-        public UUID getUUID() {
-            return id;
-        }
-    }
-
-    private static class MockPlayer extends Player {
-
-        public MockPlayer() {
-            super(UUID.randomUUID(), "");
-        }
-    }
-
-    private static class MockQuestion implements Question {
-
-        @Override
-        public double submitAnswer(String answer) {
-            if(answer.equals("CORRECT")) {
-                return 1;
-            }
-            return 0;
-        }
-
-        @Override
-        public Set<QuestionTag> getTags() { return null; }
-
-        @Override
-        public void registerTag(QuestionTag tag) { }
-
-        @Override
-        public void unregisterTag(QuestionTag tag) { }
-
-        @Override
-        public QuestionDifficulty getDifficulty() { return null; }
-
-        @Override
-        public String getRawQuestion() { return null; }
-
-        @Override
-        public String getDisplayableCorrectAnswer() { return null; }
-
-        @Override
-        public UUID getUUID() { return null; }
-    }
 }
