@@ -2,7 +2,7 @@ package net.starype.quiz.api.game;
 
 public class GameRoundContext {
 
-    private AnswerEligibility playerEligibility;
+    private EntityEligibility playerEligibility;
     private RoundEndingPredicate endingCondition;
     private ScoreDistribution scoreDistributionCreator;
     private GameRoundReport reportCreator;
@@ -14,7 +14,7 @@ public class GameRoundContext {
         this.reportCreator = round.createReport();
     }
 
-    public AnswerEligibility getPlayerEligibility() {
+    public EntityEligibility getPlayerEligibility() {
         return playerEligibility;
     }
 

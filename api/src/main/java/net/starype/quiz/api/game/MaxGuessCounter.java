@@ -5,7 +5,7 @@ import net.starype.quiz.api.game.player.UUIDHolder;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MaxGuessCounter implements AnswerEligibility {
+public class MaxGuessCounter implements EntityEligibility {
 
     private int maxGuesses;
     private Map<UUIDHolder, Integer> guessesPerPlayer;

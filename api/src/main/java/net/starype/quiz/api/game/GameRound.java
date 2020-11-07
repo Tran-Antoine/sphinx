@@ -8,7 +8,7 @@ public interface GameRound {
     void onGuessReceived(UUIDHolder source, String message);
     void onGiveUpReceived(UUIDHolder source);
 
-    AnswerEligibility playerEligibility();
+    EntityEligibility playerEligibility();
     RoundEndingPredicate endingCondition();
     ScoreDistribution createScoreDistribution();
     GameRoundReport createReport();
