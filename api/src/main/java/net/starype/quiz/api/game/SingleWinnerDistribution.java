@@ -2,18 +2,19 @@ package net.starype.quiz.api.game;
 
 import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.player.UUIDHolder;
-import net.starype.quiz.api.util.ObjectContainer;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 public class SingleWinnerDistribution implements ScoreDistribution {
 
-    private ObjectContainer<? extends UUIDHolder> container;
+    private AtomicReference<? extends UUIDHolder> container;
     private double scoreForWinner;
 
-    public SingleWinnerDistribution(ObjectContainer<? extends UUIDHolder> container) {
+    public SingleWinnerDistribution(AtomicReference<? extends UUIDHolder> container) {
         this(container, 1);
     }
 
-    public SingleWinnerDistribution(ObjectContainer<? extends UUIDHolder> container, double scoreForWinner) {
+    public SingleWinnerDistribution(AtomicReference<? extends UUIDHolder> container, double scoreForWinner) {
         this.container = container;
         this.scoreForWinner = scoreForWinner;
     }

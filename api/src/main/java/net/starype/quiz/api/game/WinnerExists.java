@@ -1,18 +1,19 @@
 package net.starype.quiz.api.game;
 
 import net.starype.quiz.api.game.player.UUIDHolder;
-import net.starype.quiz.api.util.ObjectContainer;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 public class WinnerExists implements RoundEndingPredicate {
 
-    private ObjectContainer<UUIDHolder> container;
+    private AtomicReference<? extends UUIDHolder> container;
 
-    public WinnerExists(ObjectContainer<UUIDHolder> container) {
+    public WinnerExists(AtomicReference<? extends UUIDHolder> container) {
         this.container = container;
     }
 
     @Override
     public boolean ends() {
-        return container.exists();
+        return container.get() != null;
     }
 }

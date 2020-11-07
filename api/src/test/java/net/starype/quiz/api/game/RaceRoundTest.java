@@ -10,12 +10,18 @@ import java.util.*;
 public class RaceRoundTest {
 
     @Test
-    public void test_round_ends_when_out_of_guesses() {
+    public void round_ends_when_out_of_guesses() {
         Set<UUIDHolder> players = new HashSet<>();
         players.add(new MockUUIDHolder());
         players.add(new MockUUIDHolder());
 
-        GameRound round = new RaceRound(1, new MockQuestion(), 1, players);
+        GameRound round = new RaceRound.Builder()
+                .withMaxGuessesPerPlayer(1)
+                .withQuestion(new MockQuestion())
+                .withPointsToAward(1)
+                .withPlayers(players)
+                .build();
+
         round.init();
         GameRoundContext context = round.createContext();
 
@@ -27,10 +33,15 @@ public class RaceRoundTest {
     }
 
     @Test
-    public void test_round_ends_when_one_winner() {
+    public void round_ends_when_one_winner() {
         UUIDHolder player = new MockUUIDHolder();
 
-        GameRound round = new RaceRound(3, new MockQuestion(), 1, Collections.singletonList(player));
+        GameRound round = new RaceRound.Builder()
+                .withMaxGuessesPerPlayer(3)
+                .withQuestion(new MockQuestion())
+                .withPointsToAward(1)
+                .withPlayers(Collections.singletonList(player))
+                .build();
         round.init();
         RoundEndingPredicate endingPredicate = round.createContext().getEndingCondition();
 
@@ -42,12 +53,17 @@ public class RaceRoundTest {
     }
 
     @Test
-    public void test_score_was_awarded() {
+    public void score_was_awarded() {
         double pointsToAward = 3.5;
         Player player1 = new MockPlayer(UUID.randomUUID());
         Player player2 = new MockPlayer(UUID.randomUUID());
-        GameRound round = new RaceRound(1, new MockQuestion(), pointsToAward,
-                Arrays.asList(player1, player2));
+
+        GameRound round = new RaceRound.Builder()
+                .withMaxGuessesPerPlayer(1)
+                .withQuestion(new MockQuestion())
+                .withPointsToAward(pointsToAward)
+                .withPlayers(Arrays.asList(player1, player2))
+                .build();
 
         round.init();
         round.onInputReceived(player1, "CORRECT");
