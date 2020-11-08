@@ -1,11 +1,14 @@
 package net.starype.quiz.api.game;
 
+import net.starype.quiz.api.game.answer.Answer;
 import net.starype.quiz.api.game.player.UUIDHolder;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+
 import java.util.concurrent.atomic.AtomicReference;
 
 public class RaceRound implements GameRound {
@@ -37,9 +40,8 @@ public class RaceRound implements GameRound {
     public void onGuessReceived(UUIDHolder source, String message) {
 
         // eligibility checks are performed in the game class
-        double pointsAwarded = pickedQuestion.submitAnswer(message);
-
-        if(1 - pointsAwarded > 0.01) {
+        Optional<Double> correctness = pickedQuestion.evaluateAnswer(Answer.fromString(message));
+        if(1.0 - correctness.orElse(0) > 0.01) {
             counter.wrongGuess(source);
         } else {
             winnerContainer.set(source);

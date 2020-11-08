@@ -1,5 +1,9 @@
 package net.starype.quiz.api.game;
 
+import net.starype.quiz.api.game.answer.Answer;
+import net.starype.quiz.api.game.answer.CorrectAnswer;
+import net.starype.quiz.api.game.answer.CorrectAnswerFactory;
+import net.starype.quiz.api.game.answer.WordCorrectAnswerFactory;
 import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.player.UUIDHolder;
 import org.junit.Assert;
@@ -9,6 +13,8 @@ import java.util.*;
 
 public class RaceRoundTest {
 
+    private static CorrectAnswerFactory factory = new WordCorrectAnswerFactory();
+
     @Test
     public void round_ends_when_out_of_guesses() {
         Set<UUIDHolder> players = new HashSet<>();
@@ -17,7 +23,8 @@ public class RaceRoundTest {
 
         GameRound round = new RaceRound.Builder()
                 .withMaxGuessesPerPlayer(1)
-                .withQuestion(new MockQuestion())
+                .withQuestion(new MockQuestion(factory.createCorrectAnswer("CORRECT")))
+                .withPlayers(players)
                 .build();
 
         round.init(null, players);
@@ -36,8 +43,9 @@ public class RaceRoundTest {
 
         GameRound round = new RaceRound.Builder()
                 .withMaxGuessesPerPlayer(3)
-                .withQuestion(new MockQuestion())
+                .withQuestion(new MockQuestion(factory.createCorrectAnswer("CORRECT")))
                 .build();
+      
         round.init(null, Collections.singletonList(player));
         RoundEndingPredicate endingPredicate = round.getContext().getEndingCondition();
 
@@ -69,7 +77,7 @@ public class RaceRoundTest {
 
         GameRound round = new RaceRound.Builder()
                 .withMaxGuessesPerPlayer(1)
-                .withQuestion(new MockQuestion())
+                .withQuestion(new MockQuestion(factory.createCorrectAnswer("CORRECT")))
                 .withPointsToAward(pointsToAward)
                 .build();
 
@@ -84,4 +92,57 @@ public class RaceRoundTest {
         Assert.assertEquals(score2, 0, 0.01);
     }
 
+    private static class MockUUIDHolder implements UUIDHolder {
+        private UUID id = UUID.randomUUID();
+        @Override
+        public UUID getUUID() {
+            return id;
+        }
+    }
+
+    private static class MockPlayer extends Player {
+
+        public MockPlayer() {
+            super(UUID.randomUUID(), "");
+        }
+    }
+
+    private static class MockQuestion implements Question {
+
+        private CorrectAnswer correctAnswer;
+
+        public MockQuestion(CorrectAnswer correctAnswer) {
+            this.correctAnswer = correctAnswer;
+        }
+
+        @Override
+        public Set<QuestionTag> getTags() { return null; }
+
+        @Override
+        public void registerTag(QuestionTag tag) { }
+
+        @Override
+        public void unregisterTag(QuestionTag tag) { }
+
+        @Override
+        public QuestionDifficulty getDifficulty() { return null; }
+
+        @Override
+        public String getRawQuestion() { return null; }
+
+        @Override
+        public String getDisplayableCorrectAnswer() { return null; }
+
+        @Override
+        public UUID getUUID() { return null; }
+
+        @Override
+        public Optional<Double> evaluateAnswer(Answer answer) {
+            if(!correctAnswer.getValidityEvaluator()
+                    .isValid(answer))
+                return Optional.empty();
+            return Optional.of(correctAnswer.getCorrectnessEvaluator()
+                    .getCorrectness(answer));
+        }
+    }
 }
