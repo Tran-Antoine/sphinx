@@ -5,7 +5,6 @@ import net.starype.quiz.api.game.player.UUIDHolder;
 
 import java.util.Optional;
 import java.util.Set;
-import net.starype.quiz.api.game.answer.CorrectAnswer;
 
 public interface Question extends UUIDHolder {
 

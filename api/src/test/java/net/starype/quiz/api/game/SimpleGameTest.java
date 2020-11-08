@@ -1,9 +1,7 @@
 package net.starype.quiz.api.game;
 
 import net.starype.quiz.api.game.player.Player;
-import net.starype.quiz.api.game.player.UUIDHolder;
 import net.starype.quiz.api.server.GameServer;
-import org.junit.Test;
 
 import java.util.*;
 

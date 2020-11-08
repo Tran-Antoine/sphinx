@@ -3,12 +3,7 @@ package net.starype.quiz.api.game;
 import net.starype.quiz.api.game.answer.Answer;
 import net.starype.quiz.api.game.player.UUIDHolder;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class RaceRound implements GameRound {
