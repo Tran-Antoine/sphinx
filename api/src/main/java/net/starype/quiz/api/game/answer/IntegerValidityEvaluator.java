@@ -2,12 +2,11 @@ package net.starype.quiz.api.game.answer;
 
 public class IntegerValidityEvaluator implements ValidityEvaluator {
 
-    private IntegerValidityEvaluator()
-    {}
+    private IntegerValidityEvaluator() {}
 
     private static IntegerValidityEvaluator instance = null;
 
-    public static synchronized IntegerValidityEvaluator getInstance()
+    public static IntegerValidityEvaluator getInstance()
     {
         if(instance == null) {
             instance = new IntegerValidityEvaluator();
@@ -18,7 +17,7 @@ public class IntegerValidityEvaluator implements ValidityEvaluator {
     @Override
     public boolean isValid(Answer answer) {
         return answer
-                .getAnswer()
+                .getAnswerText()
                 .strip()
                 .matches("^[+-]?[0-9]+");
     }

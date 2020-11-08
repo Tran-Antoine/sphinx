@@ -4,17 +4,18 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class WordCorrectnessEvaluator implements CorrectnessEvaluator {
-    private Set<String> acceptedAnswers;
 
-    public WordCorrectnessEvaluator(Set<String> acceptedAnswers) {
-        this.acceptedAnswers = acceptedAnswers.stream()
-                .map(s -> s.strip().toLowerCase())
-                .filter(s -> WordValidityEvaluator.getInstance().isValid(new Answer(s)))
+    private Set<Answer> acceptedAnswers;
+
+    public WordCorrectnessEvaluator(Set<Answer> acceptedAnswers) {
+        this.acceptedAnswers = acceptedAnswers
+                .stream()
+                .filter(WordValidityEvaluator.getInstance()::isValid)
                 .collect(Collectors.toSet());
     }
 
     @Override
     public double getCorrectness(Answer answer) {
-        return acceptedAnswers.contains(answer.getAnswer().strip().toLowerCase()) ? (1.0) : (0.0);
+        return acceptedAnswers.contains(answer) ? (1.0) : (0.0);
     }
 }

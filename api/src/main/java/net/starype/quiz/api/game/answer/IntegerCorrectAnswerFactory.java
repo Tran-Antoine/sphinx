@@ -11,12 +11,12 @@ public class IntegerCorrectAnswerFactory implements CorrectRangedAnswerFactory {
     }
 
     @Override
-    public CorrectAnswer createCorrectAnswer(Set<String> answer) {
-        return new IntegerCorrectAnswer(new IntegerCorrectnessEvaluator(answer, range));
+    public CorrectAnswer createCorrectAnswer(Set<Answer> answers) {
+        return new IntegerCorrectAnswer(new IntegerCorrectnessEvaluator(answers, range));
     }
 
     @Override
-    public CorrectRangedAnswerFactory setAcceptedRange(Number range) {
+    public CorrectRangedAnswerFactory withAcceptedRange(Number range) {
         this.range = Math.abs(range.intValue()) + 1;
         return this;
     }

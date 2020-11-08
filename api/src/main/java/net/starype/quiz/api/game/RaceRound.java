@@ -3,7 +3,6 @@ package net.starype.quiz.api.game;
 import net.starype.quiz.api.game.answer.Answer;
 import net.starype.quiz.api.game.player.UUIDHolder;
 
-import javax.swing.text.html.Option;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
@@ -35,7 +34,7 @@ public class RaceRound implements GameRound {
     public void onGuessReceived(UUIDHolder source, String message) {
 
         // eligibility checks are performed in the game class
-        Optional<Double> correctness = pickedQuestion.evaluateAnswer(new Answer(message));
+        Optional<Double> correctness = pickedQuestion.evaluateAnswer(Answer.fromString(message));
         if(correctness.isEmpty() || correctness.get() != 1.0) {
             counter.wrongGuess(source);
             return;

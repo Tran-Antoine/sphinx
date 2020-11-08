@@ -10,27 +10,27 @@ public class IntegerCorrectAnswerTest {
     private void assertFormatValid(String answer) {
         Assert.assertTrue(factory
                 .getValidityEvaluator()
-                .isValid(new Answer(answer)));
+                .isValid(Answer.fromString(answer)));
     }
 
     private void assertFormatInvalid(String answer) {
         Assert.assertFalse(factory
                 .getValidityEvaluator()
-                .isValid(new Answer(answer)));
+                .isValid(Answer.fromString(answer)));
     }
 
     private void assertAnswerCorrectness(double expected, int range, String expectedAnswer, String answer) {
-        Assert.assertEquals(expected, factory.setAcceptedRange(range)
+        Assert.assertEquals(expected, factory.withAcceptedRange(range)
                 .createCorrectAnswer(expectedAnswer)
                 .getCorrectnessEvaluator()
-                .getCorrectness(new Answer(answer)), 0.001);
+                .getCorrectness(Answer.fromString(answer)), 0.001);
     }
 
     private void assertAnswerIncorrect(int range, String expectedAnswer, String answer) {
-        Assert.assertFalse(factory.setAcceptedRange(range)
+        Assert.assertFalse(factory.withAcceptedRange(range)
                 .createCorrectAnswer(expectedAnswer)
                 .getCorrectnessEvaluator()
-                .getCorrectness(new Answer(answer)) > 0);
+                .getCorrectness(Answer.fromString(answer)) > 0);
     }
 
     @Test

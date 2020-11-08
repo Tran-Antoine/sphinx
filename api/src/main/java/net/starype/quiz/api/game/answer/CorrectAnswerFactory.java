@@ -5,12 +5,16 @@ import java.util.Set;
 
 public interface CorrectAnswerFactory {
 
-    CorrectAnswer createCorrectAnswer(Set<String> answers);
+    CorrectAnswer createCorrectAnswer(Set<Answer> answers);
 
-    default CorrectAnswer createCorrectAnswer(String answer) {
-        Set<String> answersSet = new HashSet<String>();
+    default CorrectAnswer createCorrectAnswer(Answer answer) {
+        Set<Answer> answersSet = new HashSet<>();
         answersSet.add(answer);
         return createCorrectAnswer(answersSet);
+    }
+
+    default CorrectAnswer createCorrectAnswer(String text) {
+        return createCorrectAnswer(Answer.fromString(text));
     }
 
     ValidityEvaluator getValidityEvaluator();

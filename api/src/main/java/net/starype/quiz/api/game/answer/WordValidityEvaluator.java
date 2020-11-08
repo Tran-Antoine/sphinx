@@ -2,12 +2,11 @@ package net.starype.quiz.api.game.answer;
 
 public class WordValidityEvaluator implements ValidityEvaluator {
 
-    private WordValidityEvaluator()
-    {}
+    private WordValidityEvaluator() {}
 
     private static WordValidityEvaluator instance = null;
 
-    public static synchronized WordValidityEvaluator getInstance()
+    public static WordValidityEvaluator getInstance()
     {
         if(instance == null) {
             instance = new WordValidityEvaluator();
@@ -18,8 +17,7 @@ public class WordValidityEvaluator implements ValidityEvaluator {
     @Override
     public boolean isValid(Answer answer) {
         return answer
-                .getAnswer()
-                .strip()
+                .getAnswerText()
                 .matches("[a-zA-Z'0-9]+");
     }
 }

@@ -9,27 +9,27 @@ public class WordCorrectAnswerTest {
     private void assertFormatValid(String answer) {
         Assert.assertTrue(factory
                 .getValidityEvaluator()
-                .isValid(new Answer(answer)));
+                .isValid(Answer.fromString(answer)));
     }
 
     private void assertFormatInvalid(String answer) {
         Assert.assertFalse(factory
                 .getValidityEvaluator()
-                .isValid(new Answer(answer)));
+                .isValid(Answer.fromString(answer)));
     }
 
     private void assertAnswerCorrect(String expectedAnswer, String answer) {
         Assert.assertEquals(1.0, factory
                 .createCorrectAnswer(expectedAnswer)
                 .getCorrectnessEvaluator()
-                .getCorrectness(new Answer(answer)), 0.001);
+                .getCorrectness(Answer.fromString(answer)), 0.001);
     }
 
     private void assertAnswerIncorrect(String expectedAnswer, String answer) {
         Assert.assertEquals(0.0, factory
                 .createCorrectAnswer(expectedAnswer)
                 .getCorrectnessEvaluator()
-                .getCorrectness(new Answer(answer)), 0.001);
+                .getCorrectness(Answer.fromString(answer)), 0.001);
     }
 
     @Test

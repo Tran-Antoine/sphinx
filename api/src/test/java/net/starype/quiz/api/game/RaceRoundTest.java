@@ -9,7 +9,6 @@ import net.starype.quiz.api.game.player.UUIDHolder;
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.swing.text.html.Option;
 import java.util.*;
 
 public class RaceRoundTest {
@@ -141,7 +140,7 @@ public class RaceRoundTest {
 
         @Override
         public Optional<Double> evaluateAnswer(Answer answer) {
-            if(!correctAnswer.getCandidateValidityEvaluator()
+            if(!correctAnswer.getValidityEvaluator()
                     .isValid(answer))
                 return Optional.empty();
             return Optional.of(correctAnswer.getCorrectnessEvaluator()
