@@ -1,5 +1,9 @@
 package net.starype.quiz.api.game;
 
+import net.starype.quiz.api.game.answer.Answer;
+import net.starype.quiz.api.game.answer.CorrectAnswer;
+import net.starype.quiz.api.game.answer.CorrectAnswerFactory;
+import net.starype.quiz.api.game.answer.WordCorrectAnswerFactory;
 import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.player.UUIDHolder;
 import org.junit.Assert;
@@ -9,6 +13,8 @@ import java.util.*;
 
 public class RaceRoundTest {
 
+    private static CorrectAnswerFactory factory = new WordCorrectAnswerFactory();
+
     @Test
     public void round_ends_when_out_of_guesses() {
         Set<UUIDHolder> players = new HashSet<>();
@@ -17,7 +23,7 @@ public class RaceRoundTest {
 
         GameRound round = new RaceRound.Builder()
                 .withMaxGuessesPerPlayer(1)
-                .withQuestion(new MockQuestion())
+                .withQuestion(new MockQuestion(factory.createCorrectAnswer("CORRECT")))
                 .withPlayers(players)
                 .build();
 
@@ -37,7 +43,7 @@ public class RaceRoundTest {
 
         GameRound round = new RaceRound.Builder()
                 .withMaxGuessesPerPlayer(3)
-                .withQuestion(new MockQuestion())
+                .withQuestion(new MockQuestion(factory.createCorrectAnswer("CORRECT")))
                 .withPlayers(Collections.singletonList(player))
                 .build();
         round.init();
@@ -72,7 +78,7 @@ public class RaceRoundTest {
 
         GameRound round = new RaceRound.Builder()
                 .withMaxGuessesPerPlayer(1)
-                .withQuestion(new MockQuestion())
+                .withQuestion(new MockQuestion(factory.createCorrectAnswer("CORRECT")))
                 .withPointsToAward(pointsToAward)
                 .withPlayers(Arrays.asList(player1, player2))
                 .build();
@@ -105,12 +111,10 @@ public class RaceRoundTest {
 
     private static class MockQuestion implements Question {
 
-        @Override
-        public double submitAnswer(String answer) {
-            if(answer.equals("CORRECT")) {
-                return 1;
-            }
-            return 0;
+        private CorrectAnswer correctAnswer;
+
+        public MockQuestion(CorrectAnswer correctAnswer) {
+            this.correctAnswer = correctAnswer;
         }
 
         @Override
@@ -133,5 +137,14 @@ public class RaceRoundTest {
 
         @Override
         public UUID getUUID() { return null; }
+
+        @Override
+        public Optional<Double> evaluateAnswer(Answer answer) {
+            if(!correctAnswer.getValidityEvaluator()
+                    .isValid(answer))
+                return Optional.empty();
+            return Optional.of(correctAnswer.getCorrectnessEvaluator()
+                    .getCorrectness(answer));
+        }
     }
 }

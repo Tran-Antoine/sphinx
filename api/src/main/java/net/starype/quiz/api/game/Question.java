@@ -1,8 +1,11 @@
 package net.starype.quiz.api.game;
 
+import net.starype.quiz.api.game.answer.Answer;
 import net.starype.quiz.api.game.player.UUIDHolder;
 
+import java.util.Optional;
 import java.util.Set;
+import net.starype.quiz.api.game.answer.CorrectAnswer;
 
 public interface Question extends UUIDHolder {
 
@@ -22,8 +25,6 @@ public interface Question extends UUIDHolder {
 
     String getDisplayableCorrectAnswer();
 
-    default double submitAnswer(String answer) {
-        return 1; // TODO: Use answer matcher
-    }
+    Optional<Double> evaluateAnswer(Answer answer);
 
 }
