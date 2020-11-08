@@ -11,7 +11,7 @@ public class SingleWinnerDistribution implements ScoreDistribution {
     private double scoreForWinner;
 
     public SingleWinnerDistribution(AtomicReference<? extends UUIDHolder> container) {
-        this(container, 1);
+        this(container, 1.0);
     }
 
     public SingleWinnerDistribution(AtomicReference<? extends UUIDHolder> container, double scoreForWinner) {

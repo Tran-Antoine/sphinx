@@ -11,6 +11,7 @@ public interface GameServer {
     void onRoundEnded(GameRoundReport report, QuizGame game);
     void onGameOver();
     void onPlayerGuessed(PlayerGuessContext context);
+    void onNonEligiblePlayerGuessed(UUIDHolder player);
     void onPlayerGaveUp(UUIDHolder player);
     void onPlayerScoreUpdated(Player player);
 }

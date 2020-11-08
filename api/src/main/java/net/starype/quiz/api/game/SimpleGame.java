@@ -58,16 +58,22 @@ public class SimpleGame implements QuizGame {
 
     @Override
     public void onInputReceived(UUIDHolder player, String message) {
-        if(paused) {
-            return;
-        }
         if(rounds.isEmpty()) {
             throw new IllegalStateException("Cannot accept inputs after the game is over");
         }
+        if(paused) {
+            return;
+        }
+
         GameRound current = rounds.peek();
+        GameRoundContext context = current.getContext();
+
+        if(!context.getPlayerEligibility().isEligible(player)) {
+            server.onNonEligiblePlayerGuessed(player);
+            return;
+        }
         transferRequestToRound(player, message, current);
 
-        GameRoundContext context = current.getContext();
         checkEndOfRound(context);
     }
 

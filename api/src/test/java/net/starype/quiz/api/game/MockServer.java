@@ -34,6 +34,11 @@ class MockServer implements GameServer {
     }
 
     @Override
+    public void onNonEligiblePlayerGuessed(UUIDHolder player) {
+        System.out.println("Input refused. Player with ID " + player.getUUID() + " may not send a guess");
+    }
+
+    @Override
     public void onPlayerGaveUp(UUIDHolder player) {
         System.out.println("Player with ID " + player.getUUID() + " gave up on the question");
     }
