@@ -11,7 +11,7 @@ public class SingleWinnerDistribution implements ScoreDistribution {
     private double scoreForWinner;
 
     public SingleWinnerDistribution(AtomicReference<? extends UUIDHolder> container) {
-        this(container, 1);
+        this(container, 1.0);
     }
 
     public SingleWinnerDistribution(AtomicReference<? extends UUIDHolder> container, double scoreForWinner) {
@@ -21,6 +21,9 @@ public class SingleWinnerDistribution implements ScoreDistribution {
 
     @Override
     public Double apply(Player player) {
+        if(container.get() == null) {
+            return 0.0;
+        }
         return player.getUUID().equals(container.get().getUUID())
                 ? scoreForWinner
                 : 0.0;
