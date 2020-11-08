@@ -7,14 +7,10 @@ public interface CorrectAnswerFactory {
 
     CorrectAnswer createCorrectAnswer(Set<Answer> answers);
 
-    default CorrectAnswer createCorrectAnswer(Answer answer) {
+    default CorrectAnswer createCorrectAnswer(Answer answer, AnswerParser parser) {
         Set<Answer> answersSet = new HashSet<>();
-        answersSet.add(answer);
+        answersSet.add(parser.process(answer));
         return createCorrectAnswer(answersSet);
-    }
-
-    default CorrectAnswer createCorrectAnswer(String text) {
-        return createCorrectAnswer(Answer.fromString(text));
     }
 
     ValidityEvaluator getValidityEvaluator();

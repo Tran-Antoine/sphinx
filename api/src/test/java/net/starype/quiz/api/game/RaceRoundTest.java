@@ -1,9 +1,6 @@
 package net.starype.quiz.api.game;
 
-import net.starype.quiz.api.game.answer.Answer;
-import net.starype.quiz.api.game.answer.CorrectAnswer;
-import net.starype.quiz.api.game.answer.CorrectAnswerFactory;
-import net.starype.quiz.api.game.answer.WordCorrectAnswerFactory;
+import net.starype.quiz.api.game.answer.*;
 import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.player.UUIDHolder;
 import org.junit.Assert;
@@ -23,7 +20,7 @@ public class RaceRoundTest {
 
         GameRound round = new RaceRound.Builder()
                 .withMaxGuessesPerPlayer(1)
-                .withQuestion(new MockQuestion(factory.createCorrectAnswer("CORRECT")))
+                .withQuestion(new MockQuestion(factory.createCorrectAnswer(Answer.fromString("CORRECT"), new NullProcess())))
                 .withPlayers(players)
                 .build();
 
@@ -43,7 +40,7 @@ public class RaceRoundTest {
 
         GameRound round = new RaceRound.Builder()
                 .withMaxGuessesPerPlayer(3)
-                .withQuestion(new MockQuestion(factory.createCorrectAnswer("CORRECT")))
+                .withQuestion(new MockQuestion(factory.createCorrectAnswer(Answer.fromString("CORRECT"), new NullProcess())))
                 .withPlayers(Collections.singletonList(player))
                 .build();
         round.init();
@@ -78,7 +75,7 @@ public class RaceRoundTest {
 
         GameRound round = new RaceRound.Builder()
                 .withMaxGuessesPerPlayer(1)
-                .withQuestion(new MockQuestion(factory.createCorrectAnswer("CORRECT")))
+                .withQuestion(new MockQuestion(factory.createCorrectAnswer(Answer.fromString("CORRECT"), new NullProcess())))
                 .withPointsToAward(pointsToAward)
                 .withPlayers(Arrays.asList(player1, player2))
                 .build();

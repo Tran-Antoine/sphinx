@@ -1,16 +1,17 @@
 package net.starype.quiz.api.game.answer;
 
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class IntegerCorrectnessEvaluator implements CorrectnessEvaluator {
 
     private Set<Answer> acceptedAnswers;
     private int acceptedRange;
+    private LossFunction lossFunction;
 
-    public IntegerCorrectnessEvaluator(Set<Answer> acceptedAnswers, int acceptedRange) {
+    public IntegerCorrectnessEvaluator(Set<Answer> acceptedAnswers, int acceptedRange, LossFunction lossFunction) {
         this.acceptedAnswers = acceptedAnswers;
         this.acceptedRange = Math.max(Math.abs(acceptedRange), 1);
+        this.lossFunction = lossFunction;
     }
 
     @Override
@@ -20,12 +21,9 @@ public class IntegerCorrectnessEvaluator implements CorrectnessEvaluator {
                 .map(accepted -> Math.abs(proposedAnswer - accepted.asInt()))
                 .filter(n -> n < acceptedRange)
                 .min(Integer::compareTo)
-                .map(n -> Math.abs(acceptedRange - n))
-                .orElse(0);
-        return linearMapping(closeness, acceptedRange);
-    }
-
-    private double linearMapping(double closeness, double maxCloseness) {
-        return closeness / maxCloseness;
+                .orElse(acceptedRange + 1);
+        if(closeness >= acceptedRange + 1)
+            return 0.0;
+        return lossFunction.evaluate(closeness, 0.0, acceptedRange);
     }
 }
