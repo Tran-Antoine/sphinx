@@ -24,7 +24,6 @@ public class RaceRoundTest {
         GameRound round = new RaceRound.Builder()
                 .withMaxGuessesPerPlayer(1)
                 .withQuestion(new MockQuestion(factory.createCorrectAnswer("CORRECT")))
-                .withPlayers(players)
                 .build();
 
         round.init(null, players);

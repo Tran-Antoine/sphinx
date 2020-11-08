@@ -1,16 +1,19 @@
 package net.starype.quiz.api.game;
 
+import net.starype.quiz.api.game.answer.Answer;
+
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
 class MockQuestion implements Question {
 
     @Override
-    public double submitAnswer(String answer) {
-        if (answer.equals("CORRECT")) {
-            return 1;
+    public Optional<Double> evaluateAnswer(Answer answer) {
+        if(answer.getAnswerText().equals("CORRECT")) {
+            return Optional.of(1.0);
         }
-        return 0;
+        return Optional.of(0.0);
     }
 
     @Override

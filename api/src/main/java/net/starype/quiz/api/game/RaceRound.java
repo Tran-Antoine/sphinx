@@ -41,13 +41,13 @@ public class RaceRound implements GameRound {
 
         // eligibility checks are performed in the game class
         Optional<Double> correctness = pickedQuestion.evaluateAnswer(Answer.fromString(message));
-        if(1.0 - correctness.orElse(0) > 0.01) {
+        if(1.0 - correctness.orElse(0.0) > 0.01) {
             counter.wrongGuess(source);
         } else {
             winnerContainer.set(source);
         }
 
-        PlayerGuessContext context = new PlayerGuessContext(source, pointsAwarded, counter.isEligible(source));
+        PlayerGuessContext context = new PlayerGuessContext(source, pointsToAward, counter.isEligible(source));
         if(game != null) {
             game.sendInputToServer((server) -> server.onPlayerGuessed(context));
         }
