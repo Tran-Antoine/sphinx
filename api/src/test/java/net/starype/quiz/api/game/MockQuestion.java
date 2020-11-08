@@ -10,7 +10,7 @@ class MockQuestion implements Question {
 
     @Override
     public Optional<Double> evaluateAnswer(Answer answer) {
-        if(answer.getAnswerText().equals("CORRECT")) {
+        if(answer.getAnswerText().equals("correct")) {
             return Optional.of(1.0);
         }
         return Optional.of(0.0);

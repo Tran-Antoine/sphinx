@@ -21,6 +21,9 @@ public class SingleWinnerDistribution implements ScoreDistribution {
 
     @Override
     public Double apply(Player player) {
+        if(container.get() == null) {
+            return 0.0;
+        }
         return player.getUUID().equals(container.get().getUUID())
                 ? scoreForWinner
                 : 0.0;
