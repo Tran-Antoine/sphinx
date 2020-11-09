@@ -2,23 +2,23 @@ package net.starype.quiz.api.game.answer;
 
 import java.util.Set;
 
-public class IntegerCorrectAnswerFactory implements CorrectRangedAnswerFactory {
-    private int range = 1;
+public class DoubleCorrectAnswerFactory implements CorrectRangedAnswerFactory {
+    private double range = 1.0;
     private LossFunction lossFunction = new LinearLossFunction();
 
     @Override
     public ValidityEvaluator getValidityEvaluator() {
-        return IntegerValidityEvaluator.getInstance();
+        return DoubleValidityEvaluator.getInstance();
     }
 
     @Override
     public CorrectAnswer createCorrectAnswer(Set<Answer> answers) {
-        return new IntegerCorrectAnswer(new IntegerCorrectnessEvaluator(answers, range, lossFunction));
+        return new DoubleCorrectAnswer(new DoubleCorrectnessEvaluator(answers, range, lossFunction));
     }
 
     @Override
     public CorrectRangedAnswerFactory withAcceptedRange(Number range) {
-        this.range = Math.abs(range.intValue());
+        this.range = Math.abs(range.doubleValue());
         return this;
     }
 

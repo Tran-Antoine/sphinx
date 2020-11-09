@@ -4,9 +4,9 @@ import java.util.Set;
 
 public class IntegerCorrectnessEvaluator implements CorrectnessEvaluator {
 
-    private Set<Answer> acceptedAnswers;
-    private int acceptedRange;
-    private LossFunction lossFunction;
+    private final Set<Answer> acceptedAnswers;
+    private final int acceptedRange;
+    private final LossFunction lossFunction;
 
     public IntegerCorrectnessEvaluator(Set<Answer> acceptedAnswers, int acceptedRange, LossFunction lossFunction) {
         this.acceptedAnswers = acceptedAnswers;
