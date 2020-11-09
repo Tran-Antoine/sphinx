@@ -23,8 +23,7 @@ public class Answer {
     }
 
     public double asDouble() {
-        return Double.parseDouble(
-                answer.replace(',', '.').replace("+", ""));
+        return Double.parseDouble(answer.replace(',', '.'));
     }
 
     @Override
