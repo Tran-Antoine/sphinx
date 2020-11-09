@@ -2,19 +2,22 @@ package net.starype.quiz.api.game.answer;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public interface CorrectAnswerFactory {
 
-    CorrectAnswer createCorrectAnswer(Set<Answer> answers);
+    CorrectAnswer createCorrectAnswer(Set<Answer> answers, AnswerProcessor answerProcessor);
 
-    default CorrectAnswer createCorrectAnswer(Answer answer) {
-        Set<Answer> answersSet = new HashSet<>();
-        answersSet.add(answer);
-        return createCorrectAnswer(answersSet);
+    default Set<Answer> processList(Set<Answer> answers, AnswerProcessor answerProcessor) {
+        return answers.stream()
+                .map(answerProcessor::process)
+                .collect(Collectors.toSet());
     }
 
-    default CorrectAnswer createCorrectAnswer(String text) {
-        return createCorrectAnswer(Answer.fromString(text));
+    default CorrectAnswer createCorrectAnswer(Answer answer, AnswerProcessor answerProcessor) {
+        Set<Answer> answersSet = new HashSet<>();
+        answersSet.add(answer);
+        return createCorrectAnswer(answersSet, answerProcessor);
     }
 
     ValidityEvaluator getValidityEvaluator();

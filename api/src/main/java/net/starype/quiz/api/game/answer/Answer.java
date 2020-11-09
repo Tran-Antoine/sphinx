@@ -4,20 +4,14 @@ import java.util.Objects;
 
 public class Answer {
 
-    private String answer;
+    private final String answer;
 
     private Answer(String answer) {
-        this.answer = processString(answer);
+        this.answer = answer;
     }
 
     public static Answer fromString(String answer) {
         return new Answer(answer);
-    }
-
-    private String processString(String rawAnswer) {
-        return rawAnswer
-                .strip()
-                .toLowerCase();
     }
 
     public String getAnswerText() {
@@ -26,6 +20,10 @@ public class Answer {
 
     public int asInt() {
         return Integer.parseInt(answer);
+    }
+
+    public double asDouble() {
+        return Double.parseDouble(answer.replace(',', '.'));
     }
 
     @Override

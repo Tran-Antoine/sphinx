@@ -1,9 +1,6 @@
 package net.starype.quiz.api.game;
 
-import net.starype.quiz.api.game.answer.Answer;
-import net.starype.quiz.api.game.answer.CorrectAnswer;
-import net.starype.quiz.api.game.answer.CorrectAnswerFactory;
-import net.starype.quiz.api.game.answer.WordCorrectAnswerFactory;
+import net.starype.quiz.api.game.answer.*;
 import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.player.UUIDHolder;
 import org.junit.Assert;
@@ -13,7 +10,7 @@ import java.util.*;
 
 public class RaceRoundTest {
 
-    private static CorrectAnswerFactory factory = new WordCorrectAnswerFactory();
+    private static CorrectAnswerFactory factory = new WordAnswerFactory();
 
     @Test
     public void round_ends_when_out_of_guesses() {
@@ -23,7 +20,7 @@ public class RaceRoundTest {
 
         GameRound round = new RaceRound.Builder()
                 .withMaxGuessesPerPlayer(1)
-                .withQuestion(new MockQuestion(factory.createCorrectAnswer("CORRECT")))
+                .withQuestion(new MockQuestion(factory.createCorrectAnswer(Answer.fromString("CORRECT"), new IdentityProcessor())))
                 .build();
 
         round.init(null, players);
@@ -42,7 +39,7 @@ public class RaceRoundTest {
 
         GameRound round = new RaceRound.Builder()
                 .withMaxGuessesPerPlayer(3)
-                .withQuestion(new MockQuestion(factory.createCorrectAnswer("CORRECT")))
+                .withQuestion(new MockQuestion(factory.createCorrectAnswer(Answer.fromString("CORRECT"), new IdentityProcessor())))
                 .build();
       
         round.init(null, Collections.singletonList(player));
@@ -76,7 +73,7 @@ public class RaceRoundTest {
 
         GameRound round = new RaceRound.Builder()
                 .withMaxGuessesPerPlayer(1)
-                .withQuestion(new MockQuestion(factory.createCorrectAnswer("CORRECT")))
+                .withQuestion(new MockQuestion(factory.createCorrectAnswer(Answer.fromString("CORRECT"), new IdentityProcessor())))
                 .withPointsToAward(pointsToAward)
                 .build();
 
