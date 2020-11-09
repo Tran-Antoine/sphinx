@@ -12,8 +12,8 @@ public class DoubleCorrectAnswerFactory implements CorrectRangedAnswerFactory {
     }
 
     @Override
-    public CorrectAnswer createCorrectAnswer(Set<Answer> answers) {
-        return new DoubleCorrectAnswer(new DoubleCorrectnessEvaluator(answers, range, lossFunction));
+    public CorrectAnswer createCorrectAnswer(Set<Answer> answers, AnswerParser parser) {
+        return new DoubleCorrectAnswer(new DoubleCorrectnessEvaluator(parseList(answers, parser), range, lossFunction));
     }
 
     @Override

@@ -10,8 +10,8 @@ public class WordCorrectAnswerFactory implements CorrectAnswerFactory {
     }
 
     @Override
-    public CorrectAnswer createCorrectAnswer(Set<Answer> answer) {
-        return new WordCorrectAnswer(new WordCorrectnessEvaluator(answer));
+    public CorrectAnswer createCorrectAnswer(Set<Answer> answers, AnswerParser parser) {
+        return new WordCorrectAnswer(new WordCorrectnessEvaluator(parseList(answers, parser)));
     }
 
 }
