@@ -6,6 +6,6 @@ public class LinearLossFunction implements LossFunction
 {
     @Override
     public double evaluate(double x) {
-        return MathUtils.Clamp01(1 - x);
+        return MathUtils.clamp01(1 - x);
     }
 }

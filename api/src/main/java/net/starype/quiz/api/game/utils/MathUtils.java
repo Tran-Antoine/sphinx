@@ -2,19 +2,19 @@ package net.starype.quiz.api.game.utils;
 
 public class MathUtils {
 
-    public static int Clamp(int value, int min, int max) {
+    public static int clamp(int value, int min, int max) {
         return Math.max(Math.min(value, max), min);
     }
 
-    public static double Clamp(double value, double min, double max) {
+    public static double clamp(double value, double min, double max) {
         return Math.max(Math.min(value, max), min);
     }
 
-    public static int Clamp01(int value) {
-        return Clamp(value, 0, 1);
+    public static int clamp01(int value) {
+        return clamp(value, 0, 1);
     }
 
-    public static double Clamp01(double value) {
-        return Clamp(value, 0.0, 1.0);
+    public static double clamp01(double value) {
+        return clamp(value, 0.0, 1.0);
     }
 }

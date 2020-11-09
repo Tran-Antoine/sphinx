@@ -2,16 +2,15 @@ package net.starype.quiz.api.game.utils;
 
 import org.junit.Assert;
 import org.junit.Test;
-import net.starype.quiz.api.game.utils.MathUtils;
 
 public class MathUtilsTest {
 
     private void testIntegerClamp(int value, int min, int max, int expected) {
-        Assert.assertEquals(expected, MathUtils.Clamp(value, min, max));
+        Assert.assertEquals(expected, MathUtils.clamp(value, min, max));
     }
 
     private void testDoubleClamp(double value, double min, double max, double expected) {
-        Assert.assertEquals(expected, MathUtils.Clamp(value, min, max), 0.001);
+        Assert.assertEquals(expected, MathUtils.clamp(value, min, max), 0.001);
     }
 
     @Test

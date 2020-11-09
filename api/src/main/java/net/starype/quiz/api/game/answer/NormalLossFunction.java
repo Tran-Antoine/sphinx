@@ -6,7 +6,7 @@ public class NormalLossFunction implements LossFunction {
 
     @Override
     public double evaluate(double x) {
-        return MathUtils.Clamp01(1 / Math.exp(3 * Math.pow(x, 2)));
+        return MathUtils.clamp01(1 / Math.exp(3 * Math.pow(x, 2)));
     }
 
 }
