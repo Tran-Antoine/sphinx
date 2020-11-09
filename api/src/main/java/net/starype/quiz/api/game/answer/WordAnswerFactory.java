@@ -2,7 +2,7 @@ package net.starype.quiz.api.game.answer;
 
 import java.util.Set;
 
-public class WordCorrectAnswerFactory implements CorrectAnswerFactory {
+public class WordAnswerFactory implements CorrectAnswerFactory {
 
     @Override
     public ValidityEvaluator getValidityEvaluator() {
@@ -11,7 +11,7 @@ public class WordCorrectAnswerFactory implements CorrectAnswerFactory {
 
     @Override
     public CorrectAnswer createCorrectAnswer(Set<Answer> answers, AnswerProcessor answerProcessor) {
-        return new WordCorrectAnswer(new WordCorrectnessEvaluator(processList(answers, answerProcessor)));
+        return new WordAnswer(new WordCorrectness(processList(answers, answerProcessor)));
     }
 
 }

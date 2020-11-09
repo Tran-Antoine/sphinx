@@ -2,13 +2,13 @@ package net.starype.quiz.api.game.answer;
 
 import java.util.Set;
 
-public class DoubleCorrectnessEvaluator implements CorrectnessEvaluator {
+public class NumberCorrectness implements CorrectnessEvaluator {
 
     private final Set<Answer> acceptedAnswers;
     private final double acceptedRange;
     private final LossFunction lossFunction;
 
-    public DoubleCorrectnessEvaluator(Set<Answer> acceptedAnswers, double acceptedRange, LossFunction lossFunction) {
+    public NumberCorrectness(Set<Answer> acceptedAnswers, double acceptedRange, LossFunction lossFunction) {
         this.acceptedAnswers = acceptedAnswers;
         this.acceptedRange = Math.max(Math.abs(acceptedRange), 0.0000001);
         this.lossFunction = lossFunction;

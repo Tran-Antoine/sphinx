@@ -1,21 +1,20 @@
 package net.starype.quiz.api.game.answer;
 
-public class DoubleCorrectAnswer implements CorrectAnswer {
+public class IntegerAnswer implements CorrectAnswer {
 
     private CorrectnessEvaluator correctnessEvaluator;
 
-    public DoubleCorrectAnswer(DoubleCorrectnessEvaluator integerCorrectnessEvaluator) {
-        correctnessEvaluator = integerCorrectnessEvaluator;
+    public IntegerAnswer(NumberCorrectness correctness) {
+        correctnessEvaluator = correctness;
     }
 
     @Override
     public ValidityEvaluator getValidityEvaluator() {
-        return DoubleValidityEvaluator.getInstance();
+        return IntegerValidity.getInstance();
     }
 
     @Override
     public CorrectnessEvaluator getCorrectnessEvaluator() {
         return correctnessEvaluator;
     }
-
 }

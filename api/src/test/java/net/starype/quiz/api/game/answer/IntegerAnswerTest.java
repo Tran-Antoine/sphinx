@@ -3,9 +3,9 @@ package net.starype.quiz.api.game.answer;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class IntegerCorrectAnswerTest {
+public class IntegerAnswerTest {
 
-    private static IntegerCorrectAnswerFactory factory = new IntegerCorrectAnswerFactory();
+    private static IntegerAnswerFactory factory = new IntegerAnswerFactory();
 
     private void assertFormatValid(String answer) {
         Assert.assertTrue(factory
@@ -21,14 +21,14 @@ public class IntegerCorrectAnswerTest {
 
     private void assertAnswerCorrectness(double expected, int range, String expectedAnswer, String answer) {
         Assert.assertEquals(expected, factory.withAcceptedRange(range)
-                .createCorrectAnswer(Answer.fromString(expectedAnswer), new AnswerProcessorIdentity())
+                .createCorrectAnswer(Answer.fromString(expectedAnswer), new IdentityProcessor())
                 .getCorrectnessEvaluator()
                 .getCorrectness(Answer.fromString(answer)), 0.001);
     }
 
     private void assertAnswerIncorrect(int range, String expectedAnswer, String answer) {
         Assert.assertFalse(factory.withAcceptedRange(range)
-                .createCorrectAnswer(Answer.fromString(expectedAnswer), new AnswerProcessorIdentity())
+                .createCorrectAnswer(Answer.fromString(expectedAnswer), new IdentityProcessor())
                 .getCorrectnessEvaluator()
                 .getCorrectness(Answer.fromString(answer)) > 0);
     }

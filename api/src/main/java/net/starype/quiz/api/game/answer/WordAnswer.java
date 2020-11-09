@@ -1,13 +1,13 @@
 package net.starype.quiz.api.game.answer;
 
-public class WordCorrectAnswer implements CorrectAnswer {
+public class WordAnswer implements CorrectAnswer {
 
     private ValidityEvaluator validityEvaluator;
     private CorrectnessEvaluator correctnessEvaluator;
 
-    public WordCorrectAnswer(WordCorrectnessEvaluator wordCorrectnessEvaluator) {
+    public WordAnswer(WordCorrectness wordCorrectness) {
         validityEvaluator = WordValidityEvaluator.getInstance();
-        correctnessEvaluator = wordCorrectnessEvaluator;
+        correctnessEvaluator = wordCorrectness;
     }
 
     @Override

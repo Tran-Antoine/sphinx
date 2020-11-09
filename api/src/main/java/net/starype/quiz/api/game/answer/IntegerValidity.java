@@ -1,14 +1,15 @@
 package net.starype.quiz.api.game.answer;
 
-public class DoubleValidityEvaluator implements ValidityEvaluator {
-    private DoubleValidityEvaluator() {}
+public class IntegerValidity implements ValidityEvaluator {
 
-    private static DoubleValidityEvaluator instance = null;
+    private IntegerValidity() {}
 
-    public static DoubleValidityEvaluator getInstance()
+    private static IntegerValidity instance = null;
+
+    public static IntegerValidity getInstance()
     {
         if(instance == null) {
-            instance = new DoubleValidityEvaluator();
+            instance = new IntegerValidity();
         }
         return instance;
     }
@@ -16,7 +17,7 @@ public class DoubleValidityEvaluator implements ValidityEvaluator {
     @Override
     public boolean isValid(Answer answer) {
         try {
-            answer.asDouble();
+            answer.asInt();
             return true;
         }
         catch(NumberFormatException e) {

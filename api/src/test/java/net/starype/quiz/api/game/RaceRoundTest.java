@@ -10,7 +10,7 @@ import java.util.*;
 
 public class RaceRoundTest {
 
-    private static CorrectAnswerFactory factory = new WordCorrectAnswerFactory();
+    private static CorrectAnswerFactory factory = new WordAnswerFactory();
 
     @Test
     public void round_ends_when_out_of_guesses() {
@@ -20,7 +20,7 @@ public class RaceRoundTest {
 
         GameRound round = new RaceRound.Builder()
                 .withMaxGuessesPerPlayer(1)
-                .withQuestion(new MockQuestion(factory.createCorrectAnswer(Answer.fromString("CORRECT"), new AnswerProcessorIdentity())))
+                .withQuestion(new MockQuestion(factory.createCorrectAnswer(Answer.fromString("CORRECT"), new IdentityProcessor())))
                 .build();
 
         round.init(null, players);
@@ -39,7 +39,7 @@ public class RaceRoundTest {
 
         GameRound round = new RaceRound.Builder()
                 .withMaxGuessesPerPlayer(3)
-                .withQuestion(new MockQuestion(factory.createCorrectAnswer(Answer.fromString("CORRECT"), new AnswerProcessorIdentity())))
+                .withQuestion(new MockQuestion(factory.createCorrectAnswer(Answer.fromString("CORRECT"), new IdentityProcessor())))
                 .build();
       
         round.init(null, Collections.singletonList(player));
@@ -73,7 +73,7 @@ public class RaceRoundTest {
 
         GameRound round = new RaceRound.Builder()
                 .withMaxGuessesPerPlayer(1)
-                .withQuestion(new MockQuestion(factory.createCorrectAnswer(Answer.fromString("CORRECT"), new AnswerProcessorIdentity())))
+                .withQuestion(new MockQuestion(factory.createCorrectAnswer(Answer.fromString("CORRECT"), new IdentityProcessor())))
                 .withPointsToAward(pointsToAward)
                 .build();
 

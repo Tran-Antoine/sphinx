@@ -2,7 +2,7 @@ package net.starype.quiz.api.game.answer;
 
 public interface AnswerProcessor {
 
-    Answer process(Answer str);
+    Answer process(Answer answer);
 
     default Answer process(String str) {
         return process(Answer.fromString(str));

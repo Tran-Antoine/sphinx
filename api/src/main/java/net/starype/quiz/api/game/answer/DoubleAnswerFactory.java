@@ -2,28 +2,28 @@ package net.starype.quiz.api.game.answer;
 
 import java.util.Set;
 
-public class DoubleCorrectAnswerFactory implements CorrectRangedAnswerFactory {
+public class DoubleAnswerFactory implements RangedAnswerFactory {
     private double range = 1.0;
     private LossFunction lossFunction = new LinearLossFunction();
 
     @Override
     public ValidityEvaluator getValidityEvaluator() {
-        return DoubleValidityEvaluator.getInstance();
+        return DoubleValidity.getInstance();
     }
 
     @Override
     public CorrectAnswer createCorrectAnswer(Set<Answer> answers, AnswerProcessor answerProcessor) {
-        return new DoubleCorrectAnswer(new DoubleCorrectnessEvaluator(processList(answers, answerProcessor), range, lossFunction));
+        return new DoubleAnswer(new NumberCorrectness(processList(answers, answerProcessor), range, lossFunction));
     }
 
     @Override
-    public CorrectRangedAnswerFactory withAcceptedRange(Number range) {
+    public RangedAnswerFactory withAcceptedRange(Number range) {
         this.range = Math.abs(range.doubleValue());
         return this;
     }
 
     @Override
-    public CorrectRangedAnswerFactory withInterpolation(LossFunction lossFunction) {
+    public RangedAnswerFactory withInterpolation(LossFunction lossFunction) {
         this.lossFunction = lossFunction;
         return this;
     }

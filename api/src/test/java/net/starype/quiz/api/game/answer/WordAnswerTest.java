@@ -3,8 +3,8 @@ package net.starype.quiz.api.game.answer;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class WordCorrectAnswerTest {
-    private static WordCorrectAnswerFactory factory = new WordCorrectAnswerFactory();
+public class WordAnswerTest {
+    private static WordAnswerFactory factory = new WordAnswerFactory();
 
     private void assertFormatValid(String answer) {
         Assert.assertTrue(factory
@@ -20,14 +20,14 @@ public class WordCorrectAnswerTest {
 
     private void assertAnswerCorrect(String expectedAnswer, String answer) {
         Assert.assertEquals(1.0, factory
-                .createCorrectAnswer(Answer.fromString(expectedAnswer), new AnswerProcessorIdentity())
+                .createCorrectAnswer(Answer.fromString(expectedAnswer), new IdentityProcessor())
                 .getCorrectnessEvaluator()
                 .getCorrectness(Answer.fromString(answer)), 0.001);
     }
 
     private void assertAnswerIncorrect(String expectedAnswer, String answer) {
         Assert.assertEquals(0.0, factory
-                .createCorrectAnswer(Answer.fromString(expectedAnswer), new AnswerProcessorIdentity())
+                .createCorrectAnswer(Answer.fromString(expectedAnswer), new IdentityProcessor())
                 .getCorrectnessEvaluator()
                 .getCorrectness(Answer.fromString(answer)), 0.001);
     }

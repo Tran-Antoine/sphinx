@@ -5,7 +5,7 @@ import org.junit.Test;
 
 public class DoubleCorrectAnswerTest {
 
-    private static final DoubleCorrectAnswerFactory factory = new DoubleCorrectAnswerFactory();
+    private static final DoubleAnswerFactory factory = new DoubleAnswerFactory();
 
     private void assertFormatValid(String answer) {
         Assert.assertTrue(factory
@@ -21,19 +21,19 @@ public class DoubleCorrectAnswerTest {
 
     private void assertAnswerCorrectness(double expected, double range, String expectedAnswer, String answer) {
         Assert.assertEquals(expected, factory.withAcceptedRange(range)
-                .createCorrectAnswer(Answer.fromString(expectedAnswer), new AnswerProcessorIdentity())
+                .createCorrectAnswer(Answer.fromString(expectedAnswer), new IdentityProcessor())
                 .getCorrectnessEvaluator()
                 .getCorrectness(Answer.fromString(answer)), 0.001);
     }
 
     private void assertAnswerIncorrect(double range, String expectedAnswer, String answer) {
         System.out.println(factory.withAcceptedRange(range)
-                .createCorrectAnswer(Answer.fromString(expectedAnswer), new AnswerProcessorIdentity())
+                .createCorrectAnswer(Answer.fromString(expectedAnswer), new IdentityProcessor())
                 .getCorrectnessEvaluator()
                 .getCorrectness(Answer.fromString(answer)));
 
         Assert.assertFalse(factory.withAcceptedRange(range)
-                .createCorrectAnswer(Answer.fromString(expectedAnswer), new AnswerProcessorIdentity())
+                .createCorrectAnswer(Answer.fromString(expectedAnswer), new IdentityProcessor())
                 .getCorrectnessEvaluator()
                 .getCorrectness(Answer.fromString(answer)) > 0);
     }
