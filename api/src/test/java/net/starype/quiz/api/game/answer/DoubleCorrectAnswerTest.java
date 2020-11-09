@@ -3,8 +3,6 @@ package net.starype.quiz.api.game.answer;
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.annotation.processing.Processor;
-
 public class DoubleCorrectAnswerTest {
 
     private static final DoubleCorrectAnswerFactory factory = new DoubleCorrectAnswerFactory();
@@ -23,19 +21,19 @@ public class DoubleCorrectAnswerTest {
 
     private void assertAnswerCorrectness(double expected, double range, String expectedAnswer, String answer) {
         Assert.assertEquals(expected, factory.withAcceptedRange(range)
-                .createCorrectAnswer(Answer.fromString(expectedAnswer), new NullProcess())
+                .createCorrectAnswer(Answer.fromString(expectedAnswer), new AnswerProcessorIdentity())
                 .getCorrectnessEvaluator()
                 .getCorrectness(Answer.fromString(answer)), 0.001);
     }
 
     private void assertAnswerIncorrect(double range, String expectedAnswer, String answer) {
         System.out.println(factory.withAcceptedRange(range)
-                .createCorrectAnswer(Answer.fromString(expectedAnswer), new NullProcess())
+                .createCorrectAnswer(Answer.fromString(expectedAnswer), new AnswerProcessorIdentity())
                 .getCorrectnessEvaluator()
                 .getCorrectness(Answer.fromString(answer)));
 
         Assert.assertFalse(factory.withAcceptedRange(range)
-                .createCorrectAnswer(Answer.fromString(expectedAnswer), new NullProcess())
+                .createCorrectAnswer(Answer.fromString(expectedAnswer), new AnswerProcessorIdentity())
                 .getCorrectnessEvaluator()
                 .getCorrectness(Answer.fromString(answer)) > 0);
     }

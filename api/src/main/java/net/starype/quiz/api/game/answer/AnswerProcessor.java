@@ -1,6 +1,6 @@
 package net.starype.quiz.api.game.answer;
 
-public interface AnswerParser {
+public interface AnswerProcessor {
 
     Answer process(Answer str);
 

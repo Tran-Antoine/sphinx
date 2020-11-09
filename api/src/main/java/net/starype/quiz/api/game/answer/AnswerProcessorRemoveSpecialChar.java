@@ -1,6 +1,6 @@
 package net.starype.quiz.api.game.answer;
 
-public class AnswerParserRemoveSpecialChar implements AnswerParser {
+public class AnswerProcessorRemoveSpecialChar implements AnswerProcessor {
 
     @Override
     public Answer process(Answer str) {

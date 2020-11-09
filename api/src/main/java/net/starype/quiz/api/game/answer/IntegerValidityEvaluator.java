@@ -16,9 +16,12 @@ public class IntegerValidityEvaluator implements ValidityEvaluator {
 
     @Override
     public boolean isValid(Answer answer) {
-        return answer
-                .getAnswerText()
-                .strip()
-                .matches("^[+-]?[0-9]+");
+        try {
+            answer.asInt();
+            return true;
+        }
+        catch(NumberFormatException e) {
+            return false;
+        }
     }
 }

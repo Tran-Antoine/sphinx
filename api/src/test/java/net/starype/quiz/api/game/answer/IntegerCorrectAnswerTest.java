@@ -3,8 +3,6 @@ package net.starype.quiz.api.game.answer;
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.annotation.processing.Processor;
-
 public class IntegerCorrectAnswerTest {
 
     private static IntegerCorrectAnswerFactory factory = new IntegerCorrectAnswerFactory();
@@ -23,14 +21,14 @@ public class IntegerCorrectAnswerTest {
 
     private void assertAnswerCorrectness(double expected, int range, String expectedAnswer, String answer) {
         Assert.assertEquals(expected, factory.withAcceptedRange(range)
-                .createCorrectAnswer(Answer.fromString(expectedAnswer), new NullProcess())
+                .createCorrectAnswer(Answer.fromString(expectedAnswer), new AnswerProcessorIdentity())
                 .getCorrectnessEvaluator()
                 .getCorrectness(Answer.fromString(answer)), 0.001);
     }
 
     private void assertAnswerIncorrect(int range, String expectedAnswer, String answer) {
         Assert.assertFalse(factory.withAcceptedRange(range)
-                .createCorrectAnswer(Answer.fromString(expectedAnswer), new NullProcess())
+                .createCorrectAnswer(Answer.fromString(expectedAnswer), new AnswerProcessorIdentity())
                 .getCorrectnessEvaluator()
                 .getCorrectness(Answer.fromString(answer)) > 0);
     }
@@ -40,15 +38,16 @@ public class IntegerCorrectAnswerTest {
         assertFormatValid("1651");
         assertFormatValid("-1");
         assertFormatValid("-546");
-        assertFormatValid(" +546 ");
-        assertFormatValid("  0123456789  ");
-        assertFormatValid(" -0123456789");
+        assertFormatValid("+546");
+        assertFormatValid("0123456789");
+        assertFormatValid("-0123456789");
         assertFormatValid("0");
 
         assertFormatInvalid(" 1 2");
         assertFormatInvalid("1+2");
         assertFormatInvalid("1-2");
         assertFormatInvalid("1a6564");
+        assertFormatInvalid("01235651651516516516512165113456789");
         assertFormatInvalid("c 16564");
         assertFormatInvalid("c16564");
         assertFormatInvalid("This is some raw text");

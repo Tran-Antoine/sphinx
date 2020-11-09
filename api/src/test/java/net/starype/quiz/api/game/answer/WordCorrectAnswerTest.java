@@ -3,8 +3,6 @@ package net.starype.quiz.api.game.answer;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.awt.*;
-
 public class WordCorrectAnswerTest {
     private static WordCorrectAnswerFactory factory = new WordCorrectAnswerFactory();
 
@@ -22,14 +20,14 @@ public class WordCorrectAnswerTest {
 
     private void assertAnswerCorrect(String expectedAnswer, String answer) {
         Assert.assertEquals(1.0, factory
-                .createCorrectAnswer(Answer.fromString(expectedAnswer), new NullProcess())
+                .createCorrectAnswer(Answer.fromString(expectedAnswer), new AnswerProcessorIdentity())
                 .getCorrectnessEvaluator()
                 .getCorrectness(Answer.fromString(answer)), 0.001);
     }
 
     private void assertAnswerIncorrect(String expectedAnswer, String answer) {
         Assert.assertEquals(0.0, factory
-                .createCorrectAnswer(Answer.fromString(expectedAnswer), new NullProcess())
+                .createCorrectAnswer(Answer.fromString(expectedAnswer), new AnswerProcessorIdentity())
                 .getCorrectnessEvaluator()
                 .getCorrectness(Answer.fromString(answer)), 0.001);
     }
@@ -37,8 +35,6 @@ public class WordCorrectAnswerTest {
     @Test
     public void answer_validity_evaluator() {
         assertFormatValid("Hello");
-        assertFormatValid("World");
-        assertFormatValid("Fihcze");
         assertFormatValid("HelloWorld");
         assertFormatValid("564");
         assertFormatValid("Banana");
