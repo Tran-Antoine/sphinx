@@ -2,13 +2,13 @@ package net.starype.quiz.api.game.player;
 
 public class Score {
 
-    private double score;
+    private double points;
 
     private int answeredQuestions;
     private int correctAnsweredQuestions;
 
     public Score() {
-        this.score = 0;
+        this.points = 0;
         this.answeredQuestions = 0;
         this.correctAnsweredQuestions = 0;
     }
@@ -17,8 +17,8 @@ public class Score {
         return (double)correctAnsweredQuestions / answeredQuestions;
     }
 
-    public double getScore() {
-        return score;
+    public double getPoints() {
+        return points;
     }
 
     public int getAnsweredQuestions() {
@@ -30,7 +30,7 @@ public class Score {
     }
 
     public void incrementScore(double increment) {
-        this.score += increment;
+        this.points += increment;
     }
 
     public void incrementAnsweredQuestionCount(boolean isAnswerCorrect) {

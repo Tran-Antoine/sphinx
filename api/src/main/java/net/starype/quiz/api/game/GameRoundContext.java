@@ -7,11 +7,11 @@ public class GameRoundContext {
     private ScoreDistribution scoreDistributionCreator;
     private GameRoundReport reportCreator;
 
-    GameRoundContext(GameRound round) {
-        this.playerEligibility = round.playerEligibility();
-        this.endingCondition = round.endingCondition();
-        this.scoreDistributionCreator = round.createScoreDistribution();
-        this.reportCreator = round.createReport();
+    public GameRoundContext(GameRound round) {
+        this.playerEligibility = round.initPlayerEligibility();
+        this.endingCondition = round.initEndingCondition();
+        this.scoreDistributionCreator = round.initScoreDistribution();
+        this.reportCreator = round.initReport();
     }
 
     public EntityEligibility getPlayerEligibility() {
@@ -26,7 +26,7 @@ public class GameRoundContext {
         return endingCondition;
     }
 
-    public ScoreDistribution getScoreDistributionCreator() {
+    public ScoreDistribution getScoreDistribution() {
         return scoreDistributionCreator;
     }
 }

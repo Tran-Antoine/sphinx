@@ -21,11 +21,10 @@ public class RaceRoundTest {
         GameRound round = new RaceRound.Builder()
                 .withMaxGuessesPerPlayer(1)
                 .withQuestion(new MockQuestion(factory.createCorrectAnswer(Answer.fromString("CORRECT"), new NullProcess())))
-                .withPlayers(players)
                 .build();
 
-        round.init();
-        GameRoundContext context = round.createContext();
+        round.init(null, players);
+        GameRoundContext context = round.getContext();
 
         for(UUIDHolder player : players) {
             round.onGuessReceived(player, "INCORRECT ANSWER");
@@ -41,10 +40,10 @@ public class RaceRoundTest {
         GameRound round = new RaceRound.Builder()
                 .withMaxGuessesPerPlayer(3)
                 .withQuestion(new MockQuestion(factory.createCorrectAnswer(Answer.fromString("CORRECT"), new NullProcess())))
-                .withPlayers(Collections.singletonList(player))
                 .build();
-        round.init();
-        RoundEndingPredicate endingPredicate = round.createContext().getEndingCondition();
+      
+        round.init(null, Collections.singletonList(player));
+        RoundEndingPredicate endingPredicate = round.getContext().getEndingCondition();
 
         Assert.assertFalse(endingPredicate.ends());
         round.onGuessReceived(player, "INCORRECT ANSWER");
@@ -58,10 +57,9 @@ public class RaceRoundTest {
         Player player = new MockPlayer();
         GameRound round = new RaceRound.Builder()
                 .withMaxGuessesPerPlayer(10)
-                .withPlayers(Collections.singletonList(player))
                 .build();
-        round.init();
-        RoundEndingPredicate endingCondition = round.createContext().getEndingCondition();
+        round.init(null, Collections.singletonList(player));
+        RoundEndingPredicate endingCondition = round.getContext().getEndingCondition();
         Assert.assertFalse(endingCondition.ends());
         round.onGiveUpReceived(player);
         Assert.assertTrue(endingCondition.ends());
@@ -77,12 +75,11 @@ public class RaceRoundTest {
                 .withMaxGuessesPerPlayer(1)
                 .withQuestion(new MockQuestion(factory.createCorrectAnswer(Answer.fromString("CORRECT"), new NullProcess())))
                 .withPointsToAward(pointsToAward)
-                .withPlayers(Arrays.asList(player1, player2))
                 .build();
 
-        round.init();
+        round.init(null, Arrays.asList(player1, player2));
         round.onGuessReceived(player1, "CORRECT");
-        ScoreDistribution scoreDistribution = round.createContext().getScoreDistributionCreator();
+        ScoreDistribution scoreDistribution = round.getContext().getScoreDistribution();
 
         double score1 = scoreDistribution.apply(player1);
         double score2 = scoreDistribution.apply(player2);
