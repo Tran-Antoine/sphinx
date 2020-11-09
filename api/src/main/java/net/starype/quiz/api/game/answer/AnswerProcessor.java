@@ -8,4 +8,8 @@ public interface AnswerProcessor {
         return process(Answer.fromString(str));
     }
 
+    default AnswerProcessor combine(AnswerProcessor processor) {
+        return (answer) -> this.process(processor.process(answer));
+    }
+
 }
