@@ -24,7 +24,7 @@ public class RaceRound implements GameRound {
     }
 
     @Override
-    public void init(QuizGame game, Collection<? extends UUIDHolder> players) {
+    public void start(QuizGame game, Collection<? extends UUIDHolder> players) {
         this.winnerContainer = new AtomicReference<>();
         this.players = players;
         this.context = new GameRoundContext(this);
@@ -37,7 +37,7 @@ public class RaceRound implements GameRound {
         // eligibility checks are performed in the game class
         Optional<Double> correctness = pickedQuestion.evaluateAnswer(Answer.fromString(message));
         double pointsAwarded;
-        if(1.0 - correctness.orElse(0.0) > 0.01) {
+        if(1.0 - correctness.orElse(0.0) > 0.001) {
             pointsAwarded = 0;
             counter.wrongGuess(source);
         } else {
@@ -68,24 +68,26 @@ public class RaceRound implements GameRound {
 
     @Override
     public ScoreDistribution initScoreDistribution() {
-        return new SingleWinnerDistribution(winnerContainer, pointsToAward);
+        return winnerContainer.get() == null
+                ? new ZeroScoreDistribution()
+                : new SingleWinnerDistribution(winnerContainer, pointsToAward);
     }
 
     @Override
     public GameRoundReport initReport() {
-        return () -> winnerContainer.get() == null
+        return winnerContainer.get() == null
                 ? winnerlessReport()
                 : winnerReport();
     }
 
-    private List<String> winnerReport() {
-        return Arrays.asList(
+    private GameRoundReport winnerReport() {
+        return () -> Arrays.asList(
                 winnerContainer.get().getUUID().toString(),
                 Double.toString(pointsToAward));
     }
 
-    private List<String> winnerlessReport() {
-        return Collections.singletonList("No winner for this round");
+    private GameRoundReport winnerlessReport() {
+        return () -> Collections.singletonList("No winner for this round");
     }
 
     @Override

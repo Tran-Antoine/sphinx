@@ -28,7 +28,7 @@ public class SimpleGame implements QuizGame {
         if(rounds.isEmpty()) {
             throw new IllegalStateException("Cannot start a game that has less than one round");
         }
-        initHead();
+        startHead();
     }
 
     @Override
@@ -49,11 +49,11 @@ public class SimpleGame implements QuizGame {
             server.onGameOver();
             return;
         }
-        initHead();
+        startHead();
     }
 
-    private void initHead() {
-        rounds.element().init(this, players);
+    private void startHead() {
+        rounds.element().start(this, players);
     }
 
     @Override

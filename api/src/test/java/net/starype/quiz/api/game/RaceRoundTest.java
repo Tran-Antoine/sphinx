@@ -26,7 +26,7 @@ public class RaceRoundTest {
                 .withQuestion(new MockQuestion(factory.createCorrectAnswer("CORRECT")))
                 .build();
 
-        round.init(null, players);
+        round.start(null, players);
         GameRoundContext context = round.getContext();
 
         for(UUIDHolder player : players) {
@@ -45,7 +45,7 @@ public class RaceRoundTest {
                 .withQuestion(new MockQuestion(factory.createCorrectAnswer("CORRECT")))
                 .build();
       
-        round.init(null, Collections.singletonList(player));
+        round.start(null, Collections.singletonList(player));
         RoundEndingPredicate endingPredicate = round.getContext().getEndingCondition();
 
         Assert.assertFalse(endingPredicate.ends());
@@ -61,7 +61,7 @@ public class RaceRoundTest {
         GameRound round = new RaceRound.Builder()
                 .withMaxGuessesPerPlayer(10)
                 .build();
-        round.init(null, Collections.singletonList(player));
+        round.start(null, Collections.singletonList(player));
         RoundEndingPredicate endingCondition = round.getContext().getEndingCondition();
         Assert.assertFalse(endingCondition.ends());
         round.onGiveUpReceived(player);
@@ -80,7 +80,7 @@ public class RaceRoundTest {
                 .withPointsToAward(pointsToAward)
                 .build();
 
-        round.init(null, Arrays.asList(player1, player2));
+        round.start(null, Arrays.asList(player1, player2));
         round.onGuessReceived(player1, "CORRECT");
         ScoreDistribution scoreDistribution = round.getContext().getScoreDistribution();
 
