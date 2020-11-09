@@ -57,6 +57,9 @@ public class RaceRound implements GameRound {
     }
 
     @Override
+    public void onRoundStopped() { }
+
+    @Override
     public EntityEligibility initPlayerEligibility() {
         return counter;
     }

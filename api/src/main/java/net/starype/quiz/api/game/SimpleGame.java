@@ -77,7 +77,8 @@ public class SimpleGame implements QuizGame {
         checkEndOfRound(context);
     }
 
-    private void checkEndOfRound(GameRoundContext context) {
+    @Override
+    public void checkEndOfRound(GameRoundContext context) {
         if(!context.getEndingCondition().ends()) {
             return;
         }

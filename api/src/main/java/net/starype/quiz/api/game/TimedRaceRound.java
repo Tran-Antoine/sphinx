@@ -9,7 +9,8 @@ public class TimedRaceRound extends RaceRound {
 
     private TimeOutEnding timeOutEnding;
 
-    public TimedRaceRound(int maxGuessesPerPlayer, Question pickedQuestion, double pointsToAward, long time, TimeUnit unit) {
+    public TimedRaceRound(int maxGuessesPerPlayer, Question pickedQuestion, double pointsToAward,
+                          long time, TimeUnit unit) {
         super(maxGuessesPerPlayer, pickedQuestion, pointsToAward);
         this.timeOutEnding = new TimeOutEnding(time, unit);
     }
@@ -17,12 +18,17 @@ public class TimedRaceRound extends RaceRound {
     @Override
     public void start(QuizGame game, Collection<? extends UUIDHolder> players) {
         super.start(game, players);
-        timeOutEnding.startTimer();
+        timeOutEnding.startTimer(() -> game.checkEndOfRound(getContext()));
     }
 
     @Override
     public RoundEndingPredicate initEndingCondition() {
         return super.initEndingCondition().or(this.timeOutEnding);
+    }
+
+    @Override
+    public void onRoundStopped() {
+        timeOutEnding.shutDown();
     }
 
     public static class Builder {
