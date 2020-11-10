@@ -14,4 +14,5 @@ public interface GameServer {
     void onNonEligiblePlayerGuessed(UUIDHolder player);
     void onPlayerGaveUp(UUIDHolder player);
     void onPlayerScoreUpdated(Player player);
+
 }
