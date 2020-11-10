@@ -6,6 +6,7 @@ import net.starype.quiz.api.server.GameServer;
 
 import java.util.Collection;
 import java.util.Queue;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 public class SimpleGame implements QuizGame {
@@ -13,18 +14,18 @@ public class SimpleGame implements QuizGame {
     private Queue<? extends GameRound> rounds;
     private Collection<? extends Player> players;
     private GameServer server;
-    private boolean paused;
+    private final AtomicBoolean paused;
 
     public SimpleGame(Queue<? extends GameRound> rounds, Collection<? extends Player> players, GameServer server) {
         this.rounds = rounds;
         this.players = players;
         this.server = server;
-        this.paused = true;
+        this.paused = new AtomicBoolean(true);
     }
 
     @Override
     public void start() {
-        this.paused = false;
+        paused.set(false);
         if(rounds.isEmpty()) {
             throw new IllegalStateException("Cannot start a game that has less than one round");
         }
@@ -49,6 +50,7 @@ public class SimpleGame implements QuizGame {
             server.onGameOver();
             return;
         }
+        paused.set(false);
         startHead();
     }
 
@@ -58,11 +60,12 @@ public class SimpleGame implements QuizGame {
 
     @Override
     public void onInputReceived(UUIDHolder player, String message) {
+
+        if(paused.get()) {
+            return;
+        }
         if(rounds.isEmpty()) {
             throw new IllegalStateException("Cannot accept inputs after the game is over");
-        }
-        if(paused) {
-            return;
         }
 
         GameRound current = rounds.peek();
@@ -74,23 +77,28 @@ public class SimpleGame implements QuizGame {
         }
         transferRequestToRound(player, message, current);
 
-        checkEndOfRound(context);
+        checkEndOfRound(current);
     }
 
     @Override
-    public void checkEndOfRound(GameRoundContext context) {
-        if(!context.getEndingCondition().ends()) {
-            return;
-        }
-        ScoreDistribution scoreDistribution = context.getScoreDistribution();
-        for(Player player : players) {
-            double score = scoreDistribution.apply(player);
-            player.getScore().incrementScore(score);
-            if(score > 0.001) {
-                server.onPlayerScoreUpdated(player);
+    public void checkEndOfRound(GameRound round) {
+        synchronized (paused) {
+            GameRoundContext context = round.getContext();
+            if (!context.getEndingCondition().ends()) {
+                return;
             }
+            paused.set(true);
+            ScoreDistribution scoreDistribution = context.getScoreDistribution();
+            for (Player player : players) {
+                double score = scoreDistribution.apply(player);
+                player.getScore().incrementScore(score);
+                if (score > 0.001) {
+                    server.onPlayerScoreUpdated(player);
+                }
+            }
+            round.onRoundStopped();
+            server.onRoundEnded(context.getReportCreator(), this);
         }
-        server.onRoundEnded(context.getReportCreator(), this);
     }
 
     private void transferRequestToRound(UUIDHolder player, String message, GameRound current) {
@@ -112,12 +120,12 @@ public class SimpleGame implements QuizGame {
 
     @Override
     public void pause() {
-        this.paused = true;
+        paused.set(true);
     }
 
     @Override
     public void resume() {
-        this.paused = false;
+        paused.set(false);
     }
 
     @Override

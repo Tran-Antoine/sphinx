@@ -17,6 +17,6 @@ public interface QuizGame {
     void nextRound();
 
     void onInputReceived(UUIDHolder player, String message);
-    void checkEndOfRound(GameRoundContext context);
+    void checkEndOfRound(GameRound round);
     void sendInputToServer(Consumer<GameServer> action);
 }
