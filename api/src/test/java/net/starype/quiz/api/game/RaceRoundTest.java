@@ -1,10 +1,8 @@
 package net.starype.quiz.api.game;
 
-import net.starype.quiz.api.game.answer.Answer;
-import net.starype.quiz.api.game.answer.CorrectAnswer;
-import net.starype.quiz.api.game.answer.CorrectAnswerFactory;
-import net.starype.quiz.api.game.answer.WordCorrectAnswerFactory;
+
 import net.starype.quiz.api.game.event.GameEventHandler;
+import net.starype.quiz.api.game.answer.*;
 import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.player.UUIDHolder;
 import net.starype.quiz.api.game.question.Question;
@@ -17,7 +15,7 @@ import java.util.*;
 
 public class RaceRoundTest {
 
-    private static CorrectAnswerFactory factory = new WordCorrectAnswerFactory();
+    private static CorrectAnswerFactory factory = new WordAnswerFactory();
 
     @Test
     public void round_ends_when_out_of_guesses() {
@@ -28,7 +26,7 @@ public class RaceRoundTest {
 
         GameRound round = new RaceRound.Builder()
                 .withMaxGuessesPerPlayer(1)
-                .withQuestion(new MockQuestion(factory.createCorrectAnswer("CORRECT")))
+                .withQuestion(new MockQuestion(factory.createCorrectAnswer(Answer.fromString("CORRECT"), new IdentityProcessor())))
                 .build();
 
         round.start(null, players, eventHandler);
@@ -48,7 +46,7 @@ public class RaceRoundTest {
 
         GameRound round = new RaceRound.Builder()
                 .withMaxGuessesPerPlayer(3)
-                .withQuestion(new MockQuestion(factory.createCorrectAnswer("CORRECT")))
+                .withQuestion(new MockQuestion(factory.createCorrectAnswer(Answer.fromString("CORRECT"), new IdentityProcessor())))
                 .build();
       
         round.start(null, Collections.singletonList(player), eventHandler);
@@ -84,7 +82,7 @@ public class RaceRoundTest {
 
         GameRound round = new RaceRound.Builder()
                 .withMaxGuessesPerPlayer(1)
-                .withQuestion(new MockQuestion(factory.createCorrectAnswer("CORRECT")))
+                .withQuestion(new MockQuestion(factory.createCorrectAnswer(Answer.fromString("CORRECT"), new IdentityProcessor())))
                 .withPointsToAward(pointsToAward)
                 .build();
 
