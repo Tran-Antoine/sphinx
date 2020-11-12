@@ -1,9 +1,10 @@
 package net.starype.quiz.api.game;
 
 import net.starype.quiz.api.game.event.Event;
-import net.starype.quiz.api.game.event.GameEventHandler;
+import net.starype.quiz.api.game.event.EventHandler;
 
-import java.time.*;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -16,14 +17,14 @@ public class TimeOutEnding implements RoundEndingPredicate, Event {
     private boolean isEnded;
     private Runnable callBack;
     private ScheduledExecutorService task;
-    private GameEventHandler eventHandler = null;
+    private EventHandler eventHandler;
 
     public TimeOutEnding(long time, TimeUnit unit) {
         this.unit = unit;
         this.time = time;
     }
 
-    public void startTimer(Runnable checkEndingCallback, GameEventHandler eventHandler) {
+    public void startTimer(Runnable checkEndingCallback, EventHandler eventHandler) {
         this.eventHandler = eventHandler;
         eventHandler.registerEvent(this);
         this.startingInstant = Instant.now();

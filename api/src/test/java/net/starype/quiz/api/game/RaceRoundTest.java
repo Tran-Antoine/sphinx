@@ -1,8 +1,9 @@
 package net.starype.quiz.api.game;
 
 
-import net.starype.quiz.api.game.event.GameEventHandler;
 import net.starype.quiz.api.game.answer.*;
+import net.starype.quiz.api.game.event.EventHandler;
+import net.starype.quiz.api.game.event.GameEventHandler;
 import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.player.UUIDHolder;
 import net.starype.quiz.api.game.question.Question;
@@ -19,7 +20,7 @@ public class RaceRoundTest {
 
     @Test
     public void round_ends_when_out_of_guesses() {
-        GameEventHandler eventHandler = new GameEventHandler();
+        EventHandler eventHandler = new GameEventHandler();
         Set<UUIDHolder> players = new HashSet<>();
         players.add(new MockUUIDHolder());
         players.add(new MockUUIDHolder());
@@ -41,7 +42,7 @@ public class RaceRoundTest {
 
     @Test
     public void round_ends_when_one_winner() {
-        GameEventHandler eventHandler = new GameEventHandler();
+        EventHandler eventHandler = new GameEventHandler();
         UUIDHolder player = new MockUUIDHolder();
 
         GameRound round = new RaceRound.Builder()
@@ -61,7 +62,7 @@ public class RaceRoundTest {
 
     @Test
     public void game_ends_when_players_give_up() {
-        GameEventHandler eventHandler = new GameEventHandler();
+        EventHandler eventHandler = new GameEventHandler();
         Player player = new MockPlayer();
         GameRound round = new RaceRound.Builder()
                 .withMaxGuessesPerPlayer(10)
@@ -75,7 +76,7 @@ public class RaceRoundTest {
 
     @Test
     public void score_was_awarded() {
-        GameEventHandler eventHandler = new GameEventHandler();
+        EventHandler eventHandler = new GameEventHandler();
         double pointsToAward = 3.5;
         Player player1 = new MockPlayer();
         Player player2 = new MockPlayer();

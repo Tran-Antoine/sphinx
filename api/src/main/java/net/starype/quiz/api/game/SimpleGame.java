@@ -1,5 +1,6 @@
 package net.starype.quiz.api.game;
 
+import net.starype.quiz.api.game.event.EventHandler;
 import net.starype.quiz.api.game.event.GameEventHandler;
 import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.player.UUIDHolder;
@@ -16,7 +17,7 @@ public class SimpleGame implements QuizGame {
     private Collection<? extends Player> players;
     private GameServer server;
     private final AtomicBoolean paused;
-    private GameEventHandler eventHandler = new GameEventHandler();
+    private EventHandler eventHandler = new GameEventHandler();
 
     public SimpleGame(Queue<? extends GameRound> rounds, Collection<? extends Player> players, GameServer server) {
         this.rounds = rounds;

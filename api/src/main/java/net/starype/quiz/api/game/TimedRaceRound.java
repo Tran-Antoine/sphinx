@@ -1,6 +1,6 @@
 package net.starype.quiz.api.game;
 
-import net.starype.quiz.api.game.event.GameEventHandler;
+import net.starype.quiz.api.game.event.EventHandler;
 import net.starype.quiz.api.game.player.UUIDHolder;
 import net.starype.quiz.api.game.question.Question;
 
@@ -18,7 +18,7 @@ public class TimedRaceRound extends RaceRound {
     }
 
     @Override
-    public void start(QuizGame game, Collection<? extends UUIDHolder> players, GameEventHandler eventHandler) {
+    public void start(QuizGame game, Collection<? extends UUIDHolder> players, EventHandler eventHandler) {
         super.start(game, players, eventHandler);
         timeOutEnding.startTimer(() -> game.checkEndOfRound(this), eventHandler);
     }
