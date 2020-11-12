@@ -1,6 +1,9 @@
 package net.starype.quiz.api.game;
 
 import net.starype.quiz.api.game.answer.Answer;
+import net.starype.quiz.api.game.question.Question;
+import net.starype.quiz.api.game.question.QuestionDifficulty;
+import net.starype.quiz.api.game.question.QuestionTag;
 
 import java.util.Optional;
 import java.util.Set;

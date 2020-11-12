@@ -1,7 +1,9 @@
 package net.starype.quiz.api.game;
 
 import net.starype.quiz.api.game.answer.Answer;
+import net.starype.quiz.api.game.event.GameEventHandler;
 import net.starype.quiz.api.game.player.UUIDHolder;
+import net.starype.quiz.api.game.question.Question;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -24,7 +26,7 @@ public class RaceRound implements GameRound {
     }
 
     @Override
-    public void start(QuizGame game, Collection<? extends UUIDHolder> players, EventHandler eventHandler) {
+    public void start(QuizGame game, Collection<? extends UUIDHolder> players, GameEventHandler eventHandler) {
         this.winnerContainer = new AtomicReference<>();
         this.players = players;
         this.context = new GameRoundContext(this);

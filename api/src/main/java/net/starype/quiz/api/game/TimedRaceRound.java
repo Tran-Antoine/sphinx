@@ -1,6 +1,8 @@
 package net.starype.quiz.api.game;
 
+import net.starype.quiz.api.game.event.GameEventHandler;
 import net.starype.quiz.api.game.player.UUIDHolder;
+import net.starype.quiz.api.game.question.Question;
 
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
@@ -16,7 +18,7 @@ public class TimedRaceRound extends RaceRound {
     }
 
     @Override
-    public void start(QuizGame game, Collection<? extends UUIDHolder> players, EventHandler eventHandler) {
+    public void start(QuizGame game, Collection<? extends UUIDHolder> players, GameEventHandler eventHandler) {
         super.start(game, players, eventHandler);
         timeOutEnding.startTimer(() -> game.checkEndOfRound(this), eventHandler);
     }

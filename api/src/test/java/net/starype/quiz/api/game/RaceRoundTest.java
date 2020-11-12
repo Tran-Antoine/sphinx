@@ -4,8 +4,12 @@ import net.starype.quiz.api.game.answer.Answer;
 import net.starype.quiz.api.game.answer.CorrectAnswer;
 import net.starype.quiz.api.game.answer.CorrectAnswerFactory;
 import net.starype.quiz.api.game.answer.WordCorrectAnswerFactory;
+import net.starype.quiz.api.game.event.GameEventHandler;
 import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.player.UUIDHolder;
+import net.starype.quiz.api.game.question.Question;
+import net.starype.quiz.api.game.question.QuestionDifficulty;
+import net.starype.quiz.api.game.question.QuestionTag;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -17,7 +21,7 @@ public class RaceRoundTest {
 
     @Test
     public void round_ends_when_out_of_guesses() {
-        EventHandler eventHandler = new EventHandler();
+        GameEventHandler eventHandler = new GameEventHandler();
         Set<UUIDHolder> players = new HashSet<>();
         players.add(new MockUUIDHolder());
         players.add(new MockUUIDHolder());
@@ -39,7 +43,7 @@ public class RaceRoundTest {
 
     @Test
     public void round_ends_when_one_winner() {
-        EventHandler eventHandler = new EventHandler();
+        GameEventHandler eventHandler = new GameEventHandler();
         UUIDHolder player = new MockUUIDHolder();
 
         GameRound round = new RaceRound.Builder()
@@ -59,7 +63,7 @@ public class RaceRoundTest {
 
     @Test
     public void game_ends_when_players_give_up() {
-        EventHandler eventHandler = new EventHandler();
+        GameEventHandler eventHandler = new GameEventHandler();
         Player player = new MockPlayer();
         GameRound round = new RaceRound.Builder()
                 .withMaxGuessesPerPlayer(10)
@@ -73,7 +77,7 @@ public class RaceRoundTest {
 
     @Test
     public void score_was_awarded() {
-        EventHandler eventHandler = new EventHandler();
+        GameEventHandler eventHandler = new GameEventHandler();
         double pointsToAward = 3.5;
         Player player1 = new MockPlayer();
         Player player2 = new MockPlayer();
