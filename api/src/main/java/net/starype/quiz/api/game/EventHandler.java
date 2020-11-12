@@ -5,17 +5,9 @@ import java.util.List;
 
 public class EventHandler {
     private List<Event> eventsList = new LinkedList<Event>();
-    private static EventHandler eventHandler = null;
 
-    private EventHandler() {
+    public EventHandler() {
 
-    }
-
-    public static synchronized EventHandler getInstance() {
-        if(eventHandler == null) {
-            eventHandler = new EventHandler();
-        }
-        return eventHandler;
     }
 
     public void registerEvent(Event event) {

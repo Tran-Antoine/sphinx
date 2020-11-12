@@ -17,6 +17,7 @@ public class TimedGameTest {
         System.out.println("Game successfully started");
         while(!server.isGameOver()) {
             System.out.println("Waiting...");
+            game.update();
             Thread.sleep(1000);
         }
 

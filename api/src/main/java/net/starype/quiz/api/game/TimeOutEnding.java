@@ -17,16 +17,22 @@ public class TimeOutEnding implements RoundEndingPredicate, Event {
     private boolean isEnded;
     private Runnable callBack;
     private ScheduledExecutorService task;
+    private EventHandler eventHandler = null;
 
     public TimeOutEnding(long time, TimeUnit unit) {
         this.unit = unit;
         this.time = time;
     }
 
-    public void startTimer(Runnable checkEndingCallback) {
-        EventHandler.getInstance().registerEvent(this);
-        this.startingInstant = Instant.now();
-        this.callBack = checkEndingCallback;
+    public void startTimer(Runnable checkEndingCallback, EventHandler eventHandler) {
+        // Make sure to not start another timers if the object is already registered
+        // in another eventHandler
+        if(this.eventHandler == null) {
+            this.eventHandler = eventHandler;
+            eventHandler.registerEvent(this);
+            this.startingInstant = Instant.now();
+            this.callBack = checkEndingCallback;
+        }
     }
 
     @Override
@@ -36,8 +42,8 @@ public class TimeOutEnding implements RoundEndingPredicate, Event {
 
     @Override
     public void run() {
-        if(Duration.between(startingInstant, Instant.now()).getNano() >
-                unit.toNanos(time)) {
+        if(Duration.between(startingInstant, Instant.now()).toMillis() >
+                unit.toMillis(time)) {
             this.isEnded = true;
             callBack.run();
             shutDown();
@@ -45,6 +51,9 @@ public class TimeOutEnding implements RoundEndingPredicate, Event {
     }
 
     public void shutDown() {
-        EventHandler.getInstance().unregisterEvent(this);
+        if(eventHandler != null) {
+            eventHandler.unregisterEvent(this);
+            eventHandler = null;
+        }
     }
 }

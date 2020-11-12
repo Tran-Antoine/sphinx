@@ -16,9 +16,9 @@ public class TimedRaceRound extends RaceRound {
     }
 
     @Override
-    public void start(QuizGame game, Collection<? extends UUIDHolder> players) {
-        super.start(game, players);
-        timeOutEnding.startTimer(() -> game.checkEndOfRound(this));
+    public void start(QuizGame game, Collection<? extends UUIDHolder> players, EventHandler eventHandler) {
+        super.start(game, players, eventHandler);
+        timeOutEnding.startTimer(() -> game.checkEndOfRound(this), eventHandler);
     }
 
     @Override

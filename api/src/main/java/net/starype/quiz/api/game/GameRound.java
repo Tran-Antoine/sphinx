@@ -6,7 +6,7 @@ import java.util.Collection;
 
 public interface GameRound {
 
-    void start(QuizGame game, Collection<? extends UUIDHolder> players);
+    void start(QuizGame game, Collection<? extends UUIDHolder> players, EventHandler eventHandler);
     void onGuessReceived(UUIDHolder source, String message);
     void onGiveUpReceived(UUIDHolder source);
     void onRoundStopped();
