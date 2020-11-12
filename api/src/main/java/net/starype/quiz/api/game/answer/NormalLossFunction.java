@@ -1,6 +1,6 @@
 package net.starype.quiz.api.game.answer;
 
-import net.starype.quiz.api.game.utils.MathUtils;
+import net.starype.quiz.api.game.util.MathUtils;
 
 public class NormalLossFunction implements LossFunction {
 
