@@ -24,7 +24,7 @@ public class RaceRound implements GameRound {
     }
 
     @Override
-    public void start(QuizGame game, Collection<? extends UUIDHolder> players) {
+    public void start(QuizGame game, Collection<? extends UUIDHolder> players, EventHandler eventHandler) {
         this.winnerContainer = new AtomicReference<>();
         this.players = players;
         this.context = new GameRoundContext(this);

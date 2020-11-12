@@ -21,6 +21,7 @@ public class SimpleGameTest {
             System.out.println("Listening to inputs:");
             String answer = scanner.nextLine();
             game.onInputReceived(me, answer);
+            game.update();
         }
 
         scanner.close();

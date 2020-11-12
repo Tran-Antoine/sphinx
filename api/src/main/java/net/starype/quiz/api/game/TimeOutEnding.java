@@ -1,29 +1,34 @@
 package net.starype.quiz.api.game;
 
+import java.time.*;
+import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
-public class TimeOutEnding implements RoundEndingPredicate, Runnable {
+public class TimeOutEnding implements RoundEndingPredicate, Event {
 
     private long time;
     private TimeUnit unit;
+    private Instant startingInstant;
 
     private boolean isEnded;
     private Runnable callBack;
     private ScheduledExecutorService task;
+    private EventHandler eventHandler = null;
 
     public TimeOutEnding(long time, TimeUnit unit) {
         this.unit = unit;
         this.time = time;
     }
 
-    public void startTimer(Runnable checkEndingCallback) {
+    public void startTimer(Runnable checkEndingCallback, EventHandler eventHandler) {
+        this.eventHandler = eventHandler;
+        eventHandler.registerEvent(this);
+        this.startingInstant = Instant.now();
         this.callBack = checkEndingCallback;
-        this.task = Executors.newScheduledThreadPool(1);
-        task.schedule(this, time, unit);
     }
 
     @Override
@@ -33,12 +38,15 @@ public class TimeOutEnding implements RoundEndingPredicate, Runnable {
 
     @Override
     public void run() {
-        this.isEnded = true;
-        callBack.run();
-        shutDown();
+        if(Duration.between(startingInstant, Instant.now()).toMillis() >
+                unit.toMillis(time)) {
+            this.isEnded = true;
+            callBack.run();
+            shutDown();
+        }
     }
 
     public void shutDown() {
-        task.shutdown();
+        eventHandler.unregisterEvent(this);
     }
 }

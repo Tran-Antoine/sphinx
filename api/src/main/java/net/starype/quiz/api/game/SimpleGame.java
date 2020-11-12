@@ -15,6 +15,7 @@ public class SimpleGame implements QuizGame {
     private Collection<? extends Player> players;
     private GameServer server;
     private final AtomicBoolean paused;
+    private EventHandler eventHandler = new EventHandler();
 
     public SimpleGame(Queue<? extends GameRound> rounds, Collection<? extends Player> players, GameServer server) {
         this.rounds = rounds;
@@ -55,7 +56,7 @@ public class SimpleGame implements QuizGame {
     }
 
     private void startHead() {
-        rounds.element().start(this, players);
+        rounds.element().start(this, players, eventHandler);
     }
 
     @Override
@@ -132,5 +133,10 @@ public class SimpleGame implements QuizGame {
     public void forceStop() {
         rounds.clear();
         server.onGameOver();
+    }
+
+    @Override
+    public void update() {
+        eventHandler.runAllEvents();
     }
 }
