@@ -25,14 +25,10 @@ public class TimeOutEnding implements RoundEndingPredicate, Event {
     }
 
     public void startTimer(Runnable checkEndingCallback, EventHandler eventHandler) {
-        // Make sure to not start another timers if the object is already registered
-        // in another eventHandler
-        if(this.eventHandler == null) {
-            this.eventHandler = eventHandler;
-            eventHandler.registerEvent(this);
-            this.startingInstant = Instant.now();
-            this.callBack = checkEndingCallback;
-        }
+        this.eventHandler = eventHandler;
+        eventHandler.registerEvent(this);
+        this.startingInstant = Instant.now();
+        this.callBack = checkEndingCallback;
     }
 
     @Override
@@ -51,9 +47,6 @@ public class TimeOutEnding implements RoundEndingPredicate, Event {
     }
 
     public void shutDown() {
-        if(eventHandler != null) {
-            eventHandler.unregisterEvent(this);
-            eventHandler = null;
-        }
+        eventHandler.unregisterEvent(this);
     }
 }
