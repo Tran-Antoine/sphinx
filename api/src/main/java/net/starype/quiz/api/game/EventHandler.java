@@ -4,10 +4,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class EventHandler {
-    private List<Event> eventsList = new LinkedList<Event>();
+    private List<Event> eventsList;
 
     public EventHandler() {
-
+        this.eventsList = new LinkedList<Event>();
     }
 
     public void registerEvent(Event event) {
