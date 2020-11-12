@@ -22,7 +22,7 @@ public class SingleWinnerDistribution implements ScoreDistribution {
     @Override
     public Double apply(Player player) {
         if(container.get() == null) {
-            return 0.0;
+            throw new IllegalStateException("No winner was established");
         }
         return player.getUUID().equals(container.get().getUUID())
                 ? scoreForWinner

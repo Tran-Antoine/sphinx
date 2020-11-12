@@ -1,4 +1,4 @@
-package net.starype.quiz.api.game.utils;
+package net.starype.quiz.api.game.util;
 
 import org.junit.Assert;
 import org.junit.Test;

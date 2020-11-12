@@ -1,4 +1,4 @@
-package net.starype.quiz.api.game;
+package net.starype.quiz.api.game.question;
 
 import net.starype.quiz.api.game.answer.Answer;
 import net.starype.quiz.api.game.player.UUIDHolder;
