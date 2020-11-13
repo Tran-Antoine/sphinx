@@ -13,10 +13,15 @@ public class MockQuestion implements Question {
 
     @Override
     public Optional<Double> evaluateAnswer(Answer answer) {
-        if(answer.getAnswerText().equals("correct")) {
-            return Optional.of(1.0);
+        String text = answer.getAnswerText();
+        double result;
+        switch (text) {
+            case "correct": result = 1; break;
+            case "pretty-correct": result = 0.66; break;
+            case "kinda-correct": result = 0.33; break;
+            default: result = 0;
         }
-        return Optional.of(0.0);
+        return Optional.of(result);
     }
 
     @Override
