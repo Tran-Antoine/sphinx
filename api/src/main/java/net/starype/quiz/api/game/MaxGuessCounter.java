@@ -15,11 +15,11 @@ public class MaxGuessCounter implements EntityEligibility {
         this.guessesPerPlayer = new HashMap<>();
     }
 
-    public void wrongGuess(UUIDHolder holder) {
+    public void incrementGuess(UUIDHolder holder) {
         guessesPerPlayer.put(holder, guessesPerPlayer.getOrDefault(holder, 0) + 1);
     }
 
-    public void giveUp(UUIDHolder holder) {
+    public void consumeAllGuesses(UUIDHolder holder) {
         guessesPerPlayer.put(holder, maxGuesses);
     }
 

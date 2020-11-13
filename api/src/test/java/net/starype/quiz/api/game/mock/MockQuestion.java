@@ -1,4 +1,4 @@
-package net.starype.quiz.api.game;
+package net.starype.quiz.api.game.mock;
 
 import net.starype.quiz.api.game.answer.Answer;
 import net.starype.quiz.api.game.question.Question;
@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-class MockQuestion implements Question {
+public class MockQuestion implements Question {
 
     @Override
     public Optional<Double> evaluateAnswer(Answer answer) {
