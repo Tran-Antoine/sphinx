@@ -41,17 +41,15 @@ public class RaceRound implements GameRound {
 
         // eligibility checks are performed in the game class
         Optional<Double> correctness = pickedQuestion.evaluateAnswer(Answer.fromString(message));
-        int binaryCorrectness = Math.abs(correctness.orElse(0D) - 1) < 0.01
-                ? 1
-                : 0;
+        boolean binaryCorrectness = Math.abs(correctness.orElse(0D) - 1) < 0.01;
 
         counter.incrementGuess(source);
-        if(binaryCorrectness == 1) {
+        if(binaryCorrectness) {
             counter.consumeAllGuesses(source);
             winnerContainer.set(source);
         }
 
-        PlayerGuessContext context = new PlayerGuessContext(source, binaryCorrectness, counter.isEligible(source));
+        PlayerGuessContext context = new PlayerGuessContext(source, binaryCorrectness ? 1.0 : 0.0, counter.isEligible(source));
         if(game != null) {
             game.sendInputToServer((server) -> server.onPlayerGuessed(context));
         }
