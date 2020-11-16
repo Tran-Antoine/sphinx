@@ -5,6 +5,7 @@ import net.starype.quiz.api.game.PlayerGuessContext;
 import net.starype.quiz.api.game.QuizGame;
 import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.player.UUIDHolder;
+import net.starype.quiz.api.game.question.Question;
 
 public interface GameServer {
 
@@ -14,5 +15,5 @@ public interface GameServer {
     void onNonEligiblePlayerGuessed(UUIDHolder player);
     void onPlayerGaveUp(UUIDHolder player);
     void onPlayerScoreUpdated(Player player);
-
+    void onQuestionReleased(Question question);
 }

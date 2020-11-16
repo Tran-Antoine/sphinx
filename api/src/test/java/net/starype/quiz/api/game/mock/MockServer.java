@@ -5,6 +5,7 @@ import net.starype.quiz.api.game.PlayerGuessContext;
 import net.starype.quiz.api.game.QuizGame;
 import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.player.UUIDHolder;
+import net.starype.quiz.api.game.question.Question;
 import net.starype.quiz.api.server.GameServer;
 
 public class MockServer implements GameServer {
@@ -47,6 +48,11 @@ public class MockServer implements GameServer {
     @Override
     public void onPlayerScoreUpdated(Player player) {
         System.out.println("Score update for player with ID " + player.getUUID() +": " + player.getScore().getPoints());
+    }
+
+    @Override
+    public void onQuestionReleased(Question question) {
+
     }
 
     public boolean isGameOver() {

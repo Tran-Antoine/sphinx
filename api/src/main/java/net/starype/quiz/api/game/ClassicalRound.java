@@ -1,6 +1,5 @@
 package net.starype.quiz.api.game;
 
-import net.starype.quiz.api.FixedLeaderboardEnding;
 import net.starype.quiz.api.game.LeaderboardDistribution.LeaderboardPosition;
 import net.starype.quiz.api.game.answer.Answer;
 import net.starype.quiz.api.game.event.EventHandler;
@@ -35,11 +34,11 @@ public class ClassicalRound implements GameRound {
     }
 
     @Override
-    public void onGuessReceived(UUIDHolder source, String message) {
+    public PlayerGuessContext onGuessReceived(UUIDHolder source, String message) {
 
         Optional<Double> optCorrectness = pickedQuestion.evaluateAnswer(Answer.fromString(message));
         if(optCorrectness.isEmpty()) {
-            return;
+            return new PlayerGuessContext(source, 0, true);
         }
 
         double correctness = optCorrectness.get();
@@ -51,8 +50,7 @@ public class ClassicalRound implements GameRound {
             counter.consumeAllGuesses(source);
         }
 
-        PlayerGuessContext context = new PlayerGuessContext(source, correctness, counter.isEligible(source));
-        game.sendInputToServer((server) -> server.onPlayerGuessed(context));
+        return new PlayerGuessContext(source, correctness, counter.isEligible(source));
     }
 
     @Override

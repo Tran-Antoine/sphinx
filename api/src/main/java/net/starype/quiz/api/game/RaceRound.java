@@ -16,7 +16,6 @@ public class RaceRound implements GameRound {
     private Question pickedQuestion;
     private AtomicReference<UUIDHolder> winnerContainer;
     private Collection<? extends UUIDHolder> players;
-    private QuizGame game;
     private GameRoundContext context;
     private double pointsToAward;
 
@@ -33,11 +32,13 @@ public class RaceRound implements GameRound {
         this.winnerContainer = new AtomicReference<>();
         this.players = players;
         this.context = new GameRoundContext(this);
-        this.game = game;
+        if(game != null) {
+            game.sendInputToServer((server) -> server.onQuestionReleased(pickedQuestion));
+        }
     }
 
     @Override
-    public void onGuessReceived(UUIDHolder source, String message) {
+    public PlayerGuessContext onGuessReceived(UUIDHolder source, String message) {
 
         // eligibility checks are performed in the game class
         Optional<Double> correctness = pickedQuestion.evaluateAnswer(Answer.fromString(message));
@@ -49,10 +50,7 @@ public class RaceRound implements GameRound {
             winnerContainer.set(source);
         }
 
-        PlayerGuessContext context = new PlayerGuessContext(source, binaryCorrectness ? 1.0 : 0.0, counter.isEligible(source));
-        if(game != null) {
-            game.sendInputToServer((server) -> server.onPlayerGuessed(context));
-        }
+        return new PlayerGuessContext(source, binaryCorrectness ? 1.0 : 0.0, counter.isEligible(source));
     }
 
     @Override

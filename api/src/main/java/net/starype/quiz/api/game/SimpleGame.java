@@ -58,7 +58,8 @@ public class SimpleGame implements QuizGame {
     }
 
     private void startHead() {
-        rounds.element().start(this, players, eventHandler);
+        GameRound round = rounds.element();
+        round.start(this, players, eventHandler);
     }
 
     @Override
@@ -118,7 +119,8 @@ public class SimpleGame implements QuizGame {
             server.onPlayerGaveUp(player);
             return;
         }
-        current.onGuessReceived(player, message);
+        PlayerGuessContext context = current.onGuessReceived(player, message);
+        server.onPlayerGuessed(context);
     }
 
     @Override
