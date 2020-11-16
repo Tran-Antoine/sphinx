@@ -10,7 +10,7 @@ public interface GameRound {
     void start(QuizGame game, Collection<? extends UUIDHolder> players, EventHandler eventHandler);
     void onGuessReceived(UUIDHolder source, String message);
     void onGiveUpReceived(UUIDHolder source);
-    void onRoundStopped();
+    default void onRoundStopped(){}
 
     EntityEligibility initPlayerEligibility();
     RoundEndingPredicate initEndingCondition();

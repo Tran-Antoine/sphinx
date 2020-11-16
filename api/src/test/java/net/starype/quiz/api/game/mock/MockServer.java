@@ -1,10 +1,13 @@
-package net.starype.quiz.api.game;
+package net.starype.quiz.api.game.mock;
 
+import net.starype.quiz.api.game.GameRoundReport;
+import net.starype.quiz.api.game.PlayerGuessContext;
+import net.starype.quiz.api.game.QuizGame;
 import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.player.UUIDHolder;
 import net.starype.quiz.api.server.GameServer;
 
-class MockServer implements GameServer {
+public class MockServer implements GameServer {
 
     private boolean gameOver = false;
 
@@ -25,11 +28,9 @@ class MockServer implements GameServer {
     @Override
     public void onPlayerGuessed(PlayerGuessContext context) {
         System.out.println("Player with ID " + context.getPlayer().getUUID() + " sent a guess");
-        double pointsAwarded = context.getPointsAwarded();
-        System.out.println("Score obtained: " + pointsAwarded);
-        if(pointsAwarded < 0.99) {
-            System.out.println("Player might try again: " + context.isEligible());
-        }
+        double pointsAwarded = context.getCorrectness();
+        System.out.println("Score Accuracy: " + pointsAwarded);
+        System.out.println("Player might try again: " + context.isEligible());
         System.out.println();
     }
 

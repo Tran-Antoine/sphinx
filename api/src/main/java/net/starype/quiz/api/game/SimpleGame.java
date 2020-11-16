@@ -86,21 +86,29 @@ public class SimpleGame implements QuizGame {
     @Override
     public void checkEndOfRound(GameRound round) {
         synchronized (paused) {
+            if(paused.get()) {
+                return;
+            }
             GameRoundContext context = round.getContext();
             if (!context.getEndingCondition().ends()) {
                 return;
             }
             paused.set(true);
-            ScoreDistribution scoreDistribution = context.getScoreDistribution();
-            for (Player player : players) {
-                double score = scoreDistribution.apply(player);
-                player.getScore().incrementScore(score);
-                if (score > 0.001) {
-                    server.onPlayerScoreUpdated(player);
-                }
-            }
+            updateScores(context);
             round.onRoundStopped();
             server.onRoundEnded(context.getReportCreator(), this);
+        }
+    }
+
+    private void updateScores(GameRoundContext context) {
+        ScoreDistribution scoreDistribution = context.getScoreDistribution();
+        scoreDistribution.applyAll(players, this::updateScore);
+    }
+
+    private void updateScore(Player player, double score) {
+        player.getScore().incrementScore(score);
+        if (Math.abs(score) > 0.001) {
+            server.onPlayerScoreUpdated(player);
         }
     }
 

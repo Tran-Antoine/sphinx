@@ -41,16 +41,15 @@ public class RaceRound implements GameRound {
 
         // eligibility checks are performed in the game class
         Optional<Double> correctness = pickedQuestion.evaluateAnswer(Answer.fromString(message));
-        double pointsAwarded;
-        if(1.0 - correctness.orElse(0.0) > 0.001) {
-            pointsAwarded = 0;
-            counter.wrongGuess(source);
-        } else {
-            pointsAwarded = pointsToAward;
+        boolean binaryCorrectness = Math.abs(correctness.orElse(0D) - 1) < 0.01;
+
+        counter.incrementGuess(source);
+        if(binaryCorrectness) {
+            counter.consumeAllGuesses(source);
             winnerContainer.set(source);
         }
 
-        PlayerGuessContext context = new PlayerGuessContext(source, pointsAwarded, counter.isEligible(source));
+        PlayerGuessContext context = new PlayerGuessContext(source, binaryCorrectness ? 1.0 : 0.0, counter.isEligible(source));
         if(game != null) {
             game.sendInputToServer((server) -> server.onPlayerGuessed(context));
         }
@@ -58,11 +57,8 @@ public class RaceRound implements GameRound {
 
     @Override
     public void onGiveUpReceived(UUIDHolder source) {
-        counter.giveUp(source);
+        counter.consumeAllGuesses(source);
     }
-
-    @Override
-    public void onRoundStopped() { }
 
     @Override
     public EntityEligibility initPlayerEligibility() {

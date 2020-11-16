@@ -1,10 +1,10 @@
-package net.starype.quiz.api.game;
+package net.starype.quiz.api.game.mock;
 
 import net.starype.quiz.api.game.player.Player;
 
 import java.util.UUID;
 
-class MockPlayer extends Player {
+public class MockPlayer extends Player {
 
     public MockPlayer() {
         super(UUID.randomUUID(), "");

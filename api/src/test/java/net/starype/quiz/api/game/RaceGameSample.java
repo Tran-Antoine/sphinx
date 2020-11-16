@@ -1,17 +1,18 @@
 package net.starype.quiz.api.game;
 
+import net.starype.quiz.api.game.mock.MockPlayer;
+import net.starype.quiz.api.game.mock.MockServer;
 import net.starype.quiz.api.game.player.Player;
-import net.starype.quiz.api.server.GameServer;
 
 import java.util.*;
 
-public class SimpleGameTest {
+public class RaceGameSample {
 
     public static void main(String... args) {
 
         Player me = new MockPlayer();
         MockServer server = new MockServer();
-        QuizGame game = createGame(me, server);
+        QuizGame game = GameFactory.createRaceGame(me, server);
 
         game.start();
 
@@ -27,14 +28,4 @@ public class SimpleGameTest {
         scanner.close();
     }
 
-    private static QuizGame createGame(Player player, GameServer server) {
-        RaceRound.Builder builder = new RaceRound.Builder()
-                .withQuestion(new MockQuestion())
-                .withMaxGuessesPerPlayer(2)
-                .withPointsToAward(1.5);
-
-        Queue<GameRound> rounds = new LinkedList<>(Arrays.asList(builder.build(), builder.build()));
-
-        return new SimpleGame(rounds, Collections.singletonList(player), server);
-    }
 }
