@@ -2,4 +2,5 @@ group 'net.starype.quiz.api'
 
 dependencies {
     compile project(':api')
+    implementation "com.discord4j:discord4j-core:3.1.1"
 }
