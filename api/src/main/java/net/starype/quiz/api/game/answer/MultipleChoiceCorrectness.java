@@ -43,7 +43,7 @@ public class MultipleChoiceCorrectness implements CorrectnessEvaluator {
                 .count();
         long badGuess = stringSet.size() - goodGuess;
         double inverseCorrectness = ((double) goodGuess - punitiveRatio * (double) (badGuess)) / (double)acceptedAnswer.size();
-        double correcness = MathUtils.clamp01(1.0 - inverseCorrectness);
-        return lossFunction.evaluate(correcness);
+        double correctness = MathUtils.clamp01(1.0 - inverseCorrectness);
+        return lossFunction.evaluate(correctness);
     }
 }
