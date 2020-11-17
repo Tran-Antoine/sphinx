@@ -3,6 +3,7 @@ package net.starype.quiz.api.game.answer;
 import net.starype.quiz.api.game.util.MathUtils;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -19,7 +20,7 @@ public class MultipleChoiceCorrectness implements CorrectnessEvaluator {
     {
         this.acceptedAnswer = acceptedAnswer
                 .stream()
-                .map(s -> s.toString().toLowerCase())
+                .map(s -> s.getAnswerText().toLowerCase())
                 .collect(Collectors.toSet());
         this.lossFunction = lossFunction;
         this.punitiveRatio = Math.max(punitiveRatio, 0.0);
@@ -31,22 +32,18 @@ public class MultipleChoiceCorrectness implements CorrectnessEvaluator {
 
     @Override
     public double getCorrectness(Answer answer) {
-        Stream<String> stringStream = Arrays.asList(answer.getAnswerText()
-                .replace(",", ";")
-                .replace(" ", ";")
-                .replace("-", ";")
-                .replace("|", ";")
-                .replaceAll("[\\;]+", ";")
+        Set<String> stringSet = Arrays.asList(answer.getAnswerText()
                 .split(";"))
                 .stream()
                 .map(s -> s.toLowerCase())
-                .distinct();
-        long goodGuess = stringStream
+                .collect(Collectors.toSet());
+        long goodGuess = stringSet
+                .stream()
                 .filter(s -> acceptedAnswer.contains(s))
                 .count();
-        long badGuess = stringStream.count() - goodGuess;
-        return lossFunction.evaluate(goodGuess - punitiveRatio * badGuess,
-                0.0,
-                acceptedAnswer.size());
+        long badGuess = stringSet.size() - goodGuess;
+        double inverseCorrectness = ((double) goodGuess - punitiveRatio * (double) (badGuess)) / (double)acceptedAnswer.size();
+        double correcness = MathUtils.clamp01(1.0 - inverseCorrectness);
+        return lossFunction.evaluate(correcness);
     }
 }

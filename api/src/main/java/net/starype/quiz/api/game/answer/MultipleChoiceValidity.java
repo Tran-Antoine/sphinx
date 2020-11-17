@@ -18,6 +18,6 @@ public class MultipleChoiceValidity implements ValidityEvaluator {
     @Override
     public boolean isValid(Answer answer) {
         return answer.getAnswerText()
-                .matches("[a-zA-Z0-9 \\-\\|\\\\\\;]+");
+                .matches("[a-zA-Z0-9\\;]+");
     }
 }
