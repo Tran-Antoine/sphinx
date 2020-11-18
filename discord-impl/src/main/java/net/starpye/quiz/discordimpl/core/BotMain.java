@@ -18,7 +18,7 @@ public class BotMain {
                 .block();
         client.getEventDispatcher()
                 .on(MessageCreateEvent.class)
-                .filter(message -> message.getMember().map(user -> !user.isBot()).orElse(false))
+                .filter(MessageInputListener.createFilter())
                 .subscribe(new MessageInputListener());
         client.onDisconnect().block();
     }
