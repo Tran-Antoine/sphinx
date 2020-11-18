@@ -14,6 +14,7 @@ public interface QuizGame {
     void forceStop();
 
     boolean isCurrentRoundFinished();
+    boolean containsPlayerId(Object id);
     void nextRound();
 
     void onInputReceived(IDHolder<?> player, String message);

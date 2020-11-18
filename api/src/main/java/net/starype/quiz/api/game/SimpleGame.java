@@ -151,4 +151,12 @@ public class SimpleGame implements QuizGame {
     public void update() {
         eventHandler.runAllEvents();
     }
+
+    @Override
+    public boolean containsPlayerId(Object id) {
+        return players
+                .stream()
+                .map(Player::getId)
+                .anyMatch(playerId -> playerId.equals(id));
+    }
 }

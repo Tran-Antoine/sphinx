@@ -1,9 +1,12 @@
 package net.starpye.quiz.discordimpl.input;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.channel.TextChannel;
 import net.starpye.quiz.discordimpl.command.CommandContext;
-import net.starpye.quiz.discordimpl.command.CreateGameCommand;
+import net.starpye.quiz.discordimpl.command.CreateLobbyCommand;
 import net.starpye.quiz.discordimpl.command.DiscordCommand;
+import net.starpye.quiz.discordimpl.command.StartGameCommand;
+import net.starpye.quiz.discordimpl.game.GameList;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -14,8 +17,10 @@ import java.util.function.Predicate;
 public class MessageInputListener implements Consumer<MessageCreateEvent> {
 
     private Collection<? extends DiscordCommand> commands;
+    private GameList gameList;
 
-    public MessageInputListener() {
+    public MessageInputListener(GameList gameList) {
+        this.gameList = gameList;
         this.commands = initCommands();
     }
 
@@ -28,9 +33,10 @@ public class MessageInputListener implements Consumer<MessageCreateEvent> {
         }
         DiscordCommand command = optCommand.get();
         CommandContext context = new CommandContext(
-                event.getGuild().block(),
+                event.getMessage().getChannel().cast(TextChannel.class).block(),
                 event.getMember().get().getId(), // Optional guaranteed to be non-empty because of the filter
-                args);
+                args,
+                gameList);
         command.execute(context);
     }
 
@@ -43,7 +49,8 @@ public class MessageInputListener implements Consumer<MessageCreateEvent> {
 
     private Collection<? extends DiscordCommand> initCommands() {
         return Arrays.asList(
-                new CreateGameCommand()
+                new CreateLobbyCommand(),
+                new StartGameCommand()
         );
     }
 

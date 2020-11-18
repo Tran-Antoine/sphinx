@@ -2,52 +2,56 @@ package net.starpye.quiz.discordimpl.game;
 
 import discord4j.common.util.Snowflake;
 import discord4j.core.object.entity.Guild;
-import discord4j.core.object.entity.Member;
-import net.starpye.quiz.discordimpl.user.DiscordPlayer;
 import net.starype.quiz.api.game.GameRound;
-import net.starype.quiz.api.game.QuizGame;
-import net.starype.quiz.api.game.SimpleGame;
-import net.starype.quiz.api.server.GameServer;
 
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class GameLobby {
 
-    private Set<Snowflake> playersID;
+    private Guild guild;
+    private Set<Snowflake> playersId;
+    private Snowflake authorId;
     private Queue<GameRound> rounds;
 
-    public GameLobby() {
-        this.playersID = new HashSet<>();
+    public GameLobby(Guild guild) {
+        this.guild = guild;
+        this.playersId = new HashSet<>();
+        this.rounds = new LinkedList<>();
     }
 
-    public void registerPlayer(Snowflake playerID) {
-        playersID.add(playerID);
+    public void registerAuthor(Snowflake playerId) {
+        this.authorId = playerId;
+        registerPlayer(playerId);
+    }
+
+    public void registerPlayer(Snowflake playerId) {
+        playersId.add(playerId);
     }
 
     public void unregisterPlayer(Snowflake playerID) {
-        playersID.remove(playerID);
+        playersId.remove(playerID);
     }
 
-    public void openToPublic() {
-
+    public void queueRound(GameRound round) {
+        rounds.add(round);
     }
 
-    public QuizGame createGame(Guild guild) {
-        Set<DiscordPlayer> gamePlayers = playersID
-                .stream()
-                .map(id -> asPlayer(guild, id))
-                .collect(Collectors.toSet());
-        GameServer server = new DiscordGameServer();
-        return new SimpleGame(GameRounds.DEFAULT_PRESET, gamePlayers, server);
+    public void unqueueRound(GameRound round) {
+        rounds.remove(round);
     }
 
-    private DiscordPlayer asPlayer(Guild guild, Snowflake id) {
-        Member player = guild.getMemberById(id).block();
-        String userName = player.getUsername();
-        String nickName = player.getDisplayName();
-        return new DiscordPlayer(id, userName, nickName);
+    public boolean containsPlayer(Snowflake authorId) {
+        return playersId.contains(authorId);
+    }
+
+    public void start(GameList gameList) {
+        gameList.startNewGame(playersId, rounds, guild);
+    }
+
+    public boolean isAuthor(Snowflake playerId) {
+        return authorId != null && authorId.equals(playerId);
     }
 }
