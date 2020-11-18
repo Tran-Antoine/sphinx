@@ -17,4 +17,20 @@ public class MathUtils {
     public static double clamp01(double value) {
         return clamp(value, 0.0, 1.0);
     }
+
+    public static double lerp(double value, double inMin, double inMax, double outMin, double outMax)  {
+        return ((value - inMin) / (inMin - inMax)) *  (outMin - outMax) + outMin;
+    }
+
+    public static double clampedLerp(double value, double inMin, double inMax, double outMin, double outMax) {
+        return clamp(lerp(value, inMin, inMax, outMin, outMax), outMin, outMax);
+    }
+
+    public static double lerp01(double value, double inMin, double inMax)  {
+        return lerp(value, inMin, inMax, 0.0,1.0);
+    }
+
+    public static double clampedLerp01(double value, double inMin, double inMax) {
+        return clampedLerp(value, inMin, inMax, 0.0,1.0);
+    }
 }

@@ -3,47 +3,47 @@ package net.starype.quiz.api.game.answer;
 import net.starype.quiz.api.game.util.MathUtils;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class MultipleChoiceCorrectness implements CorrectnessEvaluator {
 
-    private Set<String> acceptedAnswer;
+    private Set<String> acceptedAnswers;
     private LossFunction lossFunction;
     private double punitiveRatio = 1.0F;
 
-    public MultipleChoiceCorrectness(Set<Answer> acceptedAnswer,
+    public MultipleChoiceCorrectness(Set<Answer> acceptedAnswers,
                                      LossFunction lossFunction,
                                      double punitiveRatio)
     {
-        this.acceptedAnswer = acceptedAnswer
+        this.acceptedAnswers = acceptedAnswers
                 .stream()
-                .map(s -> s.getAnswerText().toLowerCase())
+                .map(Answer::getAnswerText)
                 .collect(Collectors.toSet());
         this.lossFunction = lossFunction;
         this.punitiveRatio = Math.max(punitiveRatio, 0.0);
     }
 
-    public MultipleChoiceCorrectness(Set<Answer> acceptedAnswer, LossFunction lossFunction) {
-        this(acceptedAnswer, lossFunction, 1.0);
+    public MultipleChoiceCorrectness(Set<Answer> acceptedAnswers, LossFunction lossFunction) {
+        this(acceptedAnswers, lossFunction, 1.0);
     }
 
     @Override
     public double getCorrectness(Answer answer) {
-        Set<String> stringSet = Arrays.asList(answer.getAnswerText()
-                .split(";"))
-                .stream()
-                .map(s -> s.toLowerCase())
-                .collect(Collectors.toSet());
+        Set<String> stringSet = Set.of(answer.getAnswerText().split(";"));
         long goodGuess = stringSet
                 .stream()
-                .filter(s -> acceptedAnswer.contains(s))
+                .filter(acceptedAnswers::contains)
                 .count();
-        long badGuess = stringSet.size() - goodGuess;
-        double inverseCorrectness = ((double) goodGuess - punitiveRatio * (double) (badGuess)) / (double)acceptedAnswer.size();
-        double correctness = MathUtils.clamp01(1.0 - inverseCorrectness);
+        return evaluateCorrectness(goodGuess, stringSet.size() - goodGuess);
+    }
+
+    private double evaluateCorrectness(long goodGuess, long badGuess) {
+        double score = (double) goodGuess - punitiveRatio * (double) (badGuess);
+        double correctness =1.0 - MathUtils.clampedLerp01(
+                score,
+                0.0,
+                acceptedAnswers.size());
         return lossFunction.evaluate(correctness);
     }
 }
