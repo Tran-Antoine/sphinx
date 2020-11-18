@@ -34,4 +34,13 @@ public class LossFunctionTest {
         Assert.assertTrue(new NormalLossFunction().evaluate(1.0) < 0.1);
     }
 
+    @Test
+    public void binary_loss_function()
+    {
+        TestLossFunction(new BinaryLossFunction(), 0.0, 1.0);
+        TestLossFunction(new BinaryLossFunction(), 1.0, 0.0);
+        TestLossFunction(new BinaryLossFunction(0.5), 1.0, 0.5);
+        TestLossFunction(new BinaryLossFunction(), 0.0, 0.5);
+    }
+
 }
