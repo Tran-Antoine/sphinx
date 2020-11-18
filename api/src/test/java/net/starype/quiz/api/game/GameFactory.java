@@ -8,7 +8,7 @@ import java.util.*;
 
 public class GameFactory {
 
-    public static QuizGame createRaceGame(Player player, GameServer server) {
+    public static QuizGame createRaceGame(Player<?> player, GameServer server) {
         RaceRound.Builder builder = new RaceRound.Builder()
                 .withQuestion(new MockQuestion())
                 .withMaxGuessesPerPlayer(2)
@@ -19,7 +19,7 @@ public class GameFactory {
         return new SimpleGame(rounds, Collections.singletonList(player), server);
     }
 
-    public static QuizGame createClassicalGame(List<Player> players, GameServer server) {
+    public static QuizGame createClassicalGame(List<Player<?>> players, GameServer server) {
         GameRound round = new ClassicalRound(new MockQuestion(), 5, 4.0);
         Queue<GameRound> rounds = new LinkedList<>(Collections.singletonList(round));
         return new SimpleGame(rounds, players, server);

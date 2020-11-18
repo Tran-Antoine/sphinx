@@ -1,7 +1,7 @@
 package net.starype.quiz.api.game;
 
 import net.starype.quiz.api.game.player.Player;
-import net.starype.quiz.api.game.player.UUIDHolder;
+import net.starype.quiz.api.game.player.IDHolder;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,14 +9,14 @@ import java.util.Map;
 public class OneTryDistribution implements ScoreDistribution {
 
     private double maxToAward;
-    private Map<UUIDHolder, Double> accuracies;
+    private Map<IDHolder, Double> accuracies;
 
     public OneTryDistribution(double maxToAward) {
         this.maxToAward = maxToAward;
         this.accuracies = new HashMap<>();
     }
 
-    public void addIfNew(UUIDHolder player, double accuracy) {
+    public void addIfNew(IDHolder player, double accuracy) {
         if(accuracies.containsKey(player)) {
             return;
         }

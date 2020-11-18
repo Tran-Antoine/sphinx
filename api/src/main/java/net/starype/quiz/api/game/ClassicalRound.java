@@ -3,7 +3,7 @@ package net.starype.quiz.api.game;
 import net.starype.quiz.api.game.LeaderboardDistribution.LeaderboardPosition;
 import net.starype.quiz.api.game.answer.Answer;
 import net.starype.quiz.api.game.event.EventHandler;
-import net.starype.quiz.api.game.player.UUIDHolder;
+import net.starype.quiz.api.game.player.IDHolder;
 import net.starype.quiz.api.game.question.Question;
 
 import java.util.ArrayList;
@@ -14,11 +14,10 @@ import java.util.Optional;
 public class ClassicalRound implements GameRound {
 
     private Question pickedQuestion;
-    private Collection<? extends UUIDHolder> players;
+    private Collection<? extends IDHolder<?>> players;
     private MaxGuessCounter counter;
     private double maxAwarded;
     private LeaderboardDistribution leaderboard;
-    private QuizGame game;
 
     public ClassicalRound(Question pickedQuestion, int maxGuesses, double maxAwarded) {
         this.pickedQuestion = pickedQuestion;
@@ -27,14 +26,13 @@ public class ClassicalRound implements GameRound {
     }
 
     @Override
-    public void start(QuizGame game, Collection<? extends UUIDHolder> players, EventHandler eventHandler) {
-        this.game = game;
+    public void start(QuizGame game, Collection<? extends IDHolder<?>> players, EventHandler eventHandler) {
         this.players = players;
         this.leaderboard = new LeaderboardDistribution(maxAwarded, players.size());
     }
 
     @Override
-    public PlayerGuessContext onGuessReceived(UUIDHolder source, String message) {
+    public PlayerGuessContext onGuessReceived(IDHolder<?> source, String message) {
 
         Optional<Double> optCorrectness = pickedQuestion.evaluateAnswer(Answer.fromString(message));
         if(optCorrectness.isEmpty()) {
@@ -54,7 +52,7 @@ public class ClassicalRound implements GameRound {
     }
 
     @Override
-    public void onGiveUpReceived(UUIDHolder source) {
+    public void onGiveUpReceived(IDHolder<?> source) {
         counter.consumeAllGuesses(source);
     }
 
@@ -81,7 +79,7 @@ public class ClassicalRound implements GameRound {
     private List<String> createReport() {
         List<String> report = new ArrayList<>();
         for(LeaderboardPosition position : leaderboard.getLeaderboard()) {
-            report.add(position.getPlayer().getUUID()+": " + position.getScore());
+            report.add(position.getPlayer().getId()+": " + position.getScore());
         }
         return report;
     }

@@ -1,21 +1,22 @@
 package net.starype.quiz.api.game;
 
-import net.starype.quiz.api.game.ScoreDistribution;
 import net.starype.quiz.api.game.player.Player;
-import net.starype.quiz.api.game.player.UUIDHolder;
+import net.starype.quiz.api.game.player.IDHolder;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class AccuracyDistribution implements ScoreDistribution {
 
     private double maxToAward;
-    private Map<UUIDHolder, Double> accuracies;
+    private Map<IDHolder<?>, Double> accuracies;
 
     public AccuracyDistribution(double maxToAward) {
         this.maxToAward = maxToAward;
+        this.accuracies = new HashMap<>();
     }
 
-    public void updateScore(UUIDHolder holder, double accuracy) {
+    public void updateScore(IDHolder<?> holder, double accuracy) {
         double currentAccuracy = accuracies.getOrDefault(holder, -1D);
         if(currentAccuracy < accuracy) {
             accuracies.put(holder, accuracy);

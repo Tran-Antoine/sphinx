@@ -2,7 +2,7 @@ package net.starype.quiz.api.game;
 
 import net.starype.quiz.api.game.answer.Answer;
 import net.starype.quiz.api.game.event.EventHandler;
-import net.starype.quiz.api.game.player.UUIDHolder;
+import net.starype.quiz.api.game.player.IDHolder;
 import net.starype.quiz.api.game.question.Question;
 
 import java.util.Collection;
@@ -15,7 +15,7 @@ public class IndividualRound implements GameRound {
     private OneTryDistribution scoreDistribution;
     private Question pickedQuestion;
     private MaxGuessCounter maxGuessCounter;
-    private Collection<? extends UUIDHolder> players;
+    private Collection<? extends IDHolder> players;
 
     public IndividualRound(double maxToAward, Question pickedQuestion) {
         this.maxToAward = maxToAward;
@@ -23,7 +23,7 @@ public class IndividualRound implements GameRound {
     }
 
     @Override
-    public void start(QuizGame game, Collection<? extends UUIDHolder> players, EventHandler eventHandler) {
+    public void start(QuizGame game, Collection<? extends IDHolder<?>> players, EventHandler eventHandler) {
         this.scoreDistribution = new OneTryDistribution(maxToAward);
         this.players = players;
         this.maxGuessCounter = new MaxGuessCounter(1);
@@ -31,7 +31,7 @@ public class IndividualRound implements GameRound {
     }
 
     @Override
-    public PlayerGuessContext onGuessReceived(UUIDHolder source, String message) {
+    public PlayerGuessContext onGuessReceived(IDHolder source, String message) {
         Optional<Double> optAccuracy = pickedQuestion.evaluateAnswer(Answer.fromString(message));
         if(optAccuracy.isEmpty()) {
             return new PlayerGuessContext(source, 0, true);
@@ -43,7 +43,7 @@ public class IndividualRound implements GameRound {
     }
 
     @Override
-    public void onGiveUpReceived(UUIDHolder source) {
+    public void onGiveUpReceived(IDHolder<?> source) {
         scoreDistribution.addIfNew(source, 0);
     }
 

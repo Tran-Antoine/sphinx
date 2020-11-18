@@ -3,7 +3,7 @@ package net.starype.quiz.api.game;
 import net.starype.quiz.api.game.event.EventHandler;
 import net.starype.quiz.api.game.event.GameEventHandler;
 import net.starype.quiz.api.game.player.Player;
-import net.starype.quiz.api.game.player.UUIDHolder;
+import net.starype.quiz.api.game.player.IDHolder;
 import net.starype.quiz.api.server.GameServer;
 
 import java.util.Collection;
@@ -14,12 +14,12 @@ import java.util.function.Consumer;
 public class SimpleGame implements QuizGame {
 
     private Queue<? extends GameRound> rounds;
-    private Collection<? extends Player> players;
+    private Collection<? extends Player<?>> players;
     private GameServer server;
     private final AtomicBoolean paused;
     private EventHandler eventHandler = new GameEventHandler();
 
-    public SimpleGame(Queue<? extends GameRound> rounds, Collection<? extends Player> players, GameServer server) {
+    public SimpleGame(Queue<? extends GameRound> rounds, Collection<? extends Player<?>> players, GameServer server) {
         this.rounds = rounds;
         this.players = players;
         this.server = server;
@@ -63,7 +63,7 @@ public class SimpleGame implements QuizGame {
     }
 
     @Override
-    public void onInputReceived(UUIDHolder player, String message) {
+    public void onInputReceived(IDHolder<?> player, String message) {
 
         if(paused.get()) {
             return;
@@ -106,14 +106,14 @@ public class SimpleGame implements QuizGame {
         scoreDistribution.applyAll(players, this::updateScore);
     }
 
-    private void updateScore(Player player, double score) {
+    private void updateScore(Player<?> player, double score) {
         player.getScore().incrementScore(score);
         if (Math.abs(score) > 0.001) {
             server.onPlayerScoreUpdated(player);
         }
     }
 
-    private void transferRequestToRound(UUIDHolder player, String message, GameRound current) {
+    private void transferRequestToRound(IDHolder<?> player, String message, GameRound current) {
         if(message.isEmpty()) {
             current.onGiveUpReceived(player);
             server.onPlayerGaveUp(player);

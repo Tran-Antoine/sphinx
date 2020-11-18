@@ -1,13 +1,13 @@
 package net.starype.quiz.api.game;
 
-import net.starype.quiz.api.game.player.UUIDHolder;
+import net.starype.quiz.api.game.player.IDHolder;
 
 import java.util.Collection;
 
 public interface EntityEligibility {
 
-    boolean isEligible(UUIDHolder player);
-    default boolean existsEligible(Collection<? extends UUIDHolder> players) {
+    boolean isEligible(IDHolder player);
+    default boolean existsEligible(Collection<? extends IDHolder> players) {
         return players.stream().anyMatch(this::isEligible);
     }
 

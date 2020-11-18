@@ -2,7 +2,7 @@ package net.starype.quiz.api.game;
 
 import net.starype.quiz.api.game.answer.Answer;
 import net.starype.quiz.api.game.event.EventHandler;
-import net.starype.quiz.api.game.player.UUIDHolder;
+import net.starype.quiz.api.game.player.IDHolder;
 import net.starype.quiz.api.game.question.Question;
 
 import java.util.Collection;
@@ -19,9 +19,9 @@ public class PollRound implements GameRound {
 
     private Question question;
     private final int maxGuesses;
-    private Map<UUIDHolder, Answer> definitiveAnswers;
+    private Map<IDHolder, Answer> definitiveAnswers;
     private MaxGuessCounter counter;
-    private Collection<? extends UUIDHolder> players;
+    private Collection<? extends IDHolder> players;
 
     public PollRound(Question question, int maxGuesses) {
         this.question = question;
@@ -30,21 +30,21 @@ public class PollRound implements GameRound {
     }
 
     @Override
-    public void start(QuizGame game, Collection<? extends UUIDHolder> players, EventHandler eventHandler) {
+    public void start(QuizGame game, Collection<? extends IDHolder<?>> players, EventHandler eventHandler) {
         this.counter = new MaxGuessCounter(maxGuesses);
         this.players = players;
         game.sendInputToServer((server) -> server.onQuestionReleased(question));
     }
 
     @Override
-    public PlayerGuessContext onGuessReceived(UUIDHolder source, String message) {
+    public PlayerGuessContext onGuessReceived(IDHolder<?> source, String message) {
         definitiveAnswers.put(source, Answer.fromString(message));
         counter.incrementGuess(source);
         return new PlayerGuessContext(source, 0, counter.isEligible(source));
     }
 
     @Override
-    public void onGiveUpReceived(UUIDHolder source) {
+    public void onGiveUpReceived(IDHolder<?> source) {
         counter.consumeAllGuesses(source);
     }
 
@@ -68,7 +68,7 @@ public class PollRound implements GameRound {
         return () -> definitiveAnswers
                 .entrySet()
                 .stream()
-                .map((entry) -> entry.getKey().getUUID()+": "+entry.getValue().getAnswerText())
+                .map((entry) -> entry.getKey().getId()+": "+entry.getValue().getAnswerText())
                 .collect(Collectors.toList());
     }
 

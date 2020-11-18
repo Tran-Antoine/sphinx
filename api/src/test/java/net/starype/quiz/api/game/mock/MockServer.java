@@ -4,7 +4,7 @@ import net.starype.quiz.api.game.GameRoundReport;
 import net.starype.quiz.api.game.PlayerGuessContext;
 import net.starype.quiz.api.game.QuizGame;
 import net.starype.quiz.api.game.player.Player;
-import net.starype.quiz.api.game.player.UUIDHolder;
+import net.starype.quiz.api.game.player.IDHolder;
 import net.starype.quiz.api.game.question.Question;
 import net.starype.quiz.api.server.GameServer;
 
@@ -28,7 +28,7 @@ public class MockServer implements GameServer {
 
     @Override
     public void onPlayerGuessed(PlayerGuessContext context) {
-        System.out.println("Player with ID " + context.getPlayer().getUUID() + " sent a guess");
+        System.out.println("Player with ID " + context.getPlayer().getId() + " sent a guess");
         double pointsAwarded = context.getCorrectness();
         System.out.println("Score Accuracy: " + pointsAwarded);
         System.out.println("Player might try again: " + context.isEligible());
@@ -36,18 +36,18 @@ public class MockServer implements GameServer {
     }
 
     @Override
-    public void onNonEligiblePlayerGuessed(UUIDHolder player) {
-        System.out.println("Input refused. Player with ID " + player.getUUID() + " may not send a guess");
+    public void onNonEligiblePlayerGuessed(IDHolder player) {
+        System.out.println("Input refused. Player with ID " + player.getId() + " may not send a guess");
     }
 
     @Override
-    public void onPlayerGaveUp(UUIDHolder player) {
-        System.out.println("Player with ID " + player.getUUID() + " gave up on the question");
+    public void onPlayerGaveUp(IDHolder player) {
+        System.out.println("Player with ID " + player.getId() + " gave up on the question");
     }
 
     @Override
     public void onPlayerScoreUpdated(Player player) {
-        System.out.println("Score update for player with ID " + player.getUUID() +": " + player.getScore().getPoints());
+        System.out.println("Score update for player with ID " + player.getId() +": " + player.getScore().getPoints());
     }
 
     @Override

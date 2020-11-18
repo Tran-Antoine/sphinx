@@ -1,22 +1,20 @@
 package net.starype.quiz.api.game.player;
 
-import java.util.UUID;
-
-public class Player implements UUIDHolder {
+public class Player<T> implements IDHolder<T> {
 
     private String username;
     private String nickname;
     private Score score;
-    private UUID uuid;
+    private T id;
 
-    public Player(UUID uuid, String username, String nickname) {
+    public Player(T id, String username, String nickname) {
         this.username = username;
         this.nickname = nickname;
-        this.uuid = uuid;
+        this.id = id;
         this.score = new Score();
     }
 
-    public Player(UUID uuid, String username) {
+    public Player(T uuid, String username) {
         this(uuid, username, username);
     }
 
@@ -36,8 +34,7 @@ public class Player implements UUIDHolder {
         this.score.incrementScore(increment);
     }
 
-    public UUID getUUID() {
-        return uuid;
+    public T getId() {
+        return id;
     }
-
 }
