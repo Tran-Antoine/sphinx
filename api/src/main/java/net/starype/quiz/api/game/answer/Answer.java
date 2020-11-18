@@ -18,7 +18,7 @@ public class Answer {
 
     public static Set<Answer> fromSetOfString(Set<String> stringSet) {
         return stringSet.stream()
-                .map(s -> fromString(s))
+                .map(Answer::fromString)
                 .collect(Collectors.toSet());
     }
 
