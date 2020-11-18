@@ -8,7 +8,7 @@ public class MultipleChoiceValidity implements ValidityEvaluator {
 
     }
 
-    public static synchronized MultipleChoiceValidity getInstance() {
+    public static MultipleChoiceValidity getInstance() {
         if(instance == null) {
             instance = new MultipleChoiceValidity();
         }
