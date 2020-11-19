@@ -3,7 +3,6 @@ package net.starpye.quiz.discordimpl.command;
 import discord4j.common.util.Snowflake;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.channel.TextChannel;
-import net.starpye.quiz.discordimpl.game.GameLobby;
 import net.starpye.quiz.discordimpl.game.LobbyList;
 
 public class CreateLobbyCommand implements DiscordCommand {
@@ -16,14 +15,13 @@ public class CreateLobbyCommand implements DiscordCommand {
         TextChannel channel = context.getChannel();
 
         if(context.getGameList().isPlaying(playerId)) {
-            channel.createMessage(author.getDisplayName()+", you are already playing a game");
+            channel.createMessage(author.getDisplayName()+", you are already playing a game").block();
             return;
         }
 
         LobbyList lobbies = context.getLobbyList();
-        GameLobby lobby = new GameLobby(channel.getGuild().block());
-        lobby.registerAuthor(playerId);
-        lobbies.registerLobby(lobby);
+        String lobbyId = lobbies.registerLobby(channel, playerId);
+        channel.createMessage("Lobby with ID " + lobbyId+" was created").block();
     }
 
     @Override

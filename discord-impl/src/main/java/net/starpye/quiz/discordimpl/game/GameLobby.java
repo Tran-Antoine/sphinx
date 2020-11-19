@@ -2,6 +2,7 @@ package net.starpye.quiz.discordimpl.game;
 
 import discord4j.common.util.Snowflake;
 import discord4j.core.object.entity.Guild;
+import discord4j.core.object.entity.channel.TextChannel;
 import net.starype.quiz.api.game.GameRound;
 
 import java.util.HashSet;
@@ -11,15 +12,17 @@ import java.util.Set;
 
 public class GameLobby {
 
-    private Guild guild;
+    private String name;
+    private TextChannel channel;
     private Set<Snowflake> playersId;
     private Snowflake authorId;
     private Queue<GameRound> rounds;
 
-    public GameLobby(Guild guild) {
-        this.guild = guild;
+    public GameLobby(TextChannel channel, String name) {
+        this.channel = channel;
+        this.name = name;
         this.playersId = new HashSet<>();
-        this.rounds = new LinkedList<>();
+        this.rounds = GameRounds.DEFAULT_PRESET;
     }
 
     public void registerAuthor(Snowflake playerId) {
@@ -48,10 +51,14 @@ public class GameLobby {
     }
 
     public void start(GameList gameList) {
-        gameList.startNewGame(playersId, rounds, guild);
+        gameList.startNewGame(playersId, rounds, channel);
     }
 
     public boolean isAuthor(Snowflake playerId) {
         return authorId != null && authorId.equals(playerId);
+    }
+
+    public boolean isName(String name) {
+        return this.name.equals(name);
     }
 }

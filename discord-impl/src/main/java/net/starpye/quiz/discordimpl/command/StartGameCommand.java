@@ -19,14 +19,15 @@ public class StartGameCommand implements DiscordCommand {
 
     @Override
     public void execute(CommandContext context) {
-        LobbyList gameList = context.getLobbyList();
-        Optional<GameLobby> optGame = gameList.findByAuthor(context.getAuthor().getId());
+        LobbyList lobbyList = context.getLobbyList();
+        Optional<GameLobby> optGame = lobbyList.findByAuthor(context.getAuthor().getId());
         if(optGame.isEmpty()) {
             String nickName = context.getAuthor().getDisplayName();
-            context.getChannel().createMessage(nickName +", you are not the admin of any lobby");
+            context.getChannel().createMessage(nickName +", you are not the admin of any lobby").block();
             return;
         }
         GameLobby gameLobby = optGame.get();
+        lobbyList.unregisterLobby(gameLobby);
         gameLobby.start(context.getGameList());
     }
 }

@@ -3,6 +3,7 @@ package net.starpye.quiz.discordimpl.game;
 import discord4j.common.util.Snowflake;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Member;
+import discord4j.core.object.entity.channel.TextChannel;
 import net.starpye.quiz.discordimpl.user.DiscordPlayer;
 import net.starype.quiz.api.game.GameRound;
 import net.starype.quiz.api.game.QuizGame;
@@ -24,16 +25,16 @@ public class GameList {
         this.ongoingGames = new HashMap<>();
     }
 
-    public void startNewGame(Collection<? extends Snowflake> playersId, Queue<? extends GameRound> rounds, Guild guild) {
+    public void startNewGame(Collection<? extends Snowflake> playersId, Queue<? extends GameRound> rounds, TextChannel channel) {
         Set<DiscordPlayer> gamePlayers = playersId
                 .stream()
-                .map(id -> asPlayer(guild, id))
+                .map(id -> asPlayer(channel.getGuild().block(), id))
                 .collect(Collectors.toSet());
-        GameServer server = new DiscordGameServer();
+        GameServer server = new DiscordGameServer(channel);
         QuizGame game = new SimpleGame(rounds, gamePlayers, server);
         ScheduledExecutorService task = Executors.newScheduledThreadPool(1);
         ScheduledFuture<?> future = task.scheduleAtFixedRate(game::update, 0, 250, TimeUnit.MILLISECONDS);
-
+        game.start();
         ongoingGames.put(game, future);
     }
 

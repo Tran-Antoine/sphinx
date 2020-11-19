@@ -17,7 +17,7 @@ public class Questions {
 
         private static final List<MockQuestion> MOCK_QUESTIONS = Arrays.asList(
                 new MockQuestion("True or False: Let T a linear transformation. T injective <-> T surjective", "true"),
-                new MockQuestion("True or False: There are as many elements in [0,1[ than in [0, 3[", "true"),
+                new MockQuestion("True or False: There are as many elements in [0,1[ as in [0, 3[", "true"),
                 new MockQuestion("True or False: Fields can be overridden in Java", "false"),
                 new MockQuestion("True or False: Let f: E -> F continuous. f is derivable", "false"),
                 new MockQuestion(

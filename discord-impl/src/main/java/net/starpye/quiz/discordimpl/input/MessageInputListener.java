@@ -2,11 +2,8 @@ package net.starpye.quiz.discordimpl.input;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.channel.TextChannel;
-import net.starpye.quiz.discordimpl.command.CommandContext;
+import net.starpye.quiz.discordimpl.command.*;
 import net.starpye.quiz.discordimpl.command.CommandContext.MessageContext;
-import net.starpye.quiz.discordimpl.command.CreateLobbyCommand;
-import net.starpye.quiz.discordimpl.command.DiscordCommand;
-import net.starpye.quiz.discordimpl.command.StartGameCommand;
 import net.starpye.quiz.discordimpl.game.GameList;
 import net.starpye.quiz.discordimpl.game.LobbyList;
 
@@ -58,6 +55,7 @@ public class MessageInputListener implements Consumer<MessageCreateEvent> {
     private Collection<? extends DiscordCommand> initCommands() {
         return Arrays.asList(
                 new CreateLobbyCommand(),
+                new JoinLobbyCommand(),
                 new StartGameCommand()
         );
     }
