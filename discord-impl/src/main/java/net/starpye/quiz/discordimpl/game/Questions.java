@@ -22,7 +22,7 @@ public class Questions {
                 new MockQuestion("True or False: Let f: E -> F continuous. f is derivable", "false"),
                 new MockQuestion(
                         "True or False: The total mass of a sphere can be calculated by the following triple integral:\n" +
-                        "Bounds: from 0 to R (d_r) from 0 to 2pi (d_theta) from 0 to 2pi (d_phi)" +
+                        "Bounds: from 0 to R (d_r) from 0 to 2pi (d_theta) from 0 to 2pi (d_phi)\n" +
                                 "Content of integration: rho(r, theta, phi)", "false")
         );
 
