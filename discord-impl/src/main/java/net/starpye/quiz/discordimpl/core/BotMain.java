@@ -4,6 +4,7 @@ import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import net.starpye.quiz.discordimpl.game.GameList;
+import net.starpye.quiz.discordimpl.game.LobbyList;
 import net.starpye.quiz.discordimpl.input.MessageInputListener;
 
 import java.io.BufferedReader;
@@ -20,7 +21,7 @@ public class BotMain {
         client.getEventDispatcher()
                 .on(MessageCreateEvent.class)
                 .filter(MessageInputListener.createFilter())
-                .subscribe(new MessageInputListener(new GameList()));
+                .subscribe(new MessageInputListener(new LobbyList(), new GameList()));
         client.onDisconnect().block();
     }
 
