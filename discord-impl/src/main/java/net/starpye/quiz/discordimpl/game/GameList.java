@@ -6,8 +6,6 @@ import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.channel.TextChannel;
 import net.starpye.quiz.discordimpl.user.DiscordPlayer;
 import net.starype.quiz.api.game.GameRound;
-import net.starype.quiz.api.game.QuizGame;
-import net.starype.quiz.api.game.SimpleGame;
 import net.starype.quiz.api.server.GameServer;
 
 import java.util.*;
@@ -19,19 +17,19 @@ import java.util.stream.Collectors;
 
 public class GameList {
 
-    private Map<QuizGame, ScheduledFuture<?>> ongoingGames;
+    private Map<DiscordQuizGame, ScheduledFuture<?>> ongoingGames;
 
     public GameList() {
         this.ongoingGames = new HashMap<>();
     }
 
-    public void startNewGame(Collection<? extends Snowflake> playersId, Queue<? extends GameRound> rounds, TextChannel channel) {
+    public void startNewGame(Collection<? extends Snowflake> playersId, Queue<? extends GameRound> rounds, TextChannel channel, Snowflake authorId) {
         Set<DiscordPlayer> gamePlayers = playersId
                 .stream()
                 .map(id -> asPlayer(channel.getGuild().block(), id))
                 .collect(Collectors.toSet());
-        GameServer server = new DiscordGameServer(channel);
-        QuizGame game = new SimpleGame(rounds, gamePlayers, server);
+        GameServer<DiscordQuizGame> server = new DiscordGameServer(channel, this::stopGame);
+        DiscordQuizGame game = new DiscordQuizGame(rounds, gamePlayers, server, authorId);
         ScheduledExecutorService task = Executors.newScheduledThreadPool(1);
         ScheduledFuture<?> future = task.scheduleAtFixedRate(game::update, 0, 250, TimeUnit.MILLISECONDS);
         game.start();
@@ -45,7 +43,7 @@ public class GameList {
                 .anyMatch((game) -> game.containsPlayerId(playerId));
     }
 
-    public Optional<QuizGame> getFromPlayer(Snowflake playerId) {
+    public Optional<DiscordQuizGame> getFromPlayer(Snowflake playerId) {
         return ongoingGames
                 .keySet()
                 .stream()
@@ -53,7 +51,7 @@ public class GameList {
                 .findAny();
     }
 
-    public void stopGame(QuizGame game) {
+    public void stopGame(DiscordQuizGame game) {
         ScheduledFuture<?> future = ongoingGames.remove(game);
         if(future == null) {
             return;

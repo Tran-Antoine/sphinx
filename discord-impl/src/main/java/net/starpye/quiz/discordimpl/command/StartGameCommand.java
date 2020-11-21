@@ -5,7 +5,7 @@ import net.starpye.quiz.discordimpl.game.LobbyList;
 
 import java.util.Optional;
 
-public class StartGameCommand implements DiscordCommand {
+public class StartGameCommand implements QuizCommand {
 
     @Override
     public String getName() {

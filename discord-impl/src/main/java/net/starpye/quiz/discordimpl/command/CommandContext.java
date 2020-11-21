@@ -1,7 +1,7 @@
 package net.starpye.quiz.discordimpl.command;
 
-import discord4j.common.util.Snowflake;
 import discord4j.core.object.entity.Member;
+import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.TextChannel;
 import net.starpye.quiz.discordimpl.game.GameList;
 import net.starpye.quiz.discordimpl.game.LobbyList;
@@ -38,14 +38,20 @@ public class CommandContext {
         return lobbyList;
     }
 
+    public Message getMessage() {
+        return messageContext.message;
+    }
+
     public static class MessageContext {
 
         private TextChannel textChannel;
+        private Message message;
         private Member author;
         private String[] args;
 
-        public MessageContext(TextChannel textChannel, Member author, String[] args) {
+        public MessageContext(TextChannel textChannel, Message message, Member author, String[] args) {
             this.textChannel = textChannel;
+            this.message = message;
             this.author = author;
             this.args = args;
         }

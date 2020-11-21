@@ -9,14 +9,14 @@ import java.util.Map;
 public class OneTryDistribution implements ScoreDistribution {
 
     private double maxToAward;
-    private Map<IDHolder, Double> accuracies;
+    private Map<IDHolder<?>, Double> accuracies;
 
     public OneTryDistribution(double maxToAward) {
         this.maxToAward = maxToAward;
         this.accuracies = new HashMap<>();
     }
 
-    public void addIfNew(IDHolder player, double accuracy) {
+    public void addIfNew(IDHolder<?> player, double accuracy) {
         if(accuracies.containsKey(player)) {
             return;
         }

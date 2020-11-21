@@ -1,5 +1,6 @@
 package net.starype.quiz.api.game.util;
 
+import net.starype.quiz.api.util.MathUtils;
 import org.junit.Assert;
 import org.junit.Test;
 

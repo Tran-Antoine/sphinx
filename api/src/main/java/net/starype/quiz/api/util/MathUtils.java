@@ -1,4 +1,4 @@
-package net.starype.quiz.api.game.util;
+package net.starype.quiz.api.util;
 
 public class MathUtils {
 

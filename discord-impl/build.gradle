@@ -2,5 +2,6 @@ group 'net.starype.quiz.api'
 
 dependencies {
     compile project(':api')
+    compile group: 'org.scilab.forge', name: 'jlatexmath', version: '1.0.7'
     implementation "com.discord4j:discord4j-core:3.1.1"
 }

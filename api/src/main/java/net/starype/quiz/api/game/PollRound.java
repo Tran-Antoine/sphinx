@@ -3,6 +3,7 @@ package net.starype.quiz.api.game;
 import net.starype.quiz.api.game.answer.Answer;
 import net.starype.quiz.api.game.event.EventHandler;
 import net.starype.quiz.api.game.player.IDHolder;
+import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.question.Question;
 
 import java.util.Collection;
@@ -37,7 +38,7 @@ public class PollRound implements GameRound {
     }
 
     @Override
-    public PlayerGuessContext onGuessReceived(IDHolder<?> source, String message) {
+    public PlayerGuessContext onGuessReceived(Player<?> source, String message) {
         definitiveAnswers.put(source, Answer.fromString(message));
         counter.incrementGuess(source);
         return new PlayerGuessContext(source, 0, counter.isEligible(source));
@@ -64,7 +65,7 @@ public class PollRound implements GameRound {
     }
 
     @Override
-    public GameRoundReport initReport() {
+    public GameRoundReport initReport(Map<Player<?>, Double> standings) {
         return () -> definitiveAnswers
                 .entrySet()
                 .stream()

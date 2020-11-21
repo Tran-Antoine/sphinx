@@ -4,9 +4,10 @@ import net.starype.quiz.api.game.GameRoundReport;
 import net.starype.quiz.api.game.PlayerGuessContext;
 import net.starype.quiz.api.game.QuizGame;
 import net.starype.quiz.api.game.player.Player;
-import net.starype.quiz.api.game.player.IDHolder;
 import net.starype.quiz.api.game.question.Question;
 import net.starype.quiz.api.server.GameServer;
+
+import java.util.List;
 
 public class MockServer implements GameServer {
 
@@ -21,7 +22,7 @@ public class MockServer implements GameServer {
     }
 
     @Override
-    public void onGameOver() {
+    public void onGameOver(QuizGame game, List<? extends Player<?>> standings) {
         System.out.println("All rounds have been played. Game successfully stopped");
         gameOver = true;
     }
@@ -36,17 +37,17 @@ public class MockServer implements GameServer {
     }
 
     @Override
-    public void onNonEligiblePlayerGuessed(IDHolder player) {
+    public void onNonEligiblePlayerGuessed(Player<?> player) {
         System.out.println("Input refused. Player with ID " + player.getId() + " may not send a guess");
     }
 
     @Override
-    public void onPlayerGaveUp(IDHolder player) {
+    public void onPlayerGaveUp(Player<?> player) {
         System.out.println("Player with ID " + player.getId() + " gave up on the question");
     }
 
     @Override
-    public void onPlayerScoreUpdated(Player player) {
+    public void onPlayerScoreUpdated(Player<?> player) {
         System.out.println("Score update for player with ID " + player.getId() +": " + player.getScore().getPoints());
     }
 

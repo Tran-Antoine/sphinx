@@ -21,6 +21,7 @@ public class BotMain {
         client.getEventDispatcher()
                 .on(MessageCreateEvent.class)
                 .filter(MessageInputListener.createFilter())
+                .retry()
                 .subscribe(new MessageInputListener(new LobbyList(), new GameList()));
         client.onDisconnect().block();
     }

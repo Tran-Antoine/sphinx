@@ -5,7 +5,7 @@ import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.channel.TextChannel;
 import net.starpye.quiz.discordimpl.game.LobbyList;
 
-public class CreateLobbyCommand implements DiscordCommand {
+public class CreateLobbyCommand implements QuizCommand {
 
     @Override
     public void execute(CommandContext context) {
@@ -14,8 +14,13 @@ public class CreateLobbyCommand implements DiscordCommand {
         Snowflake playerId = author.getId();
         TextChannel channel = context.getChannel();
 
+        if(context.getLobbyList().findByPlayer(playerId).isPresent()) {
+            channel.createMessage(author.getDisplayName()+", you are already in a lobby").block();
+            return;
+        }
+
         if(context.getGameList().isPlaying(playerId)) {
-            channel.createMessage(author.getDisplayName()+", you are already playing a game").block();
+            channel.createMessage(author.getDisplayName()+", you are already playing a game").subscribe();
             return;
         }
 

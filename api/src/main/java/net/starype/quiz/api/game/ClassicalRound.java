@@ -1,15 +1,13 @@
 package net.starype.quiz.api.game;
 
-import net.starype.quiz.api.game.LeaderboardDistribution.LeaderboardPosition;
 import net.starype.quiz.api.game.answer.Answer;
 import net.starype.quiz.api.game.event.EventHandler;
 import net.starype.quiz.api.game.player.IDHolder;
+import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.question.Question;
+import net.starype.quiz.api.util.SortUtils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class ClassicalRound implements GameRound {
 
@@ -29,10 +27,11 @@ public class ClassicalRound implements GameRound {
     public void start(QuizGame game, Collection<? extends IDHolder<?>> players, EventHandler eventHandler) {
         this.players = players;
         this.leaderboard = new LeaderboardDistribution(maxAwarded, players.size());
+        game.sendInputToServer(server -> server.onQuestionReleased(pickedQuestion));
     }
 
     @Override
-    public PlayerGuessContext onGuessReceived(IDHolder<?> source, String message) {
+    public PlayerGuessContext onGuessReceived(Player<?> source, String message) {
 
         Optional<Double> optCorrectness = pickedQuestion.evaluateAnswer(Answer.fromString(message));
         if(optCorrectness.isEmpty()) {
@@ -72,14 +71,15 @@ public class ClassicalRound implements GameRound {
     }
 
     @Override
-    public GameRoundReport initReport() {
-        return this::createReport;
+    public GameRoundReport initReport(Map<Player<?>, Double> standings) {
+        return () -> createReport(standings);
     }
 
-    private List<String> createReport() {
+    private List<String> createReport(Map<Player<?>, Double> standings) {
         List<String> report = new ArrayList<>();
-        for(LeaderboardPosition position : leaderboard.getLeaderboard()) {
-            report.add(position.getPlayer().getId()+": " + position.getScore());
+        report.add("Scores acquired for the round:\n");
+        for(SortUtils.Standing standing : SortUtils.sortByScore(standings)) {
+            report.add(standing.getPlayer().getNickname()+": " + standing.getScoreAcquired());
         }
         return report;
     }

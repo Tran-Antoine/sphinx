@@ -3,12 +3,10 @@ package net.starype.quiz.api.game;
 import net.starype.quiz.api.game.answer.Answer;
 import net.starype.quiz.api.game.event.EventHandler;
 import net.starype.quiz.api.game.player.IDHolder;
+import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.question.Question;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class RaceRound implements GameRound {
@@ -38,7 +36,7 @@ public class RaceRound implements GameRound {
     }
 
     @Override
-    public PlayerGuessContext onGuessReceived(IDHolder<?> source, String message) {
+    public PlayerGuessContext onGuessReceived(Player<?> source, String message) {
 
         // eligibility checks are performed in the game class
         Optional<Double> correctness = pickedQuestion.evaluateAnswer(Answer.fromString(message));
@@ -76,7 +74,7 @@ public class RaceRound implements GameRound {
     }
 
     @Override
-    public GameRoundReport initReport() {
+    public GameRoundReport initReport(Map<Player<?>, Double> standings) {
         return winnerContainer.get() == null
                 ? winnerlessReport()
                 : winnerReport();

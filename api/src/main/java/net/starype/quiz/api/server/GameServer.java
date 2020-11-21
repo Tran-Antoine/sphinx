@@ -4,16 +4,17 @@ import net.starype.quiz.api.game.GameRoundReport;
 import net.starype.quiz.api.game.PlayerGuessContext;
 import net.starype.quiz.api.game.QuizGame;
 import net.starype.quiz.api.game.player.Player;
-import net.starype.quiz.api.game.player.IDHolder;
 import net.starype.quiz.api.game.question.Question;
 
-public interface GameServer {
+import java.util.List;
 
-    void onRoundEnded(GameRoundReport report, QuizGame game);
-    void onGameOver();
+public interface GameServer<T extends QuizGame> {
+
+    void onRoundEnded(GameRoundReport report, T game);
+    void onGameOver(T game, List<? extends Player<?>> playerStandings);
     void onPlayerGuessed(PlayerGuessContext context);
-    void onNonEligiblePlayerGuessed(IDHolder<?> player);
-    void onPlayerGaveUp(IDHolder<?> player);
+    void onNonEligiblePlayerGuessed(Player<?> player);
+    void onPlayerGaveUp(Player<?> player);
     void onPlayerScoreUpdated(Player<?> player);
     void onQuestionReleased(Question question);
 }

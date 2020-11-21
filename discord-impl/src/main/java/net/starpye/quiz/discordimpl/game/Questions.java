@@ -27,12 +27,12 @@ public class Questions {
         );
 
         private String question;
-        private String answer;
+        private String textAnswer;
         private UUID uuid;
 
         public MockQuestion(String question, String answer) {
             this.question = question;
-            this.answer = answer;
+            this.textAnswer = answer;
             this.uuid = UUID.randomUUID();
         }
         @Override
@@ -58,12 +58,12 @@ public class Questions {
 
         @Override
         public String getDisplayableCorrectAnswer() {
-            return answer;
+            return textAnswer;
         }
 
         @Override
         public Optional<Double> evaluateAnswer(Answer answer) {
-            return answer.getAnswerText().equalsIgnoreCase(this.answer)
+            return answer.getAnswerText().equalsIgnoreCase(this.textAnswer)
                     ? Optional.of(1.0)
                     : Optional.of(0.0);
         }

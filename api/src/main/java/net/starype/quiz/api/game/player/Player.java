@@ -1,6 +1,6 @@
 package net.starype.quiz.api.game.player;
 
-public class Player<T> implements IDHolder<T> {
+public class Player<T> implements IDHolder<T>, Comparable<Player<?>> {
 
     private String username;
     private String nickname;
@@ -36,5 +36,10 @@ public class Player<T> implements IDHolder<T> {
 
     public T getId() {
         return id;
+    }
+
+    @Override
+    public int compareTo(Player<?> o) {
+        return Double.compare(this.score.getPoints(), o.score.getPoints());
     }
 }

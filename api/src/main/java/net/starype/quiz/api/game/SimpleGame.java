@@ -3,13 +3,12 @@ package net.starype.quiz.api.game;
 import net.starype.quiz.api.game.event.EventHandler;
 import net.starype.quiz.api.game.event.GameEventHandler;
 import net.starype.quiz.api.game.player.Player;
-import net.starype.quiz.api.game.player.IDHolder;
 import net.starype.quiz.api.server.GameServer;
 
-import java.util.Collection;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class SimpleGame implements QuizGame {
 
@@ -17,6 +16,7 @@ public class SimpleGame implements QuizGame {
     private Collection<? extends Player<?>> players;
     private GameServer server;
     private final AtomicBoolean paused;
+    private boolean waitingForNextRound;
     private EventHandler eventHandler = new GameEventHandler();
 
     public SimpleGame(Queue<? extends GameRound> rounds, Collection<? extends Player<?>> players, GameServer server) {
@@ -24,6 +24,7 @@ public class SimpleGame implements QuizGame {
         this.players = players;
         this.server = server;
         this.paused = new AtomicBoolean(true);
+        this.waitingForNextRound = false;
     }
 
     @Override
@@ -47,14 +48,21 @@ public class SimpleGame implements QuizGame {
     }
 
     @Override
-    public void nextRound() {
+    public boolean nextRound() {
+
+        if(!waitingForNextRound) {
+            return false;
+        }
+
         rounds.poll();
         if(rounds.isEmpty()) {
-            server.onGameOver();
-            return;
+            server.onGameOver(this, sortPlayers());
+            return false;
         }
+
         paused.set(false);
         startHead();
+        return true;
     }
 
     private void startHead() {
@@ -63,7 +71,7 @@ public class SimpleGame implements QuizGame {
     }
 
     @Override
-    public void onInputReceived(IDHolder<?> player, String message) {
+    public void onInputReceived(Object playerId, String message) {
 
         if(paused.get()) {
             return;
@@ -74,6 +82,8 @@ public class SimpleGame implements QuizGame {
 
         GameRound current = rounds.peek();
         GameRoundContext context = current.getContext();
+
+        Player<?> player = findHolder(playerId);
 
         if(!context.getPlayerEligibility().isEligible(player)) {
             server.onNonEligiblePlayerGuessed(player);
@@ -94,16 +104,19 @@ public class SimpleGame implements QuizGame {
             if (!context.getEndingCondition().ends()) {
                 return;
             }
+
             paused.set(true);
-            updateScores(context);
+            waitingForNextRound = true;
+
+            Map<Player<?>, Double> standings = updateScores(context);
             round.onRoundStopped();
-            server.onRoundEnded(context.getReportCreator(), this);
+            server.onRoundEnded(context.getReportCreator(standings), this);
         }
     }
 
-    private void updateScores(GameRoundContext context) {
+    private Map<Player<?>, Double> updateScores(GameRoundContext context) {
         ScoreDistribution scoreDistribution = context.getScoreDistribution();
-        scoreDistribution.applyAll(players, this::updateScore);
+        return scoreDistribution.applyAll(players, this::updateScore);
     }
 
     private void updateScore(Player<?> player, double score) {
@@ -113,7 +126,7 @@ public class SimpleGame implements QuizGame {
         }
     }
 
-    private void transferRequestToRound(IDHolder<?> player, String message, GameRound current) {
+    private void transferRequestToRound(Player<?> player, String message, GameRound current) {
         if(message.isEmpty()) {
             current.onGiveUpReceived(player);
             server.onPlayerGaveUp(player);
@@ -144,7 +157,7 @@ public class SimpleGame implements QuizGame {
     @Override
     public void forceStop() {
         rounds.clear();
-        server.onGameOver();
+        server.onGameOver(this, sortPlayers());
     }
 
     @Override
@@ -158,5 +171,37 @@ public class SimpleGame implements QuizGame {
                 .stream()
                 .map(Player::getId)
                 .anyMatch(playerId -> playerId.equals(id));
+    }
+
+    @Override
+    public void removePlayer(Object playerId) {
+        Optional<? extends Player<?>> optPlayer = players
+                .stream()
+                .filter(player -> player.getId().equals(playerId))
+                .findAny();
+        optPlayer.ifPresent(players::remove);
+    }
+
+    private List<? extends Player<?>> sortPlayers() {
+        List<? extends Player<?>> players = new ArrayList<>(this.players);
+        Collections.sort(players);
+        return players;
+    }
+
+    private Player<?> findHolder(Object id) {
+        Supplier<IllegalArgumentException> error = () -> new IllegalArgumentException("No player with given ID found");
+        return players
+                .stream()
+                .filter(player -> player.getId().equals(id))
+                .findAny()
+                .orElseThrow(error);
+    }
+
+    protected Collection<? extends Player<?>> getPlayers() {
+        return players;
+    }
+
+    public boolean isWaitingForNextRound() {
+        return waitingForNextRound;
     }
 }

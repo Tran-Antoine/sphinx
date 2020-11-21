@@ -20,7 +20,7 @@ public class LobbyList {
     }
 
     public String registerLobby(TextChannel channel, Snowflake author) {
-        String id = "lobby" + nextId;
+        String id = "lobby" + nextId++;
         GameLobby lobby = new GameLobby(channel, id);
         lobby.registerAuthor(author);
         lobbies.add(lobby);

@@ -3,11 +3,12 @@ package net.starype.quiz.api.game;
 import net.starype.quiz.api.game.answer.Answer;
 import net.starype.quiz.api.game.event.EventHandler;
 import net.starype.quiz.api.game.player.IDHolder;
+import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.question.Question;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Optional;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 public class IndividualRound implements GameRound {
 
@@ -15,7 +16,7 @@ public class IndividualRound implements GameRound {
     private OneTryDistribution scoreDistribution;
     private Question pickedQuestion;
     private MaxGuessCounter maxGuessCounter;
-    private Collection<? extends IDHolder> players;
+    private Collection<? extends IDHolder<?>> players;
 
     public IndividualRound(double maxToAward, Question pickedQuestion) {
         this.maxToAward = maxToAward;
@@ -31,7 +32,7 @@ public class IndividualRound implements GameRound {
     }
 
     @Override
-    public PlayerGuessContext onGuessReceived(IDHolder source, String message) {
+    public PlayerGuessContext onGuessReceived(Player<?> source, String message) {
         Optional<Double> optAccuracy = pickedQuestion.evaluateAnswer(Answer.fromString(message));
         if(optAccuracy.isEmpty()) {
             return new PlayerGuessContext(source, 0, true);
@@ -59,12 +60,33 @@ public class IndividualRound implements GameRound {
 
     @Override
     public ScoreDistribution initScoreDistribution() {
-        return new OneTryDistribution(maxToAward);
+        return scoreDistribution;
     }
 
     @Override
-    public GameRoundReport initReport() {
-        return Collections::emptyList;
+    public GameRoundReport initReport(Map<Player<?>, Double> standings) {
+        return () -> createReport(standings);
+    }
+
+    private List<String> createReport(Map<Player<?>, Double> standings) {
+        List<String> report = new ArrayList<>();
+        List<Double> values = standings
+                .values()
+                .stream()
+                .distinct()
+                .sorted()
+                .collect(Collectors.toList());
+        for(double value : values) {
+            Set<String> playersMatchingValue = standings
+                    .entrySet()
+                    .stream()
+                    .filter(entry -> entry.getValue().equals(value))
+                    .map(Entry::getKey)
+                    .map(Player::getNickname)
+                    .collect(Collectors.toSet());
+            report.add(String.join(", ", playersMatchingValue) + " got " + value + " points");
+        }
+        return report;
     }
 
     @Override

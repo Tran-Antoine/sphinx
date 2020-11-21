@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
-public class JoinLobbyCommand implements DiscordCommand {
+public class JoinLobbyCommand implements QuizCommand {
 
     @Override
     public String getName() {

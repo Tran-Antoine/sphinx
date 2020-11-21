@@ -39,4 +39,9 @@ public class Score {
             this.correctAnsweredQuestions++;
         }
     }
+
+    @Override
+    public String toString() {
+        return String.valueOf(points);
+    }
 }

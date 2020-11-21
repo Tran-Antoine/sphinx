@@ -1,12 +1,10 @@
 package net.starpye.quiz.discordimpl.game;
 
 import discord4j.common.util.Snowflake;
-import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.channel.TextChannel;
 import net.starype.quiz.api.game.GameRound;
 
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
 
@@ -51,7 +49,7 @@ public class GameLobby {
     }
 
     public void start(GameList gameList) {
-        gameList.startNewGame(playersId, rounds, channel);
+        gameList.startNewGame(playersId, rounds, channel, authorId);
     }
 
     public boolean isAuthor(Snowflake playerId) {
