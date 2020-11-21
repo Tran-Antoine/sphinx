@@ -75,19 +75,19 @@ public class DiscordGameServer implements GameServer<DiscordQuizGame> {
     private void sendAsFile(String message) {
 
         TeXFormula teXFormula = new TeXFormula(message);
-        Image image = teXFormula.createBufferedImage(TeXFormula.SERIF, 20, Color.BLACK, Color.WHITE);
+        Image image = teXFormula.createBufferedImage(TeXFormula.SERIF, 200, Color.BLACK, Color.WHITE);
         BufferedImage bufferedImage = toBufferedImage(image);
         ByteArrayOutputStream os = new ByteArrayOutputStream();
 
         try {
-            ImageIO.write(bufferedImage, "jpeg", os);
+            ImageIO.write(bufferedImage, "png", os);
         } catch (IOException e) {
             return;
         }
 
         InputStream inputStream = new ByteArrayInputStream(os.toByteArray());
 
-        channel.createMessage(spec -> spec.addFile("image.txt", inputStream)).block();
+        channel.createMessage(spec -> spec.addFile("image.png", inputStream)).block();
     }
 
     private void sendAsText(String message) {

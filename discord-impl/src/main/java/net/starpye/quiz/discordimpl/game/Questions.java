@@ -16,14 +16,15 @@ public class Questions {
     private static class MockQuestion implements Question {
 
         private static final List<MockQuestion> MOCK_QUESTIONS = Arrays.asList(
-                new MockQuestion("True or False: Let T a linear transformation. T injective <-> T surjective", "true"),
-                new MockQuestion("True or False: There are as many elements in [0,1[ as in [0, 3[", "true"),
+                new MockQuestion("\\textbf{Question:} \\\\ \\text{True or False: Let T a linear transformation that can be represented as a matrix.}" +
+                        " \\\\ \\text{T injective} \\iff \\text{T surjective}", "true")
+                /*new MockQuestion("True or False: There are as many elements in [0,1[ as in [0, 3[", "true"),
                 new MockQuestion("True or False: Fields can be overridden in Java", "false"),
                 new MockQuestion("True or False: Let f: E -> F continuous. f is derivable", "false"),
                 new MockQuestion(
                         "True or False: The total mass of a sphere can be calculated by the following triple integral:\n" +
                         "Bounds: from 0 to R (d_r) from 0 to 2pi (d_theta) from 0 to 2pi (d_phi)\n" +
-                                "Content of integration: rho(r, theta, phi)", "false")
+                                "Content of integration: rho(r, theta, phi)", "false")*/
         );
 
         private String question;
