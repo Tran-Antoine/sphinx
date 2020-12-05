@@ -11,7 +11,7 @@ public class TimedRaceRound extends RaceRound {
 
     private TimeOutEnding timeOutEnding;
 
-    public TimedRaceRound(int maxGuessesPerPlayer, Question pickedQuestion, double pointsToAward,
+    public TimedRaceRound(Question pickedQuestion, int maxGuessesPerPlayer, double pointsToAward,
                           long time, TimeUnit unit) {
         super(maxGuessesPerPlayer, pickedQuestion, pointsToAward);
         this.timeOutEnding = new TimeOutEnding(time, unit);
@@ -67,7 +67,7 @@ public class TimedRaceRound extends RaceRound {
         }
 
         public TimedRaceRound build() {
-            return new TimedRaceRound(maxGuessesPerPlayer, pickedQuestion, pointsToAward, time, unit);
+            return new TimedRaceRound(pickedQuestion, maxGuessesPerPlayer, pointsToAward, time, unit);
         }
     }
 }

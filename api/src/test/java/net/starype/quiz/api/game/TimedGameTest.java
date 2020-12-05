@@ -14,7 +14,7 @@ public class TimedGameTest {
         MockServer server = new MockServer();
         QuizGame game = new SimpleGame(
                 new LinkedList<>(Collections.singletonList(
-                        new TimedRaceRound(1, new MockQuestion(), 1, 10, TimeUnit.SECONDS))),
+                        new TimedRaceRound(new MockQuestion(), 1, 1, 10, TimeUnit.SECONDS))),
                 Collections.singletonList(new MockPlayer()),
                 server);
         game.start();

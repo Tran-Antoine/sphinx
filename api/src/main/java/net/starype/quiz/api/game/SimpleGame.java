@@ -14,12 +14,12 @@ public class SimpleGame implements QuizGame {
 
     private Queue<? extends GameRound> rounds;
     private Collection<? extends Player<?>> players;
-    private GameServer server;
+    private GameServer<? super QuizGame> server;
     private final AtomicBoolean paused;
     private boolean waitingForNextRound;
     private EventHandler eventHandler = new GameEventHandler();
 
-    public SimpleGame(Queue<? extends GameRound> rounds, Collection<? extends Player<?>> players, GameServer server) {
+    public SimpleGame(Queue<? extends GameRound> rounds, Collection<? extends Player<?>> players, GameServer<? super QuizGame> server) {
         this.rounds = rounds;
         this.players = players;
         this.server = server;
@@ -137,7 +137,7 @@ public class SimpleGame implements QuizGame {
     }
 
     @Override
-    public void sendInputToServer(Consumer<GameServer> action) {
+    public void sendInputToServer(Consumer<GameServer<?>> action) {
         if(server == null) {
             return;
         }

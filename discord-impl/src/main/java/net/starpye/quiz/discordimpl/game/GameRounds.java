@@ -12,7 +12,7 @@ import java.util.Queue;
 public class GameRounds {
 
     public static final Queue<GameRound> DEFAULT_PRESET = new LinkedList<>(Arrays.asList(
-            new IndividualRound(1.0, Questions.pickRandom()),
+            new IndividualRound(Questions.pickRandom(), 1.0),
             new RaceRound(2, Questions.pickRandom(), 2.0),
             new ClassicalRound(Questions.pickRandom(), 3, 3)
     ));

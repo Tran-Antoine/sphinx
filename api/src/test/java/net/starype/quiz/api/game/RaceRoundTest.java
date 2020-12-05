@@ -4,6 +4,7 @@ package net.starype.quiz.api.game;
 import net.starype.quiz.api.game.answer.*;
 import net.starype.quiz.api.game.event.EventHandler;
 import net.starype.quiz.api.game.event.GameEventHandler;
+import net.starype.quiz.api.game.mock.MockPlayer;
 import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.player.IDHolder;
 import net.starype.quiz.api.game.question.Question;
@@ -21,9 +22,9 @@ public class RaceRoundTest {
     @Test
     public void round_ends_when_out_of_guesses() {
         EventHandler eventHandler = new GameEventHandler();
-        Set<IDHolder<UUID>> players = new HashSet<>();
-        players.add(new MockUUIDHolder());
-        players.add(new MockUUIDHolder());
+        Set<Player<UUID>> players = new HashSet<>();
+        players.add(new MockPlayer());
+        players.add(new MockPlayer());
 
         GameRound round = new RaceRound.Builder()
                 .withMaxGuessesPerPlayer(1)
@@ -33,7 +34,7 @@ public class RaceRoundTest {
         round.start(null, players, eventHandler);
         GameRoundContext context = round.getContext();
 
-        for(IDHolder<?> player : players) {
+        for(Player<?> player : players) {
             round.onGuessReceived(player, "INCORRECT ANSWER");
         }
 
@@ -43,7 +44,7 @@ public class RaceRoundTest {
     @Test
     public void round_ends_when_one_winner() {
         EventHandler eventHandler = new GameEventHandler();
-        IDHolder<UUID> player = new MockUUIDHolder();
+        MockPlayer player = new MockPlayer();
 
         GameRound round = new RaceRound.Builder()
                 .withMaxGuessesPerPlayer(3)

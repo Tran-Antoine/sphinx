@@ -3,13 +3,14 @@ package net.starype.quiz.api.game.mock;
 import net.starype.quiz.api.game.GameRoundReport;
 import net.starype.quiz.api.game.PlayerGuessContext;
 import net.starype.quiz.api.game.QuizGame;
+import net.starype.quiz.api.game.SimpleGame;
 import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.question.Question;
 import net.starype.quiz.api.server.GameServer;
 
 import java.util.List;
 
-public class MockServer implements GameServer {
+public class MockServer implements GameServer<QuizGame> {
 
     private boolean gameOver = false;
 

@@ -97,17 +97,17 @@ public class DiscordGameServer implements GameServer<DiscordQuizGame> {
     // https://stackoverflow.com/questions/13605248/java-converting-image-to-bufferedimage
     private BufferedImage toBufferedImage(Image image) {
         // Create a buffered image with transparency
-        BufferedImage bimage = new BufferedImage(
+        BufferedImage bufferedImage = new BufferedImage(
                 image.getWidth(null),
                 image.getHeight(null),
                 BufferedImage.TYPE_INT_ARGB);
 
         // Draw the image on to the buffered image
-        Graphics2D bGr = bimage.createGraphics();
+        Graphics2D bGr = bufferedImage.createGraphics();
         bGr.drawImage(image, 0, 0, null);
         bGr.dispose();
 
         // Return the buffered image
-        return bimage;
+        return bufferedImage;
     }
 }

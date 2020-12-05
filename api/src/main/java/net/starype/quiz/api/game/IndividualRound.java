@@ -18,7 +18,7 @@ public class IndividualRound implements GameRound {
     private MaxGuessCounter maxGuessCounter;
     private Collection<? extends IDHolder<?>> players;
 
-    public IndividualRound(double maxToAward, Question pickedQuestion) {
+    public IndividualRound(Question pickedQuestion, double maxToAward) {
         this.maxToAward = maxToAward;
         this.pickedQuestion = pickedQuestion;
     }

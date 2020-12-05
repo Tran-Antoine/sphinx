@@ -1,7 +1,10 @@
 group 'net.starype.quiz.api'
 
+apply plugin: 'scala'
+
 dependencies {
     compile project(':api')
     compile group: 'org.scilab.forge', name: 'jlatexmath', version: '1.0.7'
+    compile group: 'org.scala-lang', name: 'scala-parser-combinators', version: '2.11.0-M4'
     implementation "com.discord4j:discord4j-core:3.1.1"
 }
