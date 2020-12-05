@@ -5,6 +5,7 @@ import java.util.LinkedList;
 
 public class GameEventHandler implements EventHandler {
 
+    private long lastMillis;
     private Collection<Event> eventsList;
 
     public GameEventHandler() {
@@ -29,6 +30,11 @@ public class GameEventHandler implements EventHandler {
 
     @Override
     public void runAllEvents() {
-        eventsList.forEach(Event::run);
+        long currentTime = System.currentTimeMillis();
+        long deltaMillis = lastMillis == 0
+                ? 0
+                : currentTime - lastMillis;
+        this.lastMillis = currentTime;
+        eventsList.forEach((event -> event.update(deltaMillis)));
     }
 }

@@ -42,7 +42,7 @@ public class DiscordGameServer implements GameServer<DiscordQuizGame> {
     }
 
     @Override
-    public void onGameOver(DiscordQuizGame game, List<? extends Player<?>> playerStandings) {
+    public void onGameOver(List<? extends Player<?>> playerStandings, DiscordQuizGame game) {
         sendAsText("Game over!");
         endAction.accept(game);
     }

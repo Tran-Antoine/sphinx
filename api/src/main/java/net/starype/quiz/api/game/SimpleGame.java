@@ -1,5 +1,6 @@
 package net.starype.quiz.api.game;
 
+import net.starype.quiz.api.DefaultSimpleGame;
 import net.starype.quiz.api.game.event.EventHandler;
 import net.starype.quiz.api.game.event.GameEventHandler;
 import net.starype.quiz.api.game.player.Player;
@@ -11,6 +12,17 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+/**
+ * Main implementation of the logic of a {@link QuizGame}.
+ * <p>
+ * An instance of {@code SimpleGame} holds a queue of game rounds that will be played one after the other,
+ * as well as a mutable player list representing the players who participate in the game.
+ * <p>
+ * Since the class was designed to be extended by custom implementations, the {@link ServerGate} is not created
+ * internally, it must be provided either by the implementation, or externally via constructor parameter or the method
+ * {@link #setGate(ServerGate)}. For a completely 'finished' implementation, check out {@link DefaultSimpleGame}.
+ * @param <T> the type of QuizGame the server gate works with.
+ */
 public class SimpleGame<T extends QuizGame> implements QuizGame {
 
     private ServerGate<T> gate;
@@ -32,6 +44,10 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
         this.gate = gate;
     }
 
+    /**
+     * Set the server gate for the game object.
+     * @param gate the gate object that will allow interactions with the server
+     */
     public void setGate(ServerGate<T> gate) {
         this.gate = gate;
     }
@@ -66,7 +82,7 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
 
         rounds.poll();
         if(rounds.isEmpty()) {
-            gate.gameCallback((server, game) -> server.onGameOver(game, sortPlayers()));
+            gate.gameCallback((server, game) -> server.onGameOver(sortPlayers(), game));
             return false;
         }
 
@@ -167,11 +183,14 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
     @Override
     public void forceStop() {
         rounds.clear();
-        gate.gameCallback((server, game) -> server.onGameOver(game, sortPlayers()));
+        gate.gameCallback((server, game) -> server.onGameOver(sortPlayers(), game));
     }
 
     @Override
     public void update() {
+        if(paused.get()) {
+            return;
+        }
         eventHandler.runAllEvents();
     }
 

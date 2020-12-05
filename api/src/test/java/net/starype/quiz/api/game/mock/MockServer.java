@@ -3,7 +3,6 @@ package net.starype.quiz.api.game.mock;
 import net.starype.quiz.api.game.GameRoundReport;
 import net.starype.quiz.api.game.PlayerGuessContext;
 import net.starype.quiz.api.game.QuizGame;
-import net.starype.quiz.api.game.SimpleGame;
 import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.question.Question;
 import net.starype.quiz.api.server.GameServer;
@@ -23,7 +22,7 @@ public class MockServer implements GameServer<QuizGame> {
     }
 
     @Override
-    public void onGameOver(QuizGame game, List<? extends Player<?>> standings) {
+    public void onGameOver(List<? extends Player<?>> standings, QuizGame game) {
         System.out.println("All rounds have been played. Game successfully stopped");
         gameOver = true;
     }
