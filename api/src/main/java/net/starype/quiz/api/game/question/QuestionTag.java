@@ -9,7 +9,7 @@ public class QuestionTag {
     
     private String formatTag(String rawTag) {
         return rawTag
-                .strip()
+                //.strip()
                 .replaceAll(" ", "-")
                 .replaceAll("[^a-zA-Z0-9 -]", "");
     }
