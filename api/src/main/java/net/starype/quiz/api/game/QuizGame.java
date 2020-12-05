@@ -6,6 +6,7 @@ import net.starype.quiz.api.server.GameServer;
 import java.util.function.Consumer;
 
 public interface QuizGame {
+
     void start();
     void pause();
     void resume();

@@ -4,31 +4,41 @@ import net.starype.quiz.api.game.event.EventHandler;
 import net.starype.quiz.api.game.event.GameEventHandler;
 import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.server.GameServer;
+import net.starype.quiz.api.server.ServerGate;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class SimpleGame implements QuizGame {
+public class SimpleGame<T extends QuizGame> implements QuizGame {
 
+    private ServerGate<T> gate;
     private Queue<? extends GameRound> rounds;
     private Collection<? extends Player<?>> players;
-    private GameServer<? super QuizGame> server;
     private final AtomicBoolean paused;
     private boolean waitingForNextRound;
     private EventHandler eventHandler = new GameEventHandler();
 
-    public SimpleGame(Queue<? extends GameRound> rounds, Collection<? extends Player<?>> players, GameServer<? super QuizGame> server) {
+    public SimpleGame(Queue<? extends GameRound> rounds, Collection<? extends Player<?>> players) {
+        this(rounds, players, null);
+    }
+
+    public SimpleGame(Queue<? extends GameRound> rounds, Collection<? extends Player<?>> players, ServerGate<T> gate) {
         this.rounds = rounds;
         this.players = players;
-        this.server = server;
         this.paused = new AtomicBoolean(true);
         this.waitingForNextRound = false;
+        this.gate = gate;
+    }
+
+    public void setGate(ServerGate<T> gate) {
+        this.gate = gate;
     }
 
     @Override
     public void start() {
+        Objects.requireNonNull(gate, "You must initialize the gate with the server before starting the game");
         paused.set(false);
         if(rounds.isEmpty()) {
             throw new IllegalStateException("Cannot start a game that has less than one round");
@@ -56,7 +66,7 @@ public class SimpleGame implements QuizGame {
 
         rounds.poll();
         if(rounds.isEmpty()) {
-            server.onGameOver(this, sortPlayers());
+            gate.gameCallback((server, game) -> server.onGameOver(game, sortPlayers()));
             return false;
         }
 
@@ -86,7 +96,7 @@ public class SimpleGame implements QuizGame {
         Player<?> player = findHolder(playerId);
 
         if(!context.getPlayerEligibility().isEligible(player)) {
-            server.onNonEligiblePlayerGuessed(player);
+            gate.callback(server -> server.onNonEligiblePlayerGuessed(player));
             return;
         }
         transferRequestToRound(player, message, current);
@@ -110,7 +120,7 @@ public class SimpleGame implements QuizGame {
 
             Map<Player<?>, Double> standings = updateScores(context);
             round.onRoundStopped();
-            server.onRoundEnded(context.getReportCreator(standings), this);
+            gate.gameCallback((server, game) -> server.onRoundEnded(context.getReportCreator(standings), game));
         }
     }
 
@@ -122,26 +132,26 @@ public class SimpleGame implements QuizGame {
     private void updateScore(Player<?> player, double score) {
         player.getScore().incrementScore(score);
         if (Math.abs(score) > 0.001) {
-            server.onPlayerScoreUpdated(player);
+            gate.callback(server -> server.onPlayerScoreUpdated(player));
         }
     }
 
     private void transferRequestToRound(Player<?> player, String message, GameRound current) {
         if(message.isEmpty()) {
             current.onGiveUpReceived(player);
-            server.onPlayerGaveUp(player);
+            gate.callback(server -> server.onPlayerGaveUp(player));
             return;
         }
         PlayerGuessContext context = current.onGuessReceived(player, message);
-        server.onPlayerGuessed(context);
+        gate.callback(server -> server.onPlayerGuessed(context));
     }
 
     @Override
     public void sendInputToServer(Consumer<GameServer<?>> action) {
-        if(server == null) {
+        if(gate == null) {
             return;
         }
-        action.accept(server);
+        gate.callback(action);
     }
 
     @Override
@@ -157,7 +167,7 @@ public class SimpleGame implements QuizGame {
     @Override
     public void forceStop() {
         rounds.clear();
-        server.onGameOver(this, sortPlayers());
+        gate.gameCallback((server, game) -> server.onGameOver(game, sortPlayers()));
     }
 
     @Override

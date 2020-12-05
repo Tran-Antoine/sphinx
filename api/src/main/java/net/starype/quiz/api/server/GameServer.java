@@ -17,4 +17,8 @@ public interface GameServer<T extends QuizGame> {
     void onPlayerGaveUp(Player<?> player);
     void onPlayerScoreUpdated(Player<?> player);
     void onQuestionReleased(Question question);
+
+    default ServerGate<T> createGate() {
+        return new ServerGate<>(this);
+    }
 }

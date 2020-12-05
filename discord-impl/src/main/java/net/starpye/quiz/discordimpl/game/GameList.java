@@ -7,6 +7,7 @@ import discord4j.core.object.entity.channel.TextChannel;
 import net.starpye.quiz.discordimpl.user.DiscordPlayer;
 import net.starype.quiz.api.game.GameRound;
 import net.starype.quiz.api.server.GameServer;
+import net.starype.quiz.api.server.ServerGate;
 
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -29,7 +30,8 @@ public class GameList {
                 .map(id -> asPlayer(channel.getGuild().block(), id))
                 .collect(Collectors.toSet());
         GameServer<DiscordQuizGame> server = new DiscordGameServer(channel, this::stopGame);
-        DiscordQuizGame game = new DiscordQuizGame(rounds, gamePlayers, server, authorId);
+        ServerGate<DiscordQuizGame> gate = server.createGate();
+        DiscordQuizGame game = new DiscordQuizGame(rounds, gamePlayers, gate, authorId);
         ScheduledExecutorService task = Executors.newScheduledThreadPool(1);
         ScheduledFuture<?> future = task.scheduleAtFixedRate(game::update, 0, 250, TimeUnit.MILLISECONDS);
         game.start();
