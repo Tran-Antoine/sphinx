@@ -1,11 +1,11 @@
 package net.starype.quiz.api.game.answer;
 
-public class WordAnswer implements CorrectAnswer {
+public class WordAnswerEvaluator implements AnswerEvaluator {
 
     private ValidityEvaluator validityEvaluator;
     private CorrectnessEvaluator correctnessEvaluator;
 
-    public WordAnswer(WordCorrectness wordCorrectness) {
+    public WordAnswerEvaluator(WordCorrectness wordCorrectness) {
         validityEvaluator = WordValidityEvaluator.getInstance();
         correctnessEvaluator = wordCorrectness;
     }
@@ -18,5 +18,10 @@ public class WordAnswer implements CorrectAnswer {
     @Override
     public CorrectnessEvaluator getCorrectnessEvaluator() {
         return correctnessEvaluator;
+    }
+
+    @Override
+    public AnswerProcessor getProcessor() {
+        return new CleanStringProcessor();
     }
 }

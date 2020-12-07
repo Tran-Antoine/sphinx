@@ -12,8 +12,8 @@ public class DoubleAnswerFactory implements RangedAnswerFactory {
     }
 
     @Override
-    public CorrectAnswer createCorrectAnswer(Set<Answer> answers, AnswerProcessor answerProcessor) {
-        return new DoubleAnswer(new NumberCorrectness(processList(answers, answerProcessor), range, lossFunction));
+    public AnswerEvaluator createCorrectAnswer(Set<Answer> answers, AnswerProcessor answerProcessor) {
+        return new DoubleAnswerEvaluator(new NumberCorrectness(processList(answers, answerProcessor), range, lossFunction));
     }
 
     @Override

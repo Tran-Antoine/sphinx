@@ -4,7 +4,6 @@ package net.starype.quiz.api.game;
 import net.starype.quiz.api.game.answer.*;
 import net.starype.quiz.api.game.event.EventHandler;
 import net.starype.quiz.api.game.event.GameEventHandler;
-import net.starype.quiz.api.game.mock.MockPlayer;
 import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.player.IDHolder;
 import net.starype.quiz.api.game.question.Question;
@@ -116,10 +115,10 @@ public class RaceRoundTest {
 
     private static class MockQuestion implements Question {
 
-        private CorrectAnswer correctAnswer;
+        private AnswerEvaluator answerEvaluator;
 
-        public MockQuestion(CorrectAnswer correctAnswer) {
-            this.correctAnswer = correctAnswer;
+        public MockQuestion(AnswerEvaluator answerEvaluator) {
+            this.answerEvaluator = answerEvaluator;
         }
 
         @Override
@@ -145,10 +144,10 @@ public class RaceRoundTest {
 
         @Override
         public Optional<Double> evaluateAnswer(Answer answer) {
-            if(!correctAnswer.getValidityEvaluator()
+            if(!answerEvaluator.getValidityEvaluator()
                     .isValid(answer))
                 return Optional.empty();
-            return Optional.of(correctAnswer.getCorrectnessEvaluator()
+            return Optional.of(answerEvaluator.getCorrectnessEvaluator()
                     .getCorrectness(answer));
         }
     }

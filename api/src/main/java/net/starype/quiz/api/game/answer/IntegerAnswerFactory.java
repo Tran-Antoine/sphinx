@@ -12,8 +12,8 @@ public class IntegerAnswerFactory implements RangedAnswerFactory {
     }
 
     @Override
-    public CorrectAnswer createCorrectAnswer(Set<Answer> answers, AnswerProcessor answerProcessor) {
-        return new IntegerAnswer(new NumberCorrectness(processList(answers, answerProcessor), range, lossFunction));
+    public AnswerEvaluator createCorrectAnswer(Set<Answer> answers, AnswerProcessor answerProcessor) {
+        return new IntegerAnswerEvaluator(new NumberCorrectness(processList(answers, answerProcessor), range, lossFunction));
     }
 
     @Override

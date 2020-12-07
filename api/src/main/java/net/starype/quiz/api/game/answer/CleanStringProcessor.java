@@ -4,7 +4,7 @@ public class CleanStringProcessor implements AnswerProcessor {
     @Override
     public Answer process(Answer answer) {
         String outputAnswer = answer.getAnswerText()
-                //.strip()
+                .strip()
                 .replaceAll("\\s+", " ");
         return Answer.fromString(outputAnswer);
     }
