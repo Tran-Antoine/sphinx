@@ -6,9 +6,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class WinnerExists implements RoundEndingPredicate {
 
-    private AtomicReference<? extends IDHolder> container;
+    private AtomicReference<? extends IDHolder<?>> container;
 
-    public WinnerExists(AtomicReference<? extends IDHolder> container) {
+    public WinnerExists(AtomicReference<? extends IDHolder<?>> container) {
         this.container = container;
     }
 

@@ -21,7 +21,7 @@ public class LeaderboardDistribution implements ScoreDistribution {
     }
 
 
-    public void scoreUpdate(IDHolder player, double score) {
+    public void scoreUpdate(IDHolder<?> player, double score) {
         Optional<LeaderboardPosition> seat = getCurrent(player);
         if(seat.isEmpty()) {
             insertNewPlayer(new LeaderboardPosition(player, score));
@@ -48,7 +48,7 @@ public class LeaderboardDistribution implements ScoreDistribution {
         leaderboard.add(playerPosition);
     }
 
-    private Optional<LeaderboardPosition> getCurrent(IDHolder player) {
+    private Optional<LeaderboardPosition> getCurrent(IDHolder<?> player) {
         return leaderboard
                 .stream()
                 .filter((seat) -> seat.player.equals(player))
@@ -76,15 +76,15 @@ public class LeaderboardDistribution implements ScoreDistribution {
 
     public static class LeaderboardPosition {
 
-        private final IDHolder player;
+        private final IDHolder<?> player;
         private final double score;
 
-        private LeaderboardPosition(IDHolder player, double score) {
+        private LeaderboardPosition(IDHolder<?> player, double score) {
             this.player = player;
             this.score = score;
         }
 
-        public IDHolder getPlayer() {
+        public IDHolder<?> getPlayer() {
             return player;
         }
 

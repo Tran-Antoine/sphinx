@@ -7,9 +7,9 @@ import java.util.Collection;
 public class NoGuessLeft implements RoundEndingPredicate {
 
     private MaxGuessCounter counter;
-    private Collection<? extends IDHolder> players;
+    private Collection<? extends IDHolder<?>> players;
 
-    public NoGuessLeft(MaxGuessCounter counter, Collection<? extends IDHolder> players) {
+    public NoGuessLeft(MaxGuessCounter counter, Collection<? extends IDHolder<?>> players) {
         this.counter = counter;
         this.players = players;
     }

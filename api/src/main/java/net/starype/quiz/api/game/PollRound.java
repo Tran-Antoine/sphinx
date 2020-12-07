@@ -20,9 +20,9 @@ public class PollRound implements GameRound {
 
     private Question question;
     private final int maxGuesses;
-    private Map<IDHolder, Answer> definitiveAnswers;
+    private Map<IDHolder<?>, Answer> definitiveAnswers;
     private MaxGuessCounter counter;
-    private Collection<? extends IDHolder> players;
+    private Collection<? extends IDHolder<?>> players;
 
     public PollRound(Question question, int maxGuesses) {
         this.question = question;

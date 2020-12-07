@@ -6,8 +6,8 @@ import java.util.Collection;
 
 public interface EntityEligibility {
 
-    boolean isEligible(IDHolder player);
-    default boolean existsEligible(Collection<? extends IDHolder> players) {
+    boolean isEligible(IDHolder<?> player);
+    default boolean existsEligible(Collection<? extends IDHolder<?>> players) {
         return players.stream().anyMatch(this::isEligible);
     }
 

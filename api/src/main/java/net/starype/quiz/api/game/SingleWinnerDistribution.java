@@ -7,14 +7,14 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class SingleWinnerDistribution implements ScoreDistribution {
 
-    private AtomicReference<? extends IDHolder> container;
+    private AtomicReference<? extends IDHolder<?>> container;
     private double scoreForWinner;
 
-    public SingleWinnerDistribution(AtomicReference<? extends IDHolder> container) {
+    public SingleWinnerDistribution(AtomicReference<? extends IDHolder<?>> container) {
         this(container, 1.0);
     }
 
-    public SingleWinnerDistribution(AtomicReference<? extends IDHolder> container, double scoreForWinner) {
+    public SingleWinnerDistribution(AtomicReference<? extends IDHolder<?>> container, double scoreForWinner) {
         this.container = container;
         this.scoreForWinner = scoreForWinner;
     }

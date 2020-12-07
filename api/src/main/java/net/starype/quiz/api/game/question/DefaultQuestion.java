@@ -65,7 +65,7 @@ public class DefaultQuestion implements Question {
     }
 
     @Override
-    public Object getId() {
+    public UUID getId() {
         return id;
     }
 
