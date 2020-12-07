@@ -14,6 +14,10 @@ public class MathUtilsTest {
         Assert.assertEquals(expected, MathUtils.clamp(value, min, max), 0.001);
     }
 
+    private void testLerp(double value, double inMin, double inMax, double outMin, double outMax, double expected) {
+        Assert.assertEquals(expected, MathUtils.lerp(value, inMin, inMax, outMin, outMax), 0.001);
+    }
+
     @Test
     public void clamp_integer() {
         testIntegerClamp(5, 1, 3, 3);
@@ -30,6 +34,13 @@ public class MathUtilsTest {
         testDoubleClamp(3.0, -91.0, 3.0, 3.0);
         testDoubleClamp(-3.0, -91.0, 3.0, -3.0);
         testDoubleClamp(-13.0, -9.0, 3.0, -9.0);
+    }
+
+    @Test
+    public void lerp_double() {
+        testLerp(0.0, 0.0, 1.0, 0.0, 1.0, 0.0);
+        testLerp(0.0, -1.0, 1.0, 0.0, 2.0, 1.0);
+        testLerp(5.0, 0.0, 1.0, -1.0, 0.0, 4.0);
     }
 
 }
