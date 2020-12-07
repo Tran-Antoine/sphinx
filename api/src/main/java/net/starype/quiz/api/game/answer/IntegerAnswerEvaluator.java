@@ -14,11 +14,6 @@ public class IntegerAnswerEvaluator implements AnswerEvaluator {
     }
 
     @Override
-    public AnswerProcessor getProcessor() {
-        return new CleanStringProcessor();
-    }
-
-    @Override
     public CorrectnessEvaluator getCorrectnessEvaluator() {
         return correctnessEvaluator;
     }

@@ -19,9 +19,4 @@ public class WordAnswerEvaluator implements AnswerEvaluator {
     public CorrectnessEvaluator getCorrectnessEvaluator() {
         return correctnessEvaluator;
     }
-
-    @Override
-    public AnswerProcessor getProcessor() {
-        return new CleanStringProcessor();
-    }
 }

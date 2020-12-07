@@ -14,11 +14,6 @@ public class DoubleAnswerEvaluator implements AnswerEvaluator {
     }
 
     @Override
-    public AnswerProcessor getProcessor() {
-        return new CleanStringProcessor();
-    }
-
-    @Override
     public CorrectnessEvaluator getCorrectnessEvaluator() {
         return correctnessEvaluator;
     }

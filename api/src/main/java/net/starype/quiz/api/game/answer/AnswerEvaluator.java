@@ -4,6 +4,8 @@ public interface AnswerEvaluator {
 
     CorrectnessEvaluator getCorrectnessEvaluator();
     ValidityEvaluator getValidityEvaluator();
-    AnswerProcessor getProcessor();
+    default AnswerProcessor getProcessor() {
+        return new CleanStringProcessor();
+    }
 
 }
