@@ -13,10 +13,10 @@ public class TimeOutEnding implements RoundEndingPredicate, Event {
     private long time;
     private TimeUnit unit;
     private Instant startingInstant;
+    private Instant currentInstant;
 
     private boolean isEnded;
     private Runnable callBack;
-    private ScheduledExecutorService task;
     private EventHandler eventHandler;
 
     public TimeOutEnding(long time, TimeUnit unit) {
@@ -28,6 +28,7 @@ public class TimeOutEnding implements RoundEndingPredicate, Event {
         this.eventHandler = eventHandler;
         eventHandler.registerEvent(this);
         this.startingInstant = Instant.now();
+        this.currentInstant = Instant.now();
         this.callBack = checkEndingCallback;
     }
 
@@ -37,9 +38,11 @@ public class TimeOutEnding implements RoundEndingPredicate, Event {
     }
 
     @Override
-    public void run() {
-        if(Duration.between(startingInstant, Instant.now()).toMillis() >
-                unit.toMillis(time)) {
+    public void update(long deltaMillis) {
+
+        currentInstant = currentInstant.plusMillis(deltaMillis);
+
+        if(Duration.between(startingInstant, currentInstant).toMillis() > unit.toMillis(time)) {
             this.isEnded = true;
             callBack.run();
             shutDown();

@@ -1,14 +1,14 @@
 package net.starype.quiz.api.game.mock;
 
-import net.starype.quiz.api.game.player.UUIDHolder;
+import net.starype.quiz.api.game.player.IDHolder;
 
 import java.util.UUID;
 
-public class MockUUIDHolder implements UUIDHolder {
+public class MockUUIDHolder implements IDHolder {
     private UUID id = UUID.randomUUID();
 
     @Override
-    public UUID getUUID() {
+    public UUID getId() {
         return id;
     }
 }

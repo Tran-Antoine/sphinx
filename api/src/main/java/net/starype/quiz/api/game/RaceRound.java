@@ -2,21 +2,18 @@ package net.starype.quiz.api.game;
 
 import net.starype.quiz.api.game.answer.Answer;
 import net.starype.quiz.api.game.event.EventHandler;
-import net.starype.quiz.api.game.player.UUIDHolder;
+import net.starype.quiz.api.game.player.IDHolder;
+import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.question.Question;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class RaceRound implements GameRound {
 
     private Question pickedQuestion;
-    private AtomicReference<UUIDHolder> winnerContainer;
-    private Collection<? extends UUIDHolder> players;
-    private QuizGame game;
+    private AtomicReference<IDHolder<?>> winnerContainer;
+    private Collection<? extends IDHolder<?>> players;
     private GameRoundContext context;
     private double pointsToAward;
 
@@ -29,15 +26,17 @@ public class RaceRound implements GameRound {
     }
 
     @Override
-    public void start(QuizGame game, Collection<? extends UUIDHolder> players, EventHandler eventHandler) {
+    public void start(QuizGame game, Collection<? extends IDHolder<?>> players, EventHandler eventHandler) {
         this.winnerContainer = new AtomicReference<>();
         this.players = players;
         this.context = new GameRoundContext(this);
-        this.game = game;
+        if(game != null) {
+            game.sendInputToServer((server) -> server.onQuestionReleased(pickedQuestion));
+        }
     }
 
     @Override
-    public void onGuessReceived(UUIDHolder source, String message) {
+    public PlayerGuessContext onGuessReceived(Player<?> source, String message) {
 
         // eligibility checks are performed in the game class
         Optional<Double> correctness = pickedQuestion.evaluateAnswer(Answer.fromString(message));
@@ -49,14 +48,11 @@ public class RaceRound implements GameRound {
             winnerContainer.set(source);
         }
 
-        PlayerGuessContext context = new PlayerGuessContext(source, binaryCorrectness ? 1.0 : 0.0, counter.isEligible(source));
-        if(game != null) {
-            game.sendInputToServer((server) -> server.onPlayerGuessed(context));
-        }
+        return new PlayerGuessContext(source, binaryCorrectness ? 1.0 : 0.0, counter.isEligible(source));
     }
 
     @Override
-    public void onGiveUpReceived(UUIDHolder source) {
+    public void onGiveUpReceived(IDHolder<?> source) {
         counter.consumeAllGuesses(source);
     }
 
@@ -78,7 +74,7 @@ public class RaceRound implements GameRound {
     }
 
     @Override
-    public GameRoundReport initReport() {
+    public GameRoundReport initReport(Map<Player<?>, Double> standings) {
         return winnerContainer.get() == null
                 ? winnerlessReport()
                 : winnerReport();
@@ -86,7 +82,7 @@ public class RaceRound implements GameRound {
 
     private GameRoundReport winnerReport() {
         return () -> Arrays.asList(
-                winnerContainer.get().getUUID().toString(),
+                winnerContainer.get().getId().toString(),
                 Double.toString(pointsToAward));
     }
 

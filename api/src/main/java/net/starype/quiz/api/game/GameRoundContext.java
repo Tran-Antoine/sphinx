@@ -1,5 +1,9 @@
 package net.starype.quiz.api.game;
 
+import net.starype.quiz.api.game.player.Player;
+
+import java.util.Map;
+
 public class GameRoundContext {
 
     private EntityEligibility playerEligibility;
@@ -22,7 +26,14 @@ public class GameRoundContext {
 
     public GameRoundReport getReportCreator() {
         if(reportCreator == null) {
-            reportCreator = round.initReport();
+            throw new IllegalStateException("Can't retrieve the report after it has been initialized with the standings");
+        }
+        return reportCreator;
+    }
+
+    public GameRoundReport getReportCreator(Map<Player<?>, Double> standings) {
+        if (reportCreator == null) {
+            this.reportCreator = round.initReport(standings);
         }
         return reportCreator;
     }

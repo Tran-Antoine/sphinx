@@ -1,33 +1,60 @@
 package net.starype.quiz.api.game;
 
+import net.starype.quiz.api.DefaultSimpleGame;
 import net.starype.quiz.api.game.event.EventHandler;
 import net.starype.quiz.api.game.event.GameEventHandler;
 import net.starype.quiz.api.game.player.Player;
-import net.starype.quiz.api.game.player.UUIDHolder;
 import net.starype.quiz.api.server.GameServer;
+import net.starype.quiz.api.server.ServerGate;
 
-import java.util.Collection;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
-public class SimpleGame implements QuizGame {
+/**
+ * Main implementation of the logic of a {@link QuizGame}.
+ * <p>
+ * An instance of {@code SimpleGame} holds a queue of game rounds that will be played one after the other,
+ * as well as a mutable player list representing the players who participate in the game.
+ * <p>
+ * Since the class was designed to be extended by custom implementations, the {@link ServerGate} is not created
+ * internally, it must be provided either by the implementation, or externally via constructor parameter or the method
+ * {@link #setGate(ServerGate)}. For a completely 'finished' implementation, check out {@link DefaultSimpleGame}.
+ * @param <T> the type of QuizGame the server gate works with.
+ */
+public class SimpleGame<T extends QuizGame> implements QuizGame {
 
+    private ServerGate<T> gate;
     private Queue<? extends GameRound> rounds;
-    private Collection<? extends Player> players;
-    private GameServer server;
+    private Collection<? extends Player<?>> players;
     private final AtomicBoolean paused;
+    private boolean waitingForNextRound;
     private EventHandler eventHandler = new GameEventHandler();
 
-    public SimpleGame(Queue<? extends GameRound> rounds, Collection<? extends Player> players, GameServer server) {
+    public SimpleGame(Queue<? extends GameRound> rounds, Collection<? extends Player<?>> players) {
+        this(rounds, players, null);
+    }
+
+    public SimpleGame(Queue<? extends GameRound> rounds, Collection<? extends Player<?>> players, ServerGate<T> gate) {
         this.rounds = rounds;
         this.players = players;
-        this.server = server;
         this.paused = new AtomicBoolean(true);
+        this.waitingForNextRound = false;
+        this.gate = gate;
+    }
+
+    /**
+     * Set the server gate for the game object.
+     * @param gate the gate object that will allow interactions with the server
+     */
+    public void setGate(ServerGate<T> gate) {
+        this.gate = gate;
     }
 
     @Override
     public void start() {
+        Objects.requireNonNull(gate, "You must initialize the gate with the server before starting the game");
         paused.set(false);
         if(rounds.isEmpty()) {
             throw new IllegalStateException("Cannot start a game that has less than one round");
@@ -47,22 +74,30 @@ public class SimpleGame implements QuizGame {
     }
 
     @Override
-    public void nextRound() {
+    public boolean nextRound() {
+
+        if(!waitingForNextRound) {
+            return false;
+        }
+
         rounds.poll();
         if(rounds.isEmpty()) {
-            server.onGameOver();
-            return;
+            gate.gameCallback((server, game) -> server.onGameOver(sortPlayers(), game));
+            return false;
         }
+
         paused.set(false);
         startHead();
+        return true;
     }
 
     private void startHead() {
-        rounds.element().start(this, players, eventHandler);
+        GameRound round = rounds.element();
+        round.start(this, players, eventHandler);
     }
 
     @Override
-    public void onInputReceived(UUIDHolder player, String message) {
+    public void onInputReceived(Object playerId, String message) {
 
         if(paused.get()) {
             return;
@@ -74,8 +109,10 @@ public class SimpleGame implements QuizGame {
         GameRound current = rounds.peek();
         GameRoundContext context = current.getContext();
 
+        Player<?> player = findHolder(playerId);
+
         if(!context.getPlayerEligibility().isEligible(player)) {
-            server.onNonEligiblePlayerGuessed(player);
+            gate.callback(server -> server.onNonEligiblePlayerGuessed(player));
             return;
         }
         transferRequestToRound(player, message, current);
@@ -93,40 +130,44 @@ public class SimpleGame implements QuizGame {
             if (!context.getEndingCondition().ends()) {
                 return;
             }
+
             paused.set(true);
-            updateScores(context);
+            waitingForNextRound = true;
+
+            Map<Player<?>, Double> standings = updateScores(context);
             round.onRoundStopped();
-            server.onRoundEnded(context.getReportCreator(), this);
+            gate.gameCallback((server, game) -> server.onRoundEnded(context.getReportCreator(standings), game));
         }
     }
 
-    private void updateScores(GameRoundContext context) {
+    private Map<Player<?>, Double> updateScores(GameRoundContext context) {
         ScoreDistribution scoreDistribution = context.getScoreDistribution();
-        scoreDistribution.applyAll(players, this::updateScore);
+        return scoreDistribution.applyAll(players, this::updateScore);
     }
 
-    private void updateScore(Player player, double score) {
+    private void updateScore(Player<?> player, double score) {
         player.getScore().incrementScore(score);
         if (Math.abs(score) > 0.001) {
-            server.onPlayerScoreUpdated(player);
+            gate.callback(server -> server.onPlayerScoreUpdated(player));
         }
     }
 
-    private void transferRequestToRound(UUIDHolder player, String message, GameRound current) {
+    private void transferRequestToRound(Player<?> player, String message, GameRound current) {
         if(message.isEmpty()) {
             current.onGiveUpReceived(player);
-            server.onPlayerGaveUp(player);
+            gate.callback(server -> server.onPlayerGaveUp(player));
             return;
         }
-        current.onGuessReceived(player, message);
+        PlayerGuessContext context = current.onGuessReceived(player, message);
+        gate.callback(server -> server.onPlayerGuessed(context));
     }
 
     @Override
-    public void sendInputToServer(Consumer<GameServer> action) {
-        if(server == null) {
+    public void sendInputToServer(Consumer<GameServer<?>> action) {
+        if(gate == null) {
             return;
         }
-        action.accept(server);
+        gate.callback(action);
     }
 
     @Override
@@ -142,11 +183,54 @@ public class SimpleGame implements QuizGame {
     @Override
     public void forceStop() {
         rounds.clear();
-        server.onGameOver();
+        gate.gameCallback((server, game) -> server.onGameOver(sortPlayers(), game));
     }
 
     @Override
     public void update() {
+        if(paused.get()) {
+            return;
+        }
         eventHandler.runAllEvents();
+    }
+
+    @Override
+    public boolean containsPlayerId(Object id) {
+        return players
+                .stream()
+                .map(Player::getId)
+                .anyMatch(playerId -> playerId.equals(id));
+    }
+
+    @Override
+    public void removePlayer(Object playerId) {
+        Optional<? extends Player<?>> optPlayer = players
+                .stream()
+                .filter(player -> player.getId().equals(playerId))
+                .findAny();
+        optPlayer.ifPresent(players::remove);
+    }
+
+    private List<? extends Player<?>> sortPlayers() {
+        List<? extends Player<?>> players = new ArrayList<>(this.players);
+        Collections.sort(players);
+        return players;
+    }
+
+    private Player<?> findHolder(Object id) {
+        Supplier<IllegalArgumentException> error = () -> new IllegalArgumentException("No player with given ID found");
+        return players
+                .stream()
+                .filter(player -> player.getId().equals(id))
+                .findAny()
+                .orElseThrow(error);
+    }
+
+    protected Collection<? extends Player<?>> getPlayers() {
+        return players;
+    }
+
+    public boolean isWaitingForNextRound() {
+        return waitingForNextRound;
     }
 }

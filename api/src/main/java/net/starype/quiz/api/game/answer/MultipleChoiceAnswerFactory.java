@@ -7,7 +7,7 @@ public class MultipleChoiceAnswerFactory implements CorrectAnswerFactory {
     private double punitiveRatio = 1.0;
 
     @Override
-    public CorrectAnswer createCorrectAnswer(Set<Answer> answers, AnswerProcessor answerProcessor) {
+    public AnswerEvaluator createCorrectAnswer(Set<Answer> answers, AnswerProcessor answerProcessor) {
         MultipleChoiceCorrectness multipleChoiceCorrectness
                 = new MultipleChoiceCorrectness(answers, lossFunction, punitiveRatio);
         return new MultipleChoiceAnswer(multipleChoiceCorrectness);

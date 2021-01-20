@@ -1,12 +1,13 @@
 package net.starype.quiz.api.game.question;
 
 import net.starype.quiz.api.game.answer.Answer;
-import net.starype.quiz.api.game.player.UUIDHolder;
+import net.starype.quiz.api.game.player.IDHolder;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
-public interface Question extends UUIDHolder {
+public interface Question extends IDHolder<UUID> {
 
     Set<QuestionTag> getTags();
 

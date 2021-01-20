@@ -1,25 +1,21 @@
 package net.starype.quiz.api.game;
 
-import net.starype.quiz.api.FixedLeaderboardEnding;
-import net.starype.quiz.api.game.LeaderboardDistribution.LeaderboardPosition;
 import net.starype.quiz.api.game.answer.Answer;
 import net.starype.quiz.api.game.event.EventHandler;
-import net.starype.quiz.api.game.player.UUIDHolder;
+import net.starype.quiz.api.game.player.IDHolder;
+import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.question.Question;
+import net.starype.quiz.api.util.SortUtils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class ClassicalRound implements GameRound {
 
     private Question pickedQuestion;
-    private Collection<? extends UUIDHolder> players;
+    private Collection<? extends IDHolder<?>> players;
     private MaxGuessCounter counter;
     private double maxAwarded;
     private LeaderboardDistribution leaderboard;
-    private QuizGame game;
 
     public ClassicalRound(Question pickedQuestion, int maxGuesses, double maxAwarded) {
         this.pickedQuestion = pickedQuestion;
@@ -28,18 +24,18 @@ public class ClassicalRound implements GameRound {
     }
 
     @Override
-    public void start(QuizGame game, Collection<? extends UUIDHolder> players, EventHandler eventHandler) {
-        this.game = game;
+    public void start(QuizGame game, Collection<? extends IDHolder<?>> players, EventHandler eventHandler) {
         this.players = players;
         this.leaderboard = new LeaderboardDistribution(maxAwarded, players.size());
+        game.sendInputToServer(server -> server.onQuestionReleased(pickedQuestion));
     }
 
     @Override
-    public void onGuessReceived(UUIDHolder source, String message) {
+    public PlayerGuessContext onGuessReceived(Player<?> source, String message) {
 
         Optional<Double> optCorrectness = pickedQuestion.evaluateAnswer(Answer.fromString(message));
         if(optCorrectness.isEmpty()) {
-            return;
+            return new PlayerGuessContext(source, 0, true);
         }
 
         double correctness = optCorrectness.get();
@@ -51,12 +47,11 @@ public class ClassicalRound implements GameRound {
             counter.consumeAllGuesses(source);
         }
 
-        PlayerGuessContext context = new PlayerGuessContext(source, correctness, counter.isEligible(source));
-        game.sendInputToServer((server) -> server.onPlayerGuessed(context));
+        return new PlayerGuessContext(source, correctness, counter.isEligible(source));
     }
 
     @Override
-    public void onGiveUpReceived(UUIDHolder source) {
+    public void onGiveUpReceived(IDHolder<?> source) {
         counter.consumeAllGuesses(source);
     }
 
@@ -76,14 +71,15 @@ public class ClassicalRound implements GameRound {
     }
 
     @Override
-    public GameRoundReport initReport() {
-        return this::createReport;
+    public GameRoundReport initReport(Map<Player<?>, Double> standings) {
+        return () -> createReport(standings);
     }
 
-    private List<String> createReport() {
+    private List<String> createReport(Map<Player<?>, Double> standings) {
         List<String> report = new ArrayList<>();
-        for(LeaderboardPosition position : leaderboard.getLeaderboard()) {
-            report.add(position.getPlayer().getUUID()+": " + position.getScore());
+        report.add("Scores acquired for the round:\n");
+        for(SortUtils.Standing standing : SortUtils.sortByScore(standings)) {
+            report.add(standing.getPlayer().getNickname()+": " + standing.getScoreAcquired());
         }
         return report;
     }

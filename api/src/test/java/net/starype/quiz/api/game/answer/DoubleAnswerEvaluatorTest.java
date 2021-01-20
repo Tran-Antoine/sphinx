@@ -3,7 +3,7 @@ package net.starype.quiz.api.game.answer;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class DoubleCorrectAnswerTest {
+public class DoubleAnswerEvaluatorTest {
 
     private static final DoubleAnswerFactory factory = new DoubleAnswerFactory();
 

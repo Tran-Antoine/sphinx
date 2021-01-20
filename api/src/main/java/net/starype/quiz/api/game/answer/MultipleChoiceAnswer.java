@@ -1,6 +1,6 @@
 package net.starype.quiz.api.game.answer;
 
-public class MultipleChoiceAnswer implements CorrectAnswer {
+public class MultipleChoiceAnswer implements AnswerEvaluator {
 
     private CorrectnessEvaluator correctnessEvaluator;
 

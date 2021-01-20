@@ -53,7 +53,7 @@ public class MockQuestion implements Question {
     }
 
     @Override
-    public UUID getUUID() {
+    public UUID getId() {
         return null;
     }
 }

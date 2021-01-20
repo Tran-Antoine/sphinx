@@ -1,14 +1,14 @@
 package net.starype.quiz.api.game;
 
-import net.starype.quiz.api.game.player.UUIDHolder;
+import net.starype.quiz.api.game.player.Player;
 
 public class PlayerGuessContext {
 
-    private UUIDHolder player;
+    private Player<?> player;
     private double correctness;
     private boolean eligibility;
 
-    public PlayerGuessContext(UUIDHolder player, double correctness, boolean eligibility) {
+    public PlayerGuessContext(Player<?> player, double correctness, boolean eligibility) {
         this.player = player;
         this.correctness = correctness;
         this.eligibility = eligibility;
@@ -18,7 +18,7 @@ public class PlayerGuessContext {
         return correctness;
     }
 
-    public UUIDHolder getPlayer() {
+    public Player<?> getPlayer() {
         return player;
     }
 

@@ -1,7 +1,7 @@
 package net.starype.quiz.api.game;
 
 import net.starype.quiz.api.game.event.EventHandler;
-import net.starype.quiz.api.game.player.UUIDHolder;
+import net.starype.quiz.api.game.player.IDHolder;
 import net.starype.quiz.api.game.question.Question;
 
 import java.util.Collection;
@@ -11,14 +11,14 @@ public class TimedRaceRound extends RaceRound {
 
     private TimeOutEnding timeOutEnding;
 
-    public TimedRaceRound(int maxGuessesPerPlayer, Question pickedQuestion, double pointsToAward,
+    public TimedRaceRound(Question pickedQuestion, int maxGuessesPerPlayer, double pointsToAward,
                           long time, TimeUnit unit) {
         super(maxGuessesPerPlayer, pickedQuestion, pointsToAward);
         this.timeOutEnding = new TimeOutEnding(time, unit);
     }
 
     @Override
-    public void start(QuizGame game, Collection<? extends UUIDHolder> players, EventHandler eventHandler) {
+    public void start(QuizGame game, Collection<? extends IDHolder<?>> players, EventHandler eventHandler) {
         super.start(game, players, eventHandler);
         timeOutEnding.startTimer(() -> game.checkEndOfRound(this), eventHandler);
     }
@@ -67,7 +67,7 @@ public class TimedRaceRound extends RaceRound {
         }
 
         public TimedRaceRound build() {
-            return new TimedRaceRound(maxGuessesPerPlayer, pickedQuestion, pointsToAward, time, unit);
+            return new TimedRaceRound(pickedQuestion, maxGuessesPerPlayer, pointsToAward, time, unit);
         }
     }
 }

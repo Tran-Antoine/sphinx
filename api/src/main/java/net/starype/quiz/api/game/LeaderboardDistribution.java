@@ -1,7 +1,7 @@
 package net.starype.quiz.api.game;
 
 import net.starype.quiz.api.game.player.Player;
-import net.starype.quiz.api.game.player.UUIDHolder;
+import net.starype.quiz.api.game.player.IDHolder;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,7 +21,7 @@ public class LeaderboardDistribution implements ScoreDistribution {
     }
 
 
-    public void scoreUpdate(UUIDHolder player, double score) {
+    public void scoreUpdate(IDHolder<?> player, double score) {
         Optional<LeaderboardPosition> seat = getCurrent(player);
         if(seat.isEmpty()) {
             insertNewPlayer(new LeaderboardPosition(player, score));
@@ -48,7 +48,7 @@ public class LeaderboardDistribution implements ScoreDistribution {
         leaderboard.add(playerPosition);
     }
 
-    private Optional<LeaderboardPosition> getCurrent(UUIDHolder player) {
+    private Optional<LeaderboardPosition> getCurrent(IDHolder<?> player) {
         return leaderboard
                 .stream()
                 .filter((seat) -> seat.player.equals(player))
@@ -76,15 +76,15 @@ public class LeaderboardDistribution implements ScoreDistribution {
 
     public static class LeaderboardPosition {
 
-        private final UUIDHolder player;
+        private final IDHolder<?> player;
         private final double score;
 
-        private LeaderboardPosition(UUIDHolder player, double score) {
+        private LeaderboardPosition(IDHolder<?> player, double score) {
             this.player = player;
             this.score = score;
         }
 
-        public UUIDHolder getPlayer() {
+        public IDHolder<?> getPlayer() {
             return player;
         }
 

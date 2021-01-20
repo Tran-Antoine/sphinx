@@ -5,7 +5,7 @@ import net.starype.quiz.api.game.answer.*;
 import net.starype.quiz.api.game.event.EventHandler;
 import net.starype.quiz.api.game.event.GameEventHandler;
 import net.starype.quiz.api.game.player.Player;
-import net.starype.quiz.api.game.player.UUIDHolder;
+import net.starype.quiz.api.game.player.IDHolder;
 import net.starype.quiz.api.game.question.Question;
 import net.starype.quiz.api.game.question.QuestionDifficulty;
 import net.starype.quiz.api.game.question.QuestionTag;
@@ -21,9 +21,9 @@ public class RaceRoundTest {
     @Test
     public void round_ends_when_out_of_guesses() {
         EventHandler eventHandler = new GameEventHandler();
-        Set<UUIDHolder> players = new HashSet<>();
-        players.add(new MockUUIDHolder());
-        players.add(new MockUUIDHolder());
+        Set<Player<UUID>> players = new HashSet<>();
+        players.add(new MockPlayer());
+        players.add(new MockPlayer());
 
         GameRound round = new RaceRound.Builder()
                 .withMaxGuessesPerPlayer(1)
@@ -33,7 +33,7 @@ public class RaceRoundTest {
         round.start(null, players, eventHandler);
         GameRoundContext context = round.getContext();
 
-        for(UUIDHolder player : players) {
+        for(Player<?> player : players) {
             round.onGuessReceived(player, "INCORRECT ANSWER");
         }
 
@@ -43,7 +43,7 @@ public class RaceRoundTest {
     @Test
     public void round_ends_when_one_winner() {
         EventHandler eventHandler = new GameEventHandler();
-        UUIDHolder player = new MockUUIDHolder();
+        MockPlayer player = new MockPlayer();
 
         GameRound round = new RaceRound.Builder()
                 .withMaxGuessesPerPlayer(3)
@@ -63,7 +63,7 @@ public class RaceRoundTest {
     @Test
     public void game_ends_when_players_give_up() {
         EventHandler eventHandler = new GameEventHandler();
-        Player player = new MockPlayer();
+        Player<UUID> player = new MockPlayer();
         GameRound round = new RaceRound.Builder()
                 .withMaxGuessesPerPlayer(10)
                 .build();
@@ -78,8 +78,8 @@ public class RaceRoundTest {
     public void score_was_awarded() {
         EventHandler eventHandler = new GameEventHandler();
         double pointsToAward = 3.5;
-        Player player1 = new MockPlayer();
-        Player player2 = new MockPlayer();
+        Player<UUID> player1 = new MockPlayer();
+        Player<UUID> player2 = new MockPlayer();
 
         GameRound round = new RaceRound.Builder()
                 .withMaxGuessesPerPlayer(1)
@@ -98,15 +98,15 @@ public class RaceRoundTest {
         Assert.assertEquals(score2, 0, 0.01);
     }
 
-    private static class MockUUIDHolder implements UUIDHolder {
+    private static class MockUUIDHolder implements IDHolder<UUID> {
         private UUID id = UUID.randomUUID();
         @Override
-        public UUID getUUID() {
+        public UUID getId() {
             return id;
         }
     }
 
-    private static class MockPlayer extends Player {
+    private static class MockPlayer extends Player<UUID> {
 
         public MockPlayer() {
             super(UUID.randomUUID(), "");
@@ -115,10 +115,10 @@ public class RaceRoundTest {
 
     private static class MockQuestion implements Question {
 
-        private CorrectAnswer correctAnswer;
+        private AnswerEvaluator answerEvaluator;
 
-        public MockQuestion(CorrectAnswer correctAnswer) {
-            this.correctAnswer = correctAnswer;
+        public MockQuestion(AnswerEvaluator answerEvaluator) {
+            this.answerEvaluator = answerEvaluator;
         }
 
         @Override
@@ -140,14 +140,14 @@ public class RaceRoundTest {
         public String getDisplayableCorrectAnswer() { return null; }
 
         @Override
-        public UUID getUUID() { return null; }
+        public UUID getId() { return null; }
 
         @Override
         public Optional<Double> evaluateAnswer(Answer answer) {
-            if(!correctAnswer.getValidityEvaluator()
+            if(!answerEvaluator.getValidityEvaluator()
                     .isValid(answer))
                 return Optional.empty();
-            return Optional.of(correctAnswer.getCorrectnessEvaluator()
+            return Optional.of(answerEvaluator.getCorrectnessEvaluator()
                     .getCorrectness(answer));
         }
     }

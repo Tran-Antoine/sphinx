@@ -12,7 +12,7 @@ public class ClassicalGameSample {
 
     public static void main(String[] args) {
         MockServer server = new MockServer();
-        List<Player> players = Arrays.asList(
+        List<Player<?>> players = Arrays.asList(
                 new MockPlayer(),
                 new MockPlayer(),
                 new MockPlayer()
