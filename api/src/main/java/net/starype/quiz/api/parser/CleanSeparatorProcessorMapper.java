@@ -4,6 +4,9 @@ import com.electronwill.nightconfig.core.CommentedConfig;
 import net.starype.quiz.api.game.answer.AnswerProcessor;
 import net.starype.quiz.api.game.answer.CleanSeparatorProcessor;
 
+/**
+ * Mapper for the {@link CleanSeparatorProcessor} object
+ */
 public class CleanSeparatorProcessorMapper implements ConfigMapper<AnswerProcessor> {
 
     @Override

@@ -13,15 +13,21 @@ import net.starype.quiz.api.game.question.QuestionDifficulty;
 import net.starype.quiz.api.game.question.QuestionTag;
 import net.starype.quiz.api.util.StringUtils;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Util class that allows toml configuration file to {@link Question} conversions
+ */
 public class QuestionParser {
 
     private static final ConfigMatcher<PartialEvaluator> EVALUATOR_MATCHER = new ConfigMatcher<>(Arrays.asList(
-            new WorldEvaluatorMapper(),
+            new WordEvaluatorMapper(),
             new DoubleEvaluatorMapper(),
             new IntegerEvaluatorMapper(),
             new MCQEvaluatorMapper()
@@ -45,7 +51,12 @@ public class QuestionParser {
     private static final String CORRECT = "answer.correct";
     private static final String DIFFICULTY = "difficulty";
 
-
+    /**
+     * Parse a given TOML configuration file and converts it into a Question object
+     * @param filePath the full path of the file
+     * @return a Question object
+     * @throws IOException if the file was not found
+     */
     public static Question parseTOML(String filePath) throws IOException {
 
         CommentedConfig config = loadConfig(filePath);
@@ -69,7 +80,7 @@ public class QuestionParser {
     }
 
     private static QuestionDifficulty loadDifficulty(CommentedConfig config) {
-        return DIFFICULTY_MATCHER.loadOrDefault(DIFFICULTY, config);
+        return DIFFICULTY_MATCHER.loadFromKeyOrDefault(DIFFICULTY, config);
     }
 
     private static CommentedConfig loadConfig(String filePath) throws IOException {
@@ -89,7 +100,7 @@ public class QuestionParser {
 
     private static AnswerEvaluator loadEvaluator(CommentedConfig config, AnswerProcessor processor, List<String> rawAnswers) {
         return EVALUATOR_MATCHER
-                .loadOrDefault(EVALUATOR, config)
+                .loadFromKeyOrDefault(EVALUATOR, config)
                 .create(StringUtils.map(rawAnswers, Answer::fromString), processor);
     }
 }

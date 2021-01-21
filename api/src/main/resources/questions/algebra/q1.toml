@@ -10,11 +10,9 @@ text = "\text{Vrai ou Faux: \\
 
 [answer]
 
-processors = ["clean-separator"]
+processors = ["clean-string", "true-false"]
 correct = ["True"]
 
 [answer.evaluator]
-name = "double-evaluator"
-interpolation = "linear"
-range = 0.5
+name = "exact-answer"
 

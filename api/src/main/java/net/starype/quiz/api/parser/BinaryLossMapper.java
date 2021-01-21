@@ -4,6 +4,9 @@ import com.electronwill.nightconfig.core.CommentedConfig;
 import net.starype.quiz.api.game.answer.BinaryLossFunction;
 import net.starype.quiz.api.game.answer.LossFunction;
 
+/**
+ * Mapper for the {@link BinaryLossFunction} object
+ */
 public class BinaryLossMapper implements ConfigMapper<LossFunction> {
 
     @Override

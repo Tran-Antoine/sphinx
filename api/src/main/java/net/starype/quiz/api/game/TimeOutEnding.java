@@ -5,7 +5,6 @@ import net.starype.quiz.api.game.event.EventHandler;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class TimeOutEnding implements RoundEndingPredicate, Event {
