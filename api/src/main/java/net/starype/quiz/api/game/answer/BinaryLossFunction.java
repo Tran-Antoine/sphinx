@@ -1,7 +1,7 @@
 package net.starype.quiz.api.game.answer;
 
 public class BinaryLossFunction implements LossFunction {
-    private double threshold = .5;
+    private double threshold;
 
     public BinaryLossFunction(double threshold) {
         this.threshold = threshold;
