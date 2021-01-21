@@ -1,16 +1,12 @@
 package net.starype.quiz.api.parser;
 
-import net.starype.quiz.api.util.ByteBufferUtils;
-import net.starype.quiz.api.util.CheckSum;
-import net.starype.quiz.api.util.SerializedArgument;
-import net.starype.quiz.api.util.Serializer;
+import net.starype.quiz.api.util.*;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class CompiledSearch {
 
@@ -26,6 +22,14 @@ public class CompiledSearch {
                     new SerializedArgument("tags"),
                     new SerializedArgument("difficulty")
             ));
+            this.data = new HashMap<>();
+        }
+
+        @Override
+        public Optional<Map<String, ByteBuffer>> evaluate(ByteBuffer data) {
+            Optional<Map<String, ByteBuffer>> r = super.evaluate(data);
+            this.data = r.orElse(this.data);
+            return r;
         }
 
         public void load(ByteBuffer data) {
@@ -37,11 +41,6 @@ public class CompiledSearch {
         }
 
         public ByteBuffer save() {
-            // First compute the new checksum
-            ByteBuffer buffer = ByteBufferUtils.concat(data.get("name"), data.get("tags"), data.get("file"));
-            CheckSum checkSum = CheckSum.fromByteBuffer(buffer);
-            data.put("checksum", checkSum.rawData());
-
             // Combine the map using the Serializer
             return evaluate(data).orElseThrow();
         }
@@ -51,7 +50,7 @@ public class CompiledSearch {
         }
 
         public CheckSum checkSum() {
-            return CheckSum.fromByteBuffer(data.get("checksum"));
+            return CheckSum.fromRawCheckSum(data.get("checksum"));
         }
 
         public String name() {
@@ -62,12 +61,24 @@ public class CompiledSearch {
             return tags;
         }
 
+        public String getDifficulty() {
+            return data.get("difficulty").toString();
+        }
+
         public void setName(String name) {
             data.put("name", ByteBuffer.wrap(name.getBytes()));
         }
 
+        public void setDifficulty(String name) {
+            data.put("difficulty", ByteBuffer.wrap(name.getBytes()));
+        }
+
         public void setFile(String file) {
             data.put("file", ByteBuffer.wrap(file.getBytes()));
+        }
+
+        public void setChecksum(CheckSum checksum) {
+            this.data.put("checksum", checksum.rawData());
         }
 
         public void setTags(Set<String> tags) {
@@ -80,16 +91,63 @@ public class CompiledSearch {
 
     private List<CompiledSearchSerializer> serializedArgument;
     private boolean isCompiled = false;
-    private final File compiledDB;
-    private final List<? extends File> trackedFile;
+    private final String compiledDB;
+    private final List<? extends String> trackedFile;
 
-    private CompiledSearch(List<? extends File> trackedFile, File compiledDB)  {
+    private CompiledSearch(List<? extends String> trackedFile, String compiledDB)  {
+        this.serializedArgument = new ArrayList<>();
         this.trackedFile = trackedFile;
         this.compiledDB = compiledDB;
     }
 
-    public static CompiledSearch fromListOfFile(List<? extends File> files, File compiledDB) {
-        return new CompiledSearch(files, compiledDB);
+    public static CompiledSearch fromListOfFile(List<? extends String> trackedFile, String compiledDB) {
+        return new CompiledSearch(trackedFile, compiledDB);
+    }
+
+    public static Optional<CompiledSearch> fromDirectory(String directoryPath, String compiledDB) {
+        File directory = new File(directoryPath);
+        if(!directory.isDirectory()) return Optional.empty();
+
+        // Get all the file from the directory
+        final List<String> files = FileUtils.listAllFiles(directory)
+                .stream()
+                .map(File::getPath)
+                .collect(Collectors.toList());
+
+        return Optional.of(new CompiledSearch(files, compiledDB));
+    }
+
+    public boolean save() {
+        try {
+            // First create a new output stream
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+            // Secondly output the number of file
+            outputStream.write(ByteBuffer.allocate(4).putInt(serializedArgument.size()).array());
+
+            // Then output each file individually
+            for(CompiledSearchSerializer compiledSearchSerializer : serializedArgument) {
+                // Compile the data of the serializedArgument
+                ByteBuffer buffer = compiledSearchSerializer.save();
+
+                // Write the ByteBuffer size
+                outputStream.write(ByteBuffer.allocate(4).putInt(buffer.array().length).array());
+
+                // Write the buffer in the stream
+                outputStream.write(buffer.array());
+            }
+
+            // Then try to write the outputStream to the file
+            FileOutputStream fileOutputStream = new FileOutputStream(compiledDB);
+            fileOutputStream.write(outputStream.toByteArray());
+            fileOutputStream.close();
+            outputStream.close();
+
+            return true;
+        }
+        catch (IOException ignored) {
+            return false;
+        }
     }
 
     public void compile() {
@@ -123,22 +181,53 @@ public class CompiledSearch {
 
         // Secondly compare each file in the list with the DB
         // Retrieve a list of file to be recompile
-        List<File> recompileRequired = new ArrayList<>();
+        List<String> recompileRequired = getRecompileList();;
+
+        // For each of file that must be recompile perform the recompilation
+        recompileRequired.forEach(this::compile);
+    }
+
+    private void compile(String file) {
+        // First parse the whole file to retrieve the following information
+        String name = "generic-name";
+        Set<String> tags = Set.of("tag1", "tag2", "tag3");
+        String difficulty = "EASY";
+
+        // Compute the CheckSum calculation for the new file
+        CheckSum checkSum = CheckSum.fromFile(file).orElseThrow();
+
+        // Update the DB
+        // First remove all the old version of this file
+        serializedArgument = serializedArgument.stream()
+                .filter(serializedArgument -> !serializedArgument.checkSum().equals(checkSum))
+                .collect(Collectors.toList());
+
+        // Finally adding the new file in the DB
+        CompiledSearchSerializer compiledSearchSerializer = new CompiledSearchSerializer();
+        compiledSearchSerializer.setFile(file);
+        compiledSearchSerializer.setName(name);
+        compiledSearchSerializer.setTags(tags);
+        compiledSearchSerializer.setDifficulty(difficulty);
+        compiledSearchSerializer.setChecksum(checkSum);
+        serializedArgument.add(compiledSearchSerializer);
+    }
+
+    private List<String> getRecompileList() {
+        List<String> recompileRequired = new ArrayList<>();
 
         // Add all file that are in the recompileRequired but not in the last DB
         recompileRequired.addAll(trackedFile.stream()
-                .filter(file -> serializedArgument
-                        .stream()
-                        .noneMatch(serializedArgument -> serializedArgument.file().equals(file.getName())))
+                .filter(file -> serializedArgument.stream()
+                        .noneMatch(serializedArgument -> serializedArgument.file().equals(file)))
                 .collect(Collectors.toList()));
 
         // Detect all the file which differs by their CheckSum
         recompileRequired.addAll(trackedFile.stream()
                 .filter(file -> serializedArgument
                         .stream()
-                        .filter(serializedArgument -> file.getName().equals(serializedArgument.file()))
+                        .filter(serializedArgument -> file.equals(serializedArgument.file()))
                         .findFirst()
-                        .map(serializedArgument -> serializedArgument.checkSum().equals(CheckSum.fromFile(file.getAbsolutePath()).orElse(CheckSum.NIL)))
+                        .map(serializedArgument -> serializedArgument.checkSum().equals(CheckSum.fromFile(file).orElse(CheckSum.NIL)))
                         .orElse(Boolean.FALSE)
                 )
                 .collect(Collectors.toList()));
@@ -147,8 +236,9 @@ public class CompiledSearch {
 
         // Discard all file that are no longer in the DB
         serializedArgument = serializedArgument.stream()
-                .filter(serializedArgument -> trackedFile.stream().anyMatch(file -> serializedArgument.file().equals(file.getName())))
+                .filter(serializedArgument -> trackedFile.stream().anyMatch(file -> serializedArgument.file().equals(file)))
                 .collect(Collectors.toList());
 
+        return recompileRequired;
     }
 }

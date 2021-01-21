@@ -1,0 +1,10 @@
+subprojects {
+
+    apply plugin: 'java'
+    targetCompatibility = '1.12'
+    sourceCompatibility = '1.12'
+
+    repositories {
+        mavenCentral()
+    }
+}

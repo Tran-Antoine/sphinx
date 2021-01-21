@@ -48,19 +48,23 @@ public class Serializer {
             for (SerializedArgument argument : arguments) {
                 // Get the corresponding ByteBuffer
                 ByteBuffer buffer = data.get(argument.getName());
+                if(buffer == null) System.out.println("ERROR: the given argument has not been registered in the given data");
                 buffer.position(0); // Reset the cursor
 
                 // First check whether the argument is variable size or not
                 int size = argument.getSize()
-                        .orElse(buffer.remaining());
+                        .orElse(buffer.array().length);
 
                 // Assert that the size correspond to the buffer
-                if(size != buffer.remaining()) {
+                if(size != buffer.array().length) {
                     throw new RuntimeException("Trying to evaluate data that doesn't correspond to the given format");
                 }
 
                 // If everything work well then push the output stream
                 stream.write(ByteBuffer.allocate(4).putInt(size).array());
+
+                // Don't forget to write the buffer to the stream
+                stream.write(buffer.array());
             }
 
             // Then put the byte buffer
