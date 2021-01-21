@@ -1,8 +1,10 @@
 package net.starype.quiz.api.util;
 
+import net.starype.quiz.api.parser.Argument;
+
 import java.util.Optional;
 
-public class SerializedArgument {
+public class SerializedArgument implements Argument {
     private final int size;
     private final String name;
 
@@ -20,6 +22,7 @@ public class SerializedArgument {
                 Optional.of(size) : Optional.empty();
     }
 
+    @Override
     public String getName() {
         return name;
     }

@@ -8,9 +8,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class CompiledSearch {
+public class CompiledSearch implements IndexDatabase {
 
     private static class CompiledSearchSerializer extends Serializer {
+        private Set<ArgumentValue> arguments;
         private Map<String, ByteBuffer> data;
         private Set<String> tags;
 
@@ -22,13 +23,25 @@ public class CompiledSearch {
                     new SerializedArgument("tags"),
                     new SerializedArgument("difficulty")
             ));
-            this.data = new HashMap<>();
+            data = new HashMap<>();
+        }
+
+        private void compile() {
+            arguments = new HashSet<>();
+            for(String str : Arrays.asList("name", "file", "tags", "difficulty")) {
+                arguments.add(new ArgumentValue(str, new String(data.get(str).array())));
+            }
+        }
+
+        public Set<ArgumentValue> getArguments() {
+            return arguments;
         }
 
         @Override
         public Optional<Map<String, ByteBuffer>> evaluate(ByteBuffer data) {
             Optional<Map<String, ByteBuffer>> r = super.evaluate(data);
             this.data = r.orElse(this.data);
+            compile();
             return r;
         }
 
@@ -37,7 +50,8 @@ public class CompiledSearch {
             this.data = evaluate(data).orElseThrow();
 
             // Then parse the tags
-            tags = Set.of(this.data.get("tags").toString().split(";"));
+            tags = Set.of(new String(this.data.get("tags").array()).split(";"));
+            compile();
         }
 
         public ByteBuffer save() {
@@ -46,7 +60,7 @@ public class CompiledSearch {
         }
 
         public String file() {
-            return data.get("file").toString();
+            return new String(data.get("file").array());
         }
 
         public CheckSum checkSum() {
@@ -54,31 +68,35 @@ public class CompiledSearch {
         }
 
         public String name() {
-            return data.get("name").toString();
+            return new String(data.get("name").array());
         }
 
-        public Set<String> tags() {
+        public Set<? extends String> tags() {
             return tags;
         }
 
         public String getDifficulty() {
-            return data.get("difficulty").toString();
+            return new String(data.get("difficulty").array());
         }
 
         public void setName(String name) {
             data.put("name", ByteBuffer.wrap(name.getBytes()));
+            compile();
         }
 
         public void setDifficulty(String name) {
             data.put("difficulty", ByteBuffer.wrap(name.getBytes()));
+            compile();
         }
 
         public void setFile(String file) {
             data.put("file", ByteBuffer.wrap(file.getBytes()));
+            compile();
         }
 
         public void setChecksum(CheckSum checksum) {
             this.data.put("checksum", checksum.rawData());
+            compile();
         }
 
         public void setTags(Set<String> tags) {
@@ -86,6 +104,7 @@ public class CompiledSearch {
             this.data.put("tags", ByteBuffer.wrap(tags.stream()
                     .reduce((s1, s2) -> s1 + ";" + s2)
                     .orElseThrow().getBytes()));
+            compile();
         }
     }
 
@@ -240,5 +259,19 @@ public class CompiledSearch {
                 .collect(Collectors.toList());
 
         return recompileRequired;
+    }
+
+    @Override
+    public List<String> query(IndexQuery query) {
+        // Assert that the DB has been compiled
+        if(!isCompiled) {
+            throw new RuntimeException("Cannot create queries before the compilation of the DB");
+        }
+
+        // Perform the query
+        return serializedArgument.stream()
+                .filter(serializedArgument -> query.match(serializedArgument.getArguments()))
+                .map(CompiledSearchSerializer::file)
+                .collect(Collectors.toList());
     }
 }
