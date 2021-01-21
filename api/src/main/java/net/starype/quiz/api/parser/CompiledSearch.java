@@ -29,7 +29,7 @@ public class CompiledSearch implements IndexDatabase {
         private void compile() {
             arguments = new HashSet<>();
             for(String str : Arrays.asList("name", "file", "tags", "difficulty")) {
-                arguments.add(new ArgumentValue(str, new String(data.get(str).array())));
+                arguments.add(new ArgumentValue(str, new String(data.getOrDefault(str,ByteBuffer.allocate(1)).array())));
             }
         }
 
@@ -218,7 +218,7 @@ public class CompiledSearch implements IndexDatabase {
         // Update the DB
         // First remove all the old version of this file
         serializedArgument = serializedArgument.stream()
-                .filter(serializedArgument -> !serializedArgument.checkSum().equals(checkSum))
+                .filter(serializedArgument -> !serializedArgument.file().equals(file))
                 .collect(Collectors.toList());
 
         // Finally adding the new file in the DB
