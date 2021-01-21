@@ -1,7 +1,0 @@
-.gradle
-.idea
-.classpath
-.project
-build
-out
-discord-impl/src/main/resources/token.txt
