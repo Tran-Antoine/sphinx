@@ -4,7 +4,6 @@ import discord4j.core.object.entity.channel.TextChannel;
 
 import java.util.Map;
 import java.util.Map.Entry;
-
 import java.util.function.Supplier;
 
 public class StopConditions {

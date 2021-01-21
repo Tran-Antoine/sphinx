@@ -1,8 +1,6 @@
 package net.starype.quiz.api.game;
 
-import net.starype.quiz.api.game.LeaderboardDistribution;
 import net.starype.quiz.api.game.LeaderboardDistribution.LeaderboardPosition;
-import net.starype.quiz.api.game.RoundEndingPredicate;
 
 import java.util.Collection;
 

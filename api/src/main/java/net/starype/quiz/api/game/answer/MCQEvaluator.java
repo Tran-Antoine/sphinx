@@ -1,11 +1,11 @@
 package net.starype.quiz.api.game.answer;
 
-public class MultipleChoiceAnswer implements AnswerEvaluator {
+public class MCQEvaluator implements AnswerEvaluator {
 
     private CorrectnessEvaluator correctnessEvaluator;
     private ValidityEvaluator validity;
 
-    public MultipleChoiceAnswer(MultipleChoiceCorrectness multipleChoiceCorrectness, MultipleChoiceValidity validity) {
+    public MCQEvaluator(MCQCorrectness multipleChoiceCorrectness, MCQValidity validity) {
         correctnessEvaluator = multipleChoiceCorrectness;
         this.validity = validity;
     }

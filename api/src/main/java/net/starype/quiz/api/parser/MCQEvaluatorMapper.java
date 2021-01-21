@@ -1,8 +1,12 @@
 package net.starype.quiz.api.parser;
 
 import com.electronwill.nightconfig.core.CommentedConfig;
-import net.starype.quiz.api.game.answer.MultipleChoiceAnswerFactory;
+import net.starype.quiz.api.game.answer.MCQEvaluator;
+import net.starype.quiz.api.game.answer.MCQAnswerFactory;
 
+/**
+ * Mapper for the {@link MCQEvaluator} object
+ */
 public class MCQEvaluatorMapper implements ConfigMapper<PartialEvaluator> {
 
     @Override
@@ -12,7 +16,7 @@ public class MCQEvaluatorMapper implements ConfigMapper<PartialEvaluator> {
 
     @Override
     public PartialEvaluator map(CommentedConfig config) {
-        MultipleChoiceAnswerFactory factory = new MultipleChoiceAnswerFactory();
+        MCQAnswerFactory factory = new MCQAnswerFactory();
         return factory::createCorrectAnswer;
     }
 }

@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class MultipleChoiceAnswerTest {
-    private static final MultipleChoiceAnswerFactory factory = new MultipleChoiceAnswerFactory();
+    private static final MCQAnswerFactory factory = new MCQAnswerFactory();
 
     private void assertFormatValid(String answer) {
         /*Assert.assertTrue(factory

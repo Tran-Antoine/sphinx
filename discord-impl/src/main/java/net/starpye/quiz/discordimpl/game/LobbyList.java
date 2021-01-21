@@ -1,11 +1,9 @@
 package net.starpye.quiz.discordimpl.game;
 
 import discord4j.common.util.Snowflake;
-import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.channel.TextChannel;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
