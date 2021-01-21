@@ -20,9 +20,9 @@ public class FileUtils {
     public static List<File> recursiveListAllFiles(File directory) {
         File[] files = directory.listFiles();
         List<File> fileList = (files == null) ? new ArrayList<>() : Arrays.stream(files).filter(File::isFile).collect(Collectors.toList());
-        for(File f : files) {
-            if(f.isDirectory()) {
-                fileList.addAll(recursiveListAllFiles(f));
+        for(File file : files) {
+            if(file.isDirectory()) {
+                fileList.addAll(recursiveListAllFiles(file));
             }
         }
         return fileList;
