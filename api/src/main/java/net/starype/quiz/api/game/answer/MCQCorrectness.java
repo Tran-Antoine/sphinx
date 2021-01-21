@@ -2,19 +2,18 @@ package net.starype.quiz.api.game.answer;
 
 import net.starype.quiz.api.util.MathUtils;
 
-import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class MultipleChoiceCorrectness implements CorrectnessEvaluator {
+public class MCQCorrectness implements CorrectnessEvaluator {
 
     private Set<String> acceptedAnswers;
     private LossFunction lossFunction;
     private double punitiveRatio;
 
-    public MultipleChoiceCorrectness(Set<Answer> acceptedAnswers,
-                                     LossFunction lossFunction,
-                                     double punitiveRatio) {
+    public MCQCorrectness(Set<Answer> acceptedAnswers,
+                          LossFunction lossFunction,
+                          double punitiveRatio) {
         this.acceptedAnswers = acceptedAnswers
                 .stream()
                 .map(Answer::getAnswerText)
@@ -23,7 +22,7 @@ public class MultipleChoiceCorrectness implements CorrectnessEvaluator {
         this.punitiveRatio = Math.max(punitiveRatio, 0.0);
     }
 
-    public MultipleChoiceCorrectness(Set<Answer> acceptedAnswers, LossFunction lossFunction) {
+    public MCQCorrectness(Set<Answer> acceptedAnswers, LossFunction lossFunction) {
         this(acceptedAnswers, lossFunction, 1.0);
     }
 
