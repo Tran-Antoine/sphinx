@@ -18,7 +18,7 @@ public class ConfigMatcher<T> {
     public Optional<T> load(String name, CommentedConfig config) {
         return mappers
                 .stream()
-                .filter(mapper -> mapper.getEvaluatorName().equals(name))
+                .filter(mapper -> mapper.getMapperName().equals(name))
                 .findAny()
                 .map(mapper -> mapper.map(config));
     }
@@ -27,7 +27,7 @@ public class ConfigMatcher<T> {
         String prefix = section.isEmpty() ? "" : section + ".";
         return mappers
                 .stream()
-                .filter(mapper -> config.get(prefix + "name").equals(mapper.getEvaluatorName()))
+                .filter(mapper -> config.get(prefix + "name").equals(mapper.getMapperName()))
                 .findAny()
                 .map(mapper -> mapper.map(config))
                 .orElse(defaultMapper.map(config));

@@ -5,7 +5,7 @@ import net.starype.quiz.api.game.answer.DefaultAnswerEvaluator;
 
 public class DefaultEvaluatorMapper implements ConfigMapper<PartialEvaluator> {
     @Override
-    public String getEvaluatorName() {
+    public String getMapperName() {
         return "default";
     }
 

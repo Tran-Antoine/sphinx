@@ -1,9 +1,11 @@
 package net.starype.quiz.api.game.answer;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Answer {
 
@@ -33,6 +35,12 @@ public class Answer {
 
     public double asDouble() {
         return Double.parseDouble(answer.replace(',', '.'));
+    }
+
+    public List<Answer> split(String regex) {
+        return Stream.of(answer.split(regex))
+                .map(Answer::fromString)
+                .collect(Collectors.toList());
     }
 
     @Override

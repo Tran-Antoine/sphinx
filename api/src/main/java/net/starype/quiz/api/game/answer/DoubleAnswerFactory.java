@@ -6,7 +6,6 @@ public class DoubleAnswerFactory implements RangedAnswerFactory {
     private double range = 1.0;
     private LossFunction lossFunction = new LinearLossFunction();
 
-    @Override
     public ValidityEvaluator getValidityEvaluator() {
         return DoubleValidity.getInstance();
     }

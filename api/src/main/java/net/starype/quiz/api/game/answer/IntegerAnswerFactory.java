@@ -6,7 +6,6 @@ public class IntegerAnswerFactory implements RangedAnswerFactory {
     private int range = 1;
     private LossFunction lossFunction = new LinearLossFunction();
 
-    @Override
     public ValidityEvaluator getValidityEvaluator() {
         return IntegerValidity.getInstance();
     }

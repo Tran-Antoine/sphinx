@@ -7,7 +7,7 @@ import net.starype.quiz.api.game.answer.CleanSeparatorProcessor;
 public class CleanSeparatorProcessorMapper implements ConfigMapper<AnswerProcessor> {
 
     @Override
-    public String getEvaluatorName() {
+    public String getMapperName() {
         return "clean-separator";
     }
 

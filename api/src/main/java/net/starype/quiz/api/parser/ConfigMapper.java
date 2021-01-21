@@ -6,6 +6,6 @@ import net.starype.quiz.api.game.answer.AnswerProcessor;
 
 public interface ConfigMapper<R> {
 
-    String getEvaluatorName();
+    String getMapperName();
     R map(CommentedConfig config);
 }

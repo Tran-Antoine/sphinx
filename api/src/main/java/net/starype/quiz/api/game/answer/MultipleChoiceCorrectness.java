@@ -14,8 +14,7 @@ public class MultipleChoiceCorrectness implements CorrectnessEvaluator {
 
     public MultipleChoiceCorrectness(Set<Answer> acceptedAnswers,
                                      LossFunction lossFunction,
-                                     double punitiveRatio)
-    {
+                                     double punitiveRatio) {
         this.acceptedAnswers = acceptedAnswers
                 .stream()
                 .map(Answer::getAnswerText)

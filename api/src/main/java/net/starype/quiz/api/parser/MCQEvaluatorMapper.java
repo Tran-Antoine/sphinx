@@ -1,18 +1,18 @@
 package net.starype.quiz.api.parser;
 
 import com.electronwill.nightconfig.core.CommentedConfig;
-import net.starype.quiz.api.game.answer.WordAnswerFactory;
+import net.starype.quiz.api.game.answer.MultipleChoiceAnswerFactory;
 
-public class WorldEvaluatorMapper implements ConfigMapper<PartialEvaluator> {
+public class MCQEvaluatorMapper implements ConfigMapper<PartialEvaluator> {
 
     @Override
     public String getMapperName() {
-        return "WordEvaluator";
+        return "mcq";
     }
 
     @Override
     public PartialEvaluator map(CommentedConfig config) {
-        WordAnswerFactory factory = new WordAnswerFactory();
+        MultipleChoiceAnswerFactory factory = new MultipleChoiceAnswerFactory();
         return factory::createCorrectAnswer;
     }
 }

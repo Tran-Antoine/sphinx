@@ -17,18 +17,20 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class QuestionParser {
 
     private static final ConfigMatcher<PartialEvaluator> EVALUATOR_MATCHER = new ConfigMatcher<>(Arrays.asList(
             new WorldEvaluatorMapper(),
-            new DoubleEvaluatorMapper()
+            new DoubleEvaluatorMapper(),
+            new IntegerEvaluatorMapper(),
+            new MCQEvaluatorMapper()
     ), new DefaultEvaluatorMapper());
 
     private static final ConfigMatcher<AnswerProcessor> PROCESSOR_MATCHER = new ConfigMatcher<>(Arrays.asList(
             new CleanStringProcessorMapper(),
-            new CleanSeparatorProcessorMapper()
+            new CleanSeparatorProcessorMapper(),
+            new TrueFalseProcessorMapper()
     ), new CleanStringProcessorMapper());
 
     private static final String PROCESSORS = "answer.processors";

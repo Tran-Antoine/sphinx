@@ -4,7 +4,6 @@ import java.util.Set;
 
 public class WordAnswerFactory implements CorrectAnswerFactory {
 
-    @Override
     public ValidityEvaluator getValidityEvaluator() {
         return WordValidityEvaluator.getInstance();
     }

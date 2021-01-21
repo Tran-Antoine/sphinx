@@ -1,7 +1,5 @@
 package net.starype.quiz.api.game.answer;
 
-import java.util.Arrays;
-
 public class CleanSeparatorProcessor implements AnswerProcessor {
     @Override
     public Answer process(Answer answer) {
