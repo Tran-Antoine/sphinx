@@ -24,7 +24,7 @@ public class MultipleChoiceAnswerTest {
     private void assertAnswerCorrect(Set<String> expectedAnswer, String answer, double punitiveRatio, double expected) {
         Assert.assertEquals(expected, factory
                 .withPunitiveRatio(punitiveRatio)
-                .createCorrectAnswer(Answer.fromSetOfString(expectedAnswer), new IdentityProcessor())
+                .createCorrectAnswer(Answer.fromStringCollection(expectedAnswer), new IdentityProcessor())
                 .getCorrectnessEvaluator()
                 .getCorrectness(Answer.fromString(answer)), 0.001);
     }
@@ -32,7 +32,7 @@ public class MultipleChoiceAnswerTest {
     private void assertAnswerIncorrect(Set<String> expectedAnswer, String answer, double punitiveRatio) {
         Assert.assertEquals(0.0, factory
                 .withPunitiveRatio(punitiveRatio)
-                .createCorrectAnswer(Answer.fromSetOfString(expectedAnswer), new IdentityProcessor())
+                .createCorrectAnswer(Answer.fromStringCollection(expectedAnswer), new IdentityProcessor())
                 .getCorrectnessEvaluator()
                 .getCorrectness(Answer.fromString(answer)), 0.001);
     }

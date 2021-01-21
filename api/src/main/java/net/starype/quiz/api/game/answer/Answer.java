@@ -1,5 +1,6 @@
 package net.starype.quiz.api.game.answer;
 
+import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -16,7 +17,7 @@ public class Answer {
         return new Answer(answer);
     }
 
-    public static Set<Answer> fromSetOfString(Set<String> stringSet) {
+    public static Set<Answer> fromStringCollection(Collection<String> stringSet) {
         return stringSet.stream()
                 .map(Answer::fromString)
                 .collect(Collectors.toSet());

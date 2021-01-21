@@ -2,7 +2,7 @@ package net.starype.quiz.api.game.answer;
 
 import java.util.Arrays;
 
-public class AnswerProcessorCleanSeparator implements AnswerProcessor {
+public class CleanSeparatorProcessor implements AnswerProcessor {
     @Override
     public Answer process(Answer answer) {
         String parsedAnswer = answer.getAnswerText()
