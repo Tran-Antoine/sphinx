@@ -4,4 +4,5 @@
 .project
 build
 out
+api/src/main/resources
 discord-impl/src/main/resources/token.txt
