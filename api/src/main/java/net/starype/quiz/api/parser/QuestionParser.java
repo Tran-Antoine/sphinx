@@ -45,10 +45,8 @@ public class QuestionParser {
     private static final String CORRECT = "answer.correct";
     private static final String DIFFICULTY = "difficulty";
 
-
-    public static Question parseTOML(String filePath) throws IOException {
-
-        CommentedConfig config = loadConfig(filePath);
+    public static Question parseTOML(File file) throws IOException {
+        CommentedConfig config = loadConfig(file);
 
         String rawText = config.get("question.text");
         Set<QuestionTag> tags = StringUtils.map(config.get("tags"), QuestionTag::new);
@@ -68,13 +66,17 @@ public class QuestionParser {
         return question;
     }
 
+    public static Question parseTOML(String filePath) throws IOException {
+        return parseTOML(new File(filePath));
+    }
+
     private static QuestionDifficulty loadDifficulty(CommentedConfig config) {
         return DIFFICULTY_MATCHER.loadOrDefault(DIFFICULTY, config);
     }
 
-    private static CommentedConfig loadConfig(String filePath) throws IOException {
+    private static CommentedConfig loadConfig(File file) throws IOException {
         ConfigParser<CommentedConfig> parser = new TomlParser();
-        Reader reader = new FileReader(new File(filePath));
+        Reader reader = new FileReader(file);
         CommentedConfig result = parser.parse(reader);
         reader.close();
         return result;
