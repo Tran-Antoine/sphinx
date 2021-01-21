@@ -24,9 +24,10 @@ public class ConfigMatcher<T> {
     }
 
     public T checkAll(String section, CommentedConfig config) {
+        String prefix = section.isEmpty() ? "" : section + ".";
         return mappers
                 .stream()
-                .filter(mapper -> config.get(section).equals(mapper.getEvaluatorName()))
+                .filter(mapper -> config.get(prefix + "name").equals(mapper.getEvaluatorName()))
                 .findAny()
                 .map(mapper -> mapper.map(config))
                 .orElse(defaultMapper.map(config));

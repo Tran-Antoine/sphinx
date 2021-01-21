@@ -10,7 +10,7 @@ public class MultipleChoiceCorrectness implements CorrectnessEvaluator {
 
     private Set<String> acceptedAnswers;
     private LossFunction lossFunction;
-    private double punitiveRatio = 1.0F;
+    private double punitiveRatio;
 
     public MultipleChoiceCorrectness(Set<Answer> acceptedAnswers,
                                      LossFunction lossFunction,

@@ -1,16 +1,9 @@
 package net.starype.quiz.api.parser;
 
 import com.electronwill.nightconfig.core.CommentedConfig;
-import net.starype.quiz.api.game.answer.Answer;
-import net.starype.quiz.api.game.answer.AnswerEvaluator;
-import net.starype.quiz.api.game.answer.AnswerProcessor;
 import net.starype.quiz.api.game.answer.WordAnswerFactory;
 
-import java.util.List;
-import java.util.Set;
-import java.util.function.Function;
-
-public class WorldEvaluatorMapper implements ConfigMapper<Function<AnswerProcessor, AnswerEvaluator>> {
+public class WorldEvaluatorMapper implements ConfigMapper<PartialEvaluator> {
 
     @Override
     public String getEvaluatorName() {
@@ -18,8 +11,8 @@ public class WorldEvaluatorMapper implements ConfigMapper<Function<AnswerProcess
     }
 
     @Override
-    public Function<AnswerProcessor, AnswerEvaluator> map(CommentedConfig config) {
-        Set<Answer> correctAnswers = Answer.fromStringCollection(config.<List<String>>get("answer.correct"));
-        return processor -> new WordAnswerFactory().createCorrectAnswer(correctAnswers, processor);
+    public PartialEvaluator map(CommentedConfig config) {
+        WordAnswerFactory factory = new WordAnswerFactory();
+        return factory::createCorrectAnswer;
     }
 }

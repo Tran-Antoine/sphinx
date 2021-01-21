@@ -5,10 +5,8 @@ import net.starype.quiz.api.game.answer.*;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
-import java.util.function.Function;
 
-public class DoubleEvaluatorMapper implements ConfigMapper<Function<AnswerProcessor, AnswerEvaluator>> {
+public class DoubleEvaluatorMapper implements ConfigMapper<PartialEvaluator> {
 
     @Override
     public String getEvaluatorName() {
@@ -16,13 +14,11 @@ public class DoubleEvaluatorMapper implements ConfigMapper<Function<AnswerProces
     }
 
     @Override
-    public Function<AnswerProcessor, AnswerEvaluator> map(CommentedConfig config) {
+    public PartialEvaluator map(CommentedConfig config) {
         RangedAnswerFactory factory = new DoubleAnswerFactory()
                 .withAcceptedRange(config.getOrElse("answer.evaluator.range", 0.1f))
                 .withInterpolation(MATCHER.load("answer.evaluator.interpolation", config).orElse(new LinearLossFunction()));
-        return processor -> factory.createCorrectAnswer(
-                Answer.fromStringCollection(config.<List<String>>get("answer.correct")),
-                processor);
+        return factory::createCorrectAnswer;
     }
 
 
