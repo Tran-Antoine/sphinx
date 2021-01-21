@@ -2,6 +2,8 @@ package net.starpye.quiz.discordimpl.game;
 
 import discord4j.common.util.Snowflake;
 import discord4j.core.object.entity.channel.TextChannel;
+import net.starpye.quiz.discordimpl.input.ReactionInputListener;
+import net.starpye.quiz.discordimpl.input.ReactionInputListener.TriggerCondition;
 import net.starype.quiz.api.game.GameRound;
 
 import java.util.HashSet;
@@ -15,6 +17,8 @@ public class GameLobby {
     private Set<Snowflake> playersId;
     private Snowflake authorId;
     private Queue<GameRound> rounds;
+
+    private TriggerCondition joinMessage;
 
     public GameLobby(TextChannel channel, String name) {
         this.channel = channel;
@@ -58,5 +62,10 @@ public class GameLobby {
 
     public boolean isName(String name) {
         return this.name.equals(name);
+    }
+
+    public void sendJoinImage(ReactionInputListener reactionListener) {
+        // send file
+        // this.joinMessage = new TriggerCondition()
     }
 }

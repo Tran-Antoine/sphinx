@@ -1,20 +1,21 @@
 package net.starpye.quiz.discordimpl.game;
 
 import discord4j.common.util.Snowflake;
-import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.channel.TextChannel;
+import net.starpye.quiz.discordimpl.input.ReactionInputListener;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 public class LobbyList {
 
     private Set<GameLobby> lobbies;
+    private ReactionInputListener reactionListener;
     private int nextId;
 
-    public LobbyList() {
+    public LobbyList(ReactionInputListener reactionListener) {
+        this.reactionListener = reactionListener;
         this.lobbies = new HashSet<>();
         this.nextId = 0;
     }
@@ -23,6 +24,7 @@ public class LobbyList {
         String id = "lobby" + nextId++;
         GameLobby lobby = new GameLobby(channel, id);
         lobby.registerAuthor(author);
+        lobby.sendJoinImage(reactionListener);
         lobbies.add(lobby);
         return id;
     }

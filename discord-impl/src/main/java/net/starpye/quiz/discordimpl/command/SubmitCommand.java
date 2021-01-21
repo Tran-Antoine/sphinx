@@ -33,6 +33,7 @@ public class SubmitCommand implements QuizCommand {
 
         QuizGame game = gameList.getFromPlayer(authorId).get();
         game.onInputReceived(authorId, args[1].substring(2, args[1].length()-2));
+        context.getMessage().delete().block();
     }
 
     private Map<Supplier<Boolean>, String> createStopConditions(Snowflake authorId, GameList gameList, String[] args) {

@@ -2,10 +2,14 @@ package net.starpye.quiz.discordimpl.core;
 
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
+import discord4j.core.event.EventDispatcher;
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.ReactionAddEvent;
+import discord4j.core.spec.MessageCreateSpec;
 import net.starpye.quiz.discordimpl.game.GameList;
 import net.starpye.quiz.discordimpl.game.LobbyList;
 import net.starpye.quiz.discordimpl.input.MessageInputListener;
+import net.starpye.quiz.discordimpl.input.ReactionInputListener;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -18,11 +22,18 @@ public class BotMain {
                 .build()
                 .login()
                 .block();
-        client.getEventDispatcher()
+        ReactionInputListener reactionListener = new ReactionInputListener();
+        EventDispatcher dispatcher = client.getEventDispatcher();
+
+        dispatcher
+                .on(ReactionAddEvent.class)
+                .retry()
+                .subscribe(reactionListener);
+        dispatcher
                 .on(MessageCreateEvent.class)
                 .filter(MessageInputListener.createFilter())
                 .retry()
-                .subscribe(new MessageInputListener(new LobbyList(), new GameList()));
+                .subscribe(new MessageInputListener(new LobbyList(reactionListener), new GameList()));
         client.onDisconnect().block();
     }
 
