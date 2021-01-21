@@ -25,7 +25,7 @@ public class QuestionParser {
             new DoubleEvaluatorMapper(),
             new IntegerEvaluatorMapper(),
             new MCQEvaluatorMapper()
-    ), new DefaultEvaluatorMapper());
+    ), new ExactEvaluatorMapper());
 
     private static final ConfigMatcher<AnswerProcessor> PROCESSOR_MATCHER = new ConfigMatcher<>(Arrays.asList(
             new CleanStringProcessorMapper(),

@@ -2,11 +2,11 @@ package net.starype.quiz.api.game.answer;
 
 import java.util.Set;
 
-public class DefaultAnswerEvaluator implements AnswerEvaluator {
+public class ExactAnswerEvaluator implements AnswerEvaluator {
 
     private Set<Answer> answers;
 
-    public DefaultAnswerEvaluator(Set<Answer> answers) {
+    public ExactAnswerEvaluator(Set<Answer> answers) {
         this.answers = answers;
     }
 
