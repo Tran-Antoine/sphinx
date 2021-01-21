@@ -1,0 +1,20 @@
+difficulty = "NORMAL"
+tags = ["Linear Algebra", "Math", "BA1"]
+
+[question]
+
+title = "Image de matrices équivalentes"
+text = "\text{Vrai ou Faux: \\
+        Soient A et B deux matrices à coefficients réels colonne-équivalentes. \\
+        Alors} Im(A) = Im(B)"
+
+[answer]
+
+processors = ["clean-separator"]
+correct = ["True"]
+
+[answer.evaluator]
+name = "double-evaluator"
+interpolation = "linear"
+range = 0.5
+

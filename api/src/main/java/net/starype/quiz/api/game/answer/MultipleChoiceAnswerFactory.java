@@ -3,19 +3,14 @@ package net.starype.quiz.api.game.answer;
 import java.util.Set;
 
 public class MultipleChoiceAnswerFactory implements CorrectAnswerFactory {
+
     private LossFunction lossFunction = new LinearLossFunction();
     private double punitiveRatio = 1.0;
 
     @Override
     public AnswerEvaluator createCorrectAnswer(Set<Answer> answers, AnswerProcessor answerProcessor) {
-        MultipleChoiceCorrectness multipleChoiceCorrectness
-                = new MultipleChoiceCorrectness(answers, lossFunction, punitiveRatio);
-        return new MultipleChoiceAnswer(multipleChoiceCorrectness);
-    }
-
-    @Override
-    public ValidityEvaluator getValidityEvaluator() {
-        return MultipleChoiceValidity.getInstance();
+        MultipleChoiceCorrectness multipleChoiceCorrectness = new MultipleChoiceCorrectness(answers, lossFunction, punitiveRatio);
+        return new MultipleChoiceAnswer(multipleChoiceCorrectness, new MultipleChoiceValidity(answers));
     }
 
     public MultipleChoiceAnswerFactory withInterpolation(LossFunction lossFunction) {

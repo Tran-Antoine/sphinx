@@ -102,7 +102,7 @@ public class DefaultQuestion implements Question {
             return this;
         }
 
-        public DefaultQuestion createDefaultQuestion() {
+        public DefaultQuestion build() {
             return new DefaultQuestion(rawText, rawAnswer, answerEvaluator, difficulty, tags);
         }
     }
