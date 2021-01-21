@@ -1,4 +1,4 @@
-difficulty = "EASY"
+difficulty = "NORMAL"
 tags = ["Linear Algebra", "Math", "BA1"]
 
 [question]
@@ -10,7 +10,7 @@ text = "\text{Vrai ou Faux: \\
 
 [answer]
 
-processors = ["clean-string"]
+processors = ["clean-separator"]
 correct = ["True"]
 
 [answer.evaluator]

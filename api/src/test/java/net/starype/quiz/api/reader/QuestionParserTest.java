@@ -10,7 +10,7 @@ public class QuestionParserTest {
     @Test
     public void get_section() {
         try {
-            QuestionParser.parse("src/main/resources/questions/algebra/q1.toml");
+            QuestionParser.parseTOML("src/main/resources/questions/algebra/q1.toml");
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -55,4 +55,9 @@ public class Answer {
     public int hashCode() {
         return Objects.hash(answer);
     }
+
+    @Override
+    public String toString() {
+        return answer;
+    }
 }

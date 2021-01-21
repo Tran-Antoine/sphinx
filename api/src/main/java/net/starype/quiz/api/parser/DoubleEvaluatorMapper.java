@@ -4,7 +4,6 @@ import com.electronwill.nightconfig.core.CommentedConfig;
 import net.starype.quiz.api.game.answer.*;
 
 import java.util.Arrays;
-import java.util.Collection;
 
 public class DoubleEvaluatorMapper implements ConfigMapper<PartialEvaluator> {
 
