@@ -7,6 +7,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * Wrapper for character string answers. <br>
+ * Mainly used to avoid primitive obsession and offer quick conversion methods
+ */
 public class Answer {
 
     private final String answer;
@@ -15,28 +19,52 @@ public class Answer {
         this.answer = answer;
     }
 
+    /**
+     * Construct an Answer object from the given string
+     * @param answer the character string corresponding to the answer
+     * @return the Answer object created
+     */
     public static Answer fromString(String answer) {
         return new Answer(answer);
     }
 
-    public static Set<Answer> fromStringCollection(Collection<String> stringSet) {
-        return stringSet.stream()
+    /**
+     * Maps a collection of string to a set of answers
+     * @param stringCollection the collection of character strings
+     * @return the set of answers computed
+     */
+    public static Set<Answer> fromStringCollection(Collection<String> stringCollection) {
+        return stringCollection.stream()
                 .map(Answer::fromString)
                 .collect(Collectors.toSet());
     }
 
+    /**
+     * @return the text value of the answer
+     */
     public String getAnswerText() {
         return answer;
     }
 
+    /**
+     * @return the text value of the answer as an integer
+     */
     public int asInt() {
         return Integer.parseInt(answer);
     }
 
+    /**
+     * @return the text value of the answer as a double
+     */
     public double asDouble() {
         return Double.parseDouble(answer.replace(',', '.'));
     }
 
+    /**
+     * Split the answer using the given regex
+     * @param regex the regex used to split the text value of the answer object
+     * @return a list containing the result of the split
+     */
     public List<Answer> split(String regex) {
         return Stream.of(answer.split(regex))
                 .map(Answer::fromString)
