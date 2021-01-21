@@ -68,7 +68,7 @@ public class CheckSum {
         if (this == o) return true;
         if (!(o instanceof CheckSum)) return false;
         CheckSum checkSum1 = (CheckSum) o;
-        return Objects.equals(checkSum, checkSum1.checkSum);
+        return checkSum.equals(checkSum1.checkSum);
     }
 
     @Override

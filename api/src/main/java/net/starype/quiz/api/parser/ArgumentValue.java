@@ -2,7 +2,7 @@ package net.starype.quiz.api.parser;
 
 public class ArgumentValue implements Argument {
     private final String name;
-    private final String value;
+    private String value;
 
     public ArgumentValue(String name, String value) {
         this.name = name;
@@ -16,5 +16,9 @@ public class ArgumentValue implements Argument {
 
     public String getValue() {
         return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 }
