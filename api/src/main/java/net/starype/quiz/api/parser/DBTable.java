@@ -27,12 +27,12 @@ public class DBTable {
     }
 
     public static class Builder {
-        private final List<String> arguments;
-        private final List<String> indexedArguments;
+        private final Set<String> arguments;
+        private final Set<String> indexedArguments;
 
         public Builder() {
-            arguments = new ArrayList<>();
-            indexedArguments = new ArrayList<>();
+            arguments = new HashSet<>();
+            indexedArguments = new HashSet<>();
         }
 
         public Builder registerArgument(String argument) {

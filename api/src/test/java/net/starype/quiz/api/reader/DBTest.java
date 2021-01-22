@@ -1,4 +1,4 @@
-package net.starype.quiz.api.game;
+package net.starype.quiz.api.reader;
 
 import net.starype.quiz.api.parser.DBEntry;
 import net.starype.quiz.api.parser.DBInputOutput;

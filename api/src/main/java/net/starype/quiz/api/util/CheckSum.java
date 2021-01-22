@@ -16,30 +16,31 @@ public class CheckSum {
 
     public static final CheckSum NIL = fromByteBuffer(ByteBuffer.allocate(1));
 
-    private CheckSum(ByteBuffer checkSum, boolean __) {
-        this.checkSum = checkSum;
-    }
-
-    private CheckSum(ByteBuffer buffer) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-1");
-            digest.update(buffer);
-            checkSum = ByteBuffer.wrap(digest.digest());
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+    private CheckSum(ByteBuffer buffer, boolean isRawData) {
+        if(isRawData) {
+            this.checkSum = buffer;
+        }
+        else {
+            try {
+                MessageDigest digest = MessageDigest.getInstance("xxHash");
+                digest.update(buffer);
+                checkSum = ByteBuffer.wrap(digest.digest());
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     public static CheckSum fromRawCheckSum(ByteBuffer buffer) {
-        return new CheckSum(buffer, false);
+        return new CheckSum(buffer, true);
     }
 
     public static CheckSum fromByteBuffer(ByteBuffer buffer) {
-        return new CheckSum(buffer);
+        return new CheckSum(buffer, false);
     }
 
     public static CheckSum fromString(String str) {
-        return new CheckSum(ByteBuffer.wrap(str.getBytes()));
+        return fromByteBuffer(ByteBuffer.wrap(str.getBytes()));
     }
 
     public static Optional<CheckSum> fromFile(String filepath) {
@@ -50,7 +51,7 @@ public class CheckSum {
             try {
                 FileInputStream fileInputStream = new FileInputStream(file);
                 ByteBuffer buffer = ByteBuffer.wrap(fileInputStream.readAllBytes());
-                return Optional.of(new CheckSum(buffer));
+                return Optional.of(fromByteBuffer(buffer));
             } catch (IOException e) {
                 e.printStackTrace();
             }

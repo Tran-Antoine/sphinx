@@ -61,11 +61,12 @@ public class DBEntry extends Serializer {
 
     @Override
     public Optional<Map<String, ByteBuffer>> evaluate(ByteBuffer data) {
-        Optional<Map<String, ByteBuffer>> r = super.evaluate(data);
-        this.data = r.orElse(this.data);
-        r.ifPresent(stringByteBufferMap -> stringByteBufferMap.forEach((s, buffer) -> updateIndexedArgument(s, new String(buffer.array()))));
+        Optional<Map<String, ByteBuffer>> returnData = super.evaluate(data);
+        this.data = returnData.orElse(this.data);
+        returnData.ifPresent(stringByteBufferMap -> stringByteBufferMap
+                .forEach((entry, buffer) -> updateIndexedArgument(entry, new String(buffer.array()))));
         compile();
-        return r;
+        return returnData;
     }
 
     private void updateIndexedArgument(String entry, String value) {
@@ -77,7 +78,7 @@ public class DBEntry extends Serializer {
 
     public void load(ByteBuffer data) {
         this.data = evaluate(data).orElseThrow();
-        this.data.forEach((s, buffer) -> updateIndexedArgument(s, new String(buffer.array())));
+        this.data.forEach((entry, buffer) -> updateIndexedArgument(entry, new String(buffer.array())));
         compile();
     }
 
