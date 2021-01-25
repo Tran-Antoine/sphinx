@@ -43,7 +43,7 @@ public class DBEntry extends Serializer {
     }
 
     /**
-     * Sets the checksum of the given entry
+     * Set the checksum of the given entry
      * @param checkSum the new checkSum value (see {@link CheckSum})
      */
     public void setCheckSum(CheckSum checkSum) {
