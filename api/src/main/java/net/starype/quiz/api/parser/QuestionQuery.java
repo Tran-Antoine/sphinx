@@ -36,4 +36,12 @@ public interface QuestionQuery {
     }
 
     boolean apply(QueryData data);
+
+    default QuestionQuery and(QuestionQuery other) {
+        return (data) -> apply(data) && other.apply(data);
+    }
+
+    default QuestionQuery or(QuestionQuery other) {
+        return (data) -> apply(data) || other.apply(data);
+    }
 }
