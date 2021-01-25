@@ -119,6 +119,28 @@ public class QuestionParser {
         };
     }
 
+    public static Question parseTOML(String filePath) throws IOException {
+
+        CommentedConfig config = loadConfig(filePath);
+
+        String rawText = config.get("question.text");
+        Set<QuestionTag> tags = StringUtils.map(config.get("tags"), QuestionTag::new);
+        List<String> rawAnswers = config.get(CORRECT);
+        AnswerProcessor processor = loadProcessor(config::getOptional);
+        AnswerEvaluator evaluator = loadEvaluator(config::getOptional, processor, rawAnswers);
+        QuestionDifficulty difficulty = loadDifficulty(config::getOptional);
+
+        Question question = new DefaultQuestion.Builder()
+                .withAnswerEvaluator(evaluator)
+                .withRawText(rawText)
+                .withRawAnswer(String.join(", ", rawAnswers))
+                .withTags(tags)
+                .withDifficulty(difficulty)
+                .build();
+
+        return question;
+    }
+
     private static QuestionDifficulty loadDifficulty(ReadableMap config) {
         return DIFFICULTY_MATCHER.loadFromKeyOrDefault(DIFFICULTY, config);
     }

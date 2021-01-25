@@ -31,7 +31,8 @@ public class DBEntry extends Serializer {
         this.table = table;
         data = new HashMap<>();
         indexedArguments = new HashSet<>();
-        table.getIndexedArguments().forEach(arg -> indexedArguments.add(new ArgumentValue(arg, "")));
+        table.getIndexedArguments().forEach(arg -> indexedArguments.add(new ArgumentValue<>(arg, "")));
+        indexedArguments.add(new ArgumentValue<>("file", ""));
     }
 
     /**

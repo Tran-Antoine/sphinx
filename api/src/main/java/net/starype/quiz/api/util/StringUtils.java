@@ -62,6 +62,8 @@ public class StringUtils {
 
     public static <T> Optional<T> mapOptionalNoThrow(Optional<String> optionalString, Function<String, ? extends T> mapping) {
         try {
+            if(optionalString.isEmpty())
+                return Optional.empty();
             return Optional.of(mapping.apply(optionalString.orElseThrow()));
         }
         catch (RuntimeException e) {

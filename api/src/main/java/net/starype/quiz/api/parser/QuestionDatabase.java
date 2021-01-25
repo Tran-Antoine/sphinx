@@ -3,11 +3,10 @@ package net.starype.quiz.api.parser;
 import net.starype.quiz.api.game.question.Question;
 import net.starype.quiz.api.util.FileUtils;
 import net.starype.quiz.api.util.RandomComparator;
+import net.starype.quiz.api.util.StringUtils;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class QuestionDatabase {
@@ -65,8 +64,16 @@ public class QuestionDatabase {
         database.sync();
     }
 
-    public List<Question> randomizedQuery(IndexQuery queryMatcher, int maxCount) {
-        return database.query(queryMatcher).stream()
+    private boolean getQuery(QuestionQuery queryMatcher, Set<? extends ArgumentValue<String>> argumentValues) {
+        Map<String,String> map = argumentValues.stream()
+                .collect(Collectors.toMap(ArgumentValue::getName, ArgumentValue::getValue));
+        return queryMatcher.apply(new HashSet<>(StringUtils.unpack(map.get("tags"))),
+                map.get("text"), map.get("difficulty"), map.get("file"));
+    }
+
+    public List<Question> randomizedQuery(QuestionQuery queryMatcher, int maxCount) {
+        return database.query(argumentValues -> getQuery(queryMatcher, argumentValues))
+                .stream()
                 .sorted(new RandomComparator<>())
                 .map(s -> QuestionParser.parseRaw(
                         s.get("difficulty").orElse("NORMAL"),
@@ -81,11 +88,11 @@ public class QuestionDatabase {
                 .collect(Collectors.toList());
     }
 
-    public List<Question> queryAll(IndexQuery queryMatcher) {
+    public List<Question> queryAll(QuestionQuery queryMatcher) {
         return randomizedQuery(queryMatcher, Integer.MAX_VALUE);
     }
 
-    public Optional<Question> pickQuery(IndexQuery queryMatched) {
+    public Optional<Question> pickQuery(QuestionQuery queryMatched) {
         return randomizedQuery(queryMatched,1).stream().findAny();
     }
 }
