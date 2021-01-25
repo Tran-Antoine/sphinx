@@ -5,18 +5,22 @@ import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.TextChannel;
 import discord4j.core.object.reaction.ReactionEmoji;
 import net.starpye.quiz.discordimpl.input.ReactionInputListener;
+import net.starpye.quiz.discordimpl.input.ReactionInputListener.ReactionContext;
 import net.starpye.quiz.discordimpl.input.ReactionInputListener.TriggerCondition;
 import net.starpye.quiz.discordimpl.util.ImageUtils;
 import net.starype.quiz.api.game.GameRound;
 
 import javax.imageio.ImageIO;
+import javax.print.DocFlavor.READER;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
+import java.util.function.Consumer;
 
 public class GameLobby {
 
@@ -44,26 +48,28 @@ public class GameLobby {
         if(!playersId.add(playerId)) {
             return;
         }
-        String countIndication = playersId.size() + " player";
-        if(playersId.size() > 1) {
-            countIndication += "s";
-        }
-        editLobbyMessage(userName + " joined! (" + countIndication + ")");
-    }
-
-    private void editLobbyMessage(String newContent) {
-        channel
-                .getMessageById(lobbyMessageId)
-                .block()
-                .edit(spec -> spec.setContent(newContent))
-                .block();
+        String countIndication = countIndication();
+        editLobbyMessage(userName + " joined <:pandaheart:803074085101109319> " + countIndication);
     }
 
     public void unregisterPlayer(Snowflake playerID, String userName) {
         if(!playersId.remove(playerID)) {
             return;
         }
-        editLobbyMessage(userName + " left :(");
+        String countIndication = countIndication();
+        editLobbyMessage(userName + " left <:pandacry:803074107117142016> " + countIndication);
+    }
+
+    private void editLobbyMessage(String newContent) {
+        performAction(message -> message.edit(spec -> spec.setContent(newContent)).subscribe());
+    }
+
+    private String countIndication() {
+        String countIndication = playersId.size() + " player";
+        if(playersId.size() > 1) {
+            countIndication += "s";
+        }
+        return "(" + countIndication + ")";
     }
 
     public void queueRound(GameRound round) {
@@ -80,6 +86,7 @@ public class GameLobby {
 
     public void start(GameList gameList) {
         gameList.startNewGame(playersId, rounds, channel, authorId);
+        performAction(message -> message.delete().subscribe());
     }
 
     public boolean isAuthor(Snowflake playerId) {
@@ -90,22 +97,56 @@ public class GameLobby {
         return this.name.equals(name);
     }
 
-    public void sendJoinImage(ReactionInputListener reactionListener, TextChannel channel) {
+    public void sendJoinImage(ReactionInputListener reactionListener) {
 
-        try {
-            BufferedImage image = ImageIO.read(new File("discord-impl/src/main/resources/lobby.png"));
-            InputStream stream = ImageUtils.toInputStream(image);
-            Message message = channel.createMessage(spec -> spec.addFile("image.png", stream)).block();
-            message.addReaction(ReactionEmoji.unicode("\u25B6")).block();
-            message.addReaction(ReactionEmoji.unicode("\u274C")).block();
-            this.lobbyMessageId = message.getId();
-            TriggerCondition joinOption = new TriggerCondition(lobbyMessageId, "\u25B6", true);
-            TriggerCondition leaveOption = new TriggerCondition(lobbyMessageId, "\u274C", true);
-            reactionListener.addCallBack(joinOption, cont -> registerPlayer(cont.getUserId(), cont.getUserName()));
-            reactionListener.addCallBack(leaveOption, cont -> unregisterPlayer(cont.getUserId(), cont.getUserName()));
+        Optional<Message> optMessage = sendImage();
 
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(optMessage.isEmpty()) {
+            System.err.println("Error: Image could not be sent");
+            return;
         }
+
+        Message message = optMessage.get();
+        this.lobbyMessageId = message.getId();
+
+        setUpReaction(
+                message, "\u25B6",
+                cont -> registerPlayer(cont.getUserId(), cont.getUserName()),
+                reactionListener);
+
+        setUpReaction(
+                message, "\u274C",
+                cont -> unregisterPlayer(cont.getUserId(), cont.getUserName()),
+                reactionListener
+        );
+    }
+
+    private Optional<Message> sendImage() {
+
+        BufferedImage image;
+        try {
+            image = ImageIO.read(new File("discord-impl/src/main/resources/lobby.png"));
+        } catch (IOException e) {
+            return Optional.empty();
+        }
+
+        InputStream stream = ImageUtils.toInputStream(image);
+        Optional<Message> optMessage = channel
+                .createMessage(spec -> spec.addFile("image.png", stream))
+                .blockOptional();
+        return optMessage;
+    }
+
+    private void setUpReaction(Message message, String unicode, Consumer<ReactionContext> action, ReactionInputListener reactionListener) {
+        message.addReaction(ReactionEmoji.unicode(unicode)).block();
+        TriggerCondition condition = new TriggerCondition(message.getId(), unicode, true);
+        reactionListener.addCallBack(condition, action);
+    }
+
+    private void performAction(Consumer<Message> action) {
+        channel
+                .getMessageById(lobbyMessageId)
+                .blockOptional()
+                .ifPresent(action);
     }
 }

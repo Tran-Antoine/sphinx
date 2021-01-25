@@ -7,6 +7,7 @@ import net.starpye.quiz.discordimpl.game.DiscordQuizGame;
 import net.starpye.quiz.discordimpl.game.GameList;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -30,13 +31,13 @@ public class NextRoundCommand implements QuizCommand {
     }
 
     public static Map<Supplier<Boolean>, String> createStopConditions(GameList gameList, Snowflake playerId) {
-        Map<Supplier<Boolean>, String> conditions = new HashMap<>();
+        Map<Supplier<Boolean>, String> conditions = new LinkedHashMap<>();
         conditions.put(
                 () -> gameList.getFromPlayer(playerId).isEmpty(),
                 "You are not in any game");
 
         conditions.put(
-                () -> !gameList.getFromPlayer(playerId).map(DiscordQuizGame::isWaitingForNextRound).orElse(true),
+                () -> !gameList.getFromPlayer(playerId).get().isWaitingForNextRound(),
                 "You can't vote to begin the next round, since the current one is not finished yet");
 
         return conditions;

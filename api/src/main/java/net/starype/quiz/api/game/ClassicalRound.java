@@ -1,11 +1,11 @@
 package net.starype.quiz.api.game;
 
+import net.starype.quiz.api.game.ScoreDistribution.Standing;
 import net.starype.quiz.api.game.answer.Answer;
 import net.starype.quiz.api.game.event.EventHandler;
 import net.starype.quiz.api.game.player.IDHolder;
 import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.question.Question;
-import net.starype.quiz.api.util.SortUtils;
 
 import java.util.*;
 
@@ -71,17 +71,8 @@ public class ClassicalRound implements GameRound {
     }
 
     @Override
-    public GameRoundReport initReport(Map<Player<?>, Double> standings) {
-        return () -> createReport(standings);
-    }
-
-    private List<String> createReport(Map<Player<?>, Double> standings) {
-        List<String> report = new ArrayList<>();
-        report.add("Scores acquired for the round:\n");
-        for(SortUtils.Standing standing : SortUtils.sortByScore(standings)) {
-            report.add(standing.getPlayer().getNickname()+": " + standing.getScoreAcquired());
-        }
-        return report;
+    public GameRoundReport initReport(List<Standing> standings) {
+        return new SimpleGameReport(standings);
     }
 
     @Override

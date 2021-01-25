@@ -24,7 +24,7 @@ public class LobbyList {
     public String registerLobby(TextChannel channel, Member author) {
         String id = "lobby" + nextId++;
         GameLobby lobby = new GameLobby(channel, id);
-        lobby.sendJoinImage(reactionListener, channel);
+        lobby.sendJoinImage(reactionListener);
         lobby.registerAuthor(author.getId(), author.getDisplayName());
         lobbies.add(lobby);
         return id;

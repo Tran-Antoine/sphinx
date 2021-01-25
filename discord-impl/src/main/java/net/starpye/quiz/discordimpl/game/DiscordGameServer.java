@@ -1,10 +1,12 @@
 package net.starpye.quiz.discordimpl.game;
 
+import discord4j.common.util.Snowflake;
 import discord4j.core.object.entity.channel.TextChannel;
 import discord4j.core.util.ImageUtil;
 import net.starpye.quiz.discordimpl.util.ImageUtils;
 import net.starype.quiz.api.game.GameRoundReport;
 import net.starype.quiz.api.game.PlayerGuessContext;
+import net.starype.quiz.api.game.ScoreDistribution.Standing;
 import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.question.Question;
 import net.starype.quiz.api.server.GameServer;
@@ -18,6 +20,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Random;
 import java.util.function.Consumer;
 
 public class DiscordGameServer implements GameServer<DiscordQuizGame> {
@@ -32,15 +35,66 @@ public class DiscordGameServer implements GameServer<DiscordQuizGame> {
 
     @Override
     public void onRoundEnded(GameRoundReport report, DiscordQuizGame game) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("---------------\n").append("That is the end of the round!\nHere are the results:\n");
-        for(String value : report.rawMessages()) {
-            builder.append(value).append("\n");
+        InputStream image = generateStandingsImage(report);
+        channel.createMessage(spec -> spec.addFile("standings.png", image)).subscribe();
+    }
+
+    private InputStream generateStandingsImage(GameRoundReport report) {
+        int width = 500;
+        int height = 300;
+
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        Graphics2D graphics = image.createGraphics();
+        graphics.setBackground(Color.DARK_GRAY);
+        graphics.clearRect(0, 0, width, height);
+        int index = 0;
+        List<Standing> standings = report.orderedStandings();
+        for(Standing standing : standings) {
+            addLine(graphics, width, height, index++, standing, standings.size(), standings.get(0).getScoreAcquired());
         }
-        builder.append("\n---------------\n").append("Waiting for the next round... Use command 'next' to get ready\n");
-        if(builder.length() != 0) {
-            sendAsText(builder.toString());
+        graphics.dispose();
+        return ImageUtils.toInputStream(image);
+    }
+
+    private void addLine(Graphics2D graphics, int width, int height, int index, Standing standing, int size, double maxScore) {
+
+        int lineSpace = height / (size + 1);
+        int lineThickness = (int) (0.5 * lineSpace);
+        int imageThickness = (int) (1.2 * lineThickness);
+
+        int lineLength = (int) (standing.getScoreAcquired() / maxScore * width * 0.7) + (int) (1.4 * imageThickness);
+
+        int lineCenterY = (index+1) * lineSpace;
+        int lineTopY =  lineCenterY - lineThickness/2;
+        graphics.setColor(randomColor());
+        graphics.fill(new Rectangle(0, lineTopY, lineLength, lineThickness));
+        graphics.setColor(Color.WHITE);
+        graphics.setFont(new Font( "SansSerif", Font.BOLD, 12));
+        graphics.drawString(String.valueOf(standing.getScoreAcquired()), lineLength + 12, lineCenterY);
+        Object id = standing.getPlayer().getId();
+        byte[] data = channel
+                .getGuild()
+                .block()
+                .getMemberById((Snowflake) id)
+                .block().getAvatar()
+                .block()
+                .getData();
+        InputStream stream = new ByteArrayInputStream(data);
+        try {
+            Image image = ImageIO.read(stream);
+            image = image.getScaledInstance(imageThickness, imageThickness, 0);
+            graphics.drawImage(image, (int) (0.01 * width), lineCenterY - imageThickness/2, null);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+    }
+
+    private static Color randomColor() {
+        Random random = new Random();
+        int r = random.nextInt(256);
+        int g = random.nextInt(256);
+        int b = random.nextInt(256);
+        return new Color(r, g, b);
     }
 
     @Override

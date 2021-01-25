@@ -1,5 +1,6 @@
 package net.starype.quiz.api.game;
 
+import net.starype.quiz.api.game.ScoreDistribution.Standing;
 import net.starype.quiz.api.game.answer.Answer;
 import net.starype.quiz.api.game.event.EventHandler;
 import net.starype.quiz.api.game.player.IDHolder;
@@ -74,20 +75,18 @@ public class RaceRound implements GameRound {
     }
 
     @Override
-    public GameRoundReport initReport(Map<Player<?>, Double> standings) {
+    public GameRoundReport initReport(List<Standing> standings) {
         return winnerContainer.get() == null
                 ? winnerlessReport()
-                : winnerReport();
+                : winnerReport(standings);
     }
 
-    private GameRoundReport winnerReport() {
-        return () -> Arrays.asList(
-                winnerContainer.get().getId().toString(),
-                Double.toString(pointsToAward));
+    private GameRoundReport winnerReport(List<Standing> standings) {
+        return new SimpleGameReport(standings);
     }
 
     private GameRoundReport winnerlessReport() {
-        return () -> Collections.singletonList("No winner for this round");
+        return new SimpleGameReport(Collections.singletonList("No winner for this round"), Collections.emptyList());
     }
 
     @Override
