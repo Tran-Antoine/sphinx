@@ -47,19 +47,25 @@ public class DiscordGameServer implements GameServer<DiscordQuizGame> {
         Graphics2D graphics = image.createGraphics();
         graphics.setBackground(Color.DARK_GRAY);
         graphics.clearRect(0, 0, width, height);
+        graphics.setColor(Color.WHITE);
+        graphics.setFont(new Font("SansSerif", Font.BOLD, 20));
+        graphics.drawString("Results", width/2 - 33, height/10);
         int index = 0;
         List<Standing> standings = report.orderedStandings();
         for(Standing standing : standings) {
             addLine(graphics, width, height, index++, standing, standings.size(), standings.get(0).getScoreAcquired());
         }
+
         graphics.dispose();
         return ImageUtils.toInputStream(image);
     }
 
     private void addLine(Graphics2D graphics, int width, int height, int index, Standing standing, int size, double maxScore) {
 
-        int lineSpace = height / (size + 1);
-        int lineThickness = (int) (0.5 * lineSpace);
+        int yShift = 20;
+
+        int lineSpace = (height - yShift) / (size + 1);
+        int lineThickness = (int) (0.55 * lineSpace);
         int imageThickness = (int) (1.2 * lineThickness);
 
         int lineLength = (int) (standing.getScoreAcquired() / maxScore * width * 0.7) + (int) (1.4 * imageThickness);
@@ -67,10 +73,10 @@ public class DiscordGameServer implements GameServer<DiscordQuizGame> {
         int lineCenterY = (index+1) * lineSpace;
         int lineTopY =  lineCenterY - lineThickness/2;
         graphics.setColor(randomColor());
-        graphics.fill(new Rectangle(0, lineTopY, lineLength, lineThickness));
+        graphics.fill(new Rectangle(0, lineTopY + yShift, lineLength, lineThickness));
         graphics.setColor(Color.WHITE);
         graphics.setFont(new Font( "SansSerif", Font.BOLD, 12));
-        graphics.drawString(String.valueOf(standing.getScoreAcquired()), lineLength + 12, lineCenterY);
+        graphics.drawString(String.valueOf(standing.getScoreAcquired()), lineLength + 12, lineCenterY + 3 + yShift);
         Object id = standing.getPlayer().getId();
         byte[] data = channel
                 .getGuild()
@@ -82,11 +88,9 @@ public class DiscordGameServer implements GameServer<DiscordQuizGame> {
         InputStream stream = new ByteArrayInputStream(data);
         try {
             Image image = ImageIO.read(stream);
-            image = image.getScaledInstance(imageThickness, imageThickness, 0);
-            graphics.drawImage(image, (int) (0.01 * width), lineCenterY - imageThickness/2, null);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            image = image.getScaledInstance(imageThickness, imageThickness, Image.SCALE_SMOOTH);
+            graphics.drawImage(image, (int) (lineLength - imageThickness - 0.02 * width), lineCenterY - imageThickness/2 + yShift, null);
+        } catch (IOException ignored) { }
     }
 
     private static Color randomColor() {
@@ -119,9 +123,7 @@ public class DiscordGameServer implements GameServer<DiscordQuizGame> {
     }
 
     @Override
-    public void onPlayerScoreUpdated(Player<?> player) {
-        sendAsText(player.getNickname()+" now has " + player.getScore() + " points");
-    }
+    public void onPlayerScoreUpdated(Player<?> player) { }
 
     @Override
     public void onQuestionReleased(Question question) {
