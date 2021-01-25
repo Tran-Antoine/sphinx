@@ -14,10 +14,10 @@ import java.util.stream.Collectors;
 
 /**
  * Class {@link TrackedDatabase} defines  an IndexDatabase created from a  list of files. Each files is parsed using  an
- * {@link FileParser} and  then registered  in the Database. We  can then use the {@link SerializedIO} to save the
- * current state of  the database to a unique binary  file and therefore prevent the parsing of every file every time we
- * start  the  program. Each  tracked-File  is  automatically compare  to  the file  present in the  database and if any
- * differences are notice the file is re-parsed. <br>
+ * {@link FileParser} and then registered in the Database. {@link SerializedIO} can then be used to save the
+ * current state of  the database into a unique binary file and therefore prevent the parsing of every file every time we
+ * launch the program. Each tracked file is automatically compared to the file present in the database and if any
+ * difference is noticed the file is parsed again. <br>
  * <br>
  * <b>Example of usage:</b>
  * <pre>
