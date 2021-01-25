@@ -15,7 +15,7 @@ public class WordEvaluatorMapper implements ConfigMapper<PartialEvaluator> {
     }
 
     @Override
-    public PartialEvaluator map(CommentedConfig config) {
+    public PartialEvaluator map(ReadableMap config) {
         WordAnswerFactory factory = new WordAnswerFactory();
         return factory::createCorrectAnswer;
     }

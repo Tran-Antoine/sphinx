@@ -19,7 +19,7 @@ public class DifficultyMapper implements ConfigMapper<QuestionDifficulty> {
     }
 
     @Override
-    public QuestionDifficulty map(CommentedConfig config) {
+    public QuestionDifficulty map(ReadableMap config) {
         return difficulty;
     }
 }

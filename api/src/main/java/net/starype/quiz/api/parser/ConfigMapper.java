@@ -21,5 +21,5 @@ public interface ConfigMapper<R> {
      * @param config the configuration object loaded from the file
      * @return a result representing the value
      */
-    R map(CommentedConfig config);
+    R map(ReadableMap config);
 }

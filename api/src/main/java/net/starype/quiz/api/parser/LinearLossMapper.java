@@ -15,7 +15,7 @@ public class LinearLossMapper implements ConfigMapper<LossFunction> {
     }
 
     @Override
-    public LossFunction map(CommentedConfig config) {
+    public LossFunction map(ReadableMap config) {
         return new LinearLossFunction();
     }
 }

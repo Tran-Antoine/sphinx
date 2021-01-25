@@ -15,7 +15,7 @@ public class CleanStringProcessorMapper implements ConfigMapper<AnswerProcessor>
     }
 
     @Override
-    public AnswerProcessor map(CommentedConfig config) {
+    public AnswerProcessor map(ReadableMap config) {
         return new CleanStringProcessor();
     }
 }

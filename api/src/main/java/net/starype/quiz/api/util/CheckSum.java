@@ -22,10 +22,11 @@ public class CheckSum {
         }
         else {
             try {
-                MessageDigest digest = MessageDigest.getInstance("xxHash");
+                MessageDigest digest = MessageDigest.getInstance("SHA-1");
                 digest.update(buffer);
                 checkSum = ByteBuffer.wrap(digest.digest());
             } catch (NoSuchAlgorithmException e) {
+                System.out.println("Cannot use the required algorithm for digest");
                 e.printStackTrace();
             }
         }

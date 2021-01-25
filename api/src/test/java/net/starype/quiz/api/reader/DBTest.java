@@ -1,7 +1,7 @@
 package net.starype.quiz.api.reader;
 
 import net.starype.quiz.api.parser.DBEntry;
-import net.starype.quiz.api.parser.DBInputOutput;
+import net.starype.quiz.api.parser.SerializedIO;
 import net.starype.quiz.api.parser.DBTable;
 import net.starype.quiz.api.parser.TrackedDatabase;
 
@@ -32,7 +32,7 @@ public class DBTest {
                     entry.set("t2", "test");
                     return Collections.singleton(entry);
                 })
-                .setIO(new DBInputOutput() {
+                .setIO(new SerializedIO() {
                     @Override
                     public Optional<ByteBuffer> read() {
                         try {
