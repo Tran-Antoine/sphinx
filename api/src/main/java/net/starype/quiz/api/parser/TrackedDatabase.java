@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  * start  the  program. Each  tracked-File  is  automatically compare  to  the file  present in the  database and if any
  * differences are notice the file is re-parsed. <br>
  * <br>
- * <b>Example usage:</b>
+ * <b>Example of usage:</b>
  * <pre>
  *     DBTable table = new DBTable.Builder()
  *                 .registerArgument("arg1")
