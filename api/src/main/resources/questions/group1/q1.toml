@@ -6,7 +6,7 @@ tags = ["AICC", "Math", "BA1"]
 title = "Complexité polynomiale"
 text = """
         \\text{Vrai ou Faux: \\\\
-        \\sum_{k=0}^{n} a_k \\cdot n^d \\text{ is } \\Theta(n^{d+1})
+        \\sum_{k=0}^{n} a_k \\cdot k^d \\text{ is } \\Theta(n^{d+1})
        """
 
 [answer]

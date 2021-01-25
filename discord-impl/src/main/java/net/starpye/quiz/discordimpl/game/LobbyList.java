@@ -1,6 +1,7 @@
 package net.starpye.quiz.discordimpl.game;
 
 import discord4j.common.util.Snowflake;
+import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.channel.TextChannel;
 import net.starpye.quiz.discordimpl.input.ReactionInputListener;
 
@@ -20,11 +21,11 @@ public class LobbyList {
         this.nextId = 0;
     }
 
-    public String registerLobby(TextChannel channel, Snowflake author) {
+    public String registerLobby(TextChannel channel, Member author) {
         String id = "lobby" + nextId++;
         GameLobby lobby = new GameLobby(channel, id);
-        lobby.registerAuthor(author);
-        lobby.sendJoinImage(reactionListener);
+        lobby.sendJoinImage(reactionListener, channel);
+        lobby.registerAuthor(author.getId(), author.getDisplayName());
         lobbies.add(lobby);
         return id;
     }

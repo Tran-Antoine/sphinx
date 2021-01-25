@@ -25,8 +25,8 @@ public class CreateLobbyCommand implements QuizCommand {
         }
 
         LobbyList lobbies = context.getLobbyList();
-        String lobbyId = lobbies.registerLobby(channel, playerId);
-        channel.createMessage("Lobby with ID " + lobbyId+" was created").block();
+        String lobbyId = lobbies.registerLobby(channel, author);
+        //channel.createMessage("Lobby with ID " + lobbyId+" was created").block();
     }
 
     @Override

@@ -3,6 +3,7 @@ package net.starpye.quiz.discordimpl.command;
 import discord4j.common.util.Snowflake;
 import discord4j.core.object.entity.channel.TextChannel;
 import discord4j.core.object.reaction.ReactionEmoji;
+import net.starpye.quiz.discordimpl.game.DiscordQuizGame;
 import net.starpye.quiz.discordimpl.game.GameList;
 
 import java.util.HashMap;
@@ -35,7 +36,7 @@ public class NextRoundCommand implements QuizCommand {
                 "You are not in any game");
 
         conditions.put(
-                () -> !gameList.getFromPlayer(playerId).get().isWaitingForNextRound(),
+                () -> !gameList.getFromPlayer(playerId).map(DiscordQuizGame::isWaitingForNextRound).orElse(true),
                 "You can't vote to begin the next round, since the current one is not finished yet");
 
         return conditions;

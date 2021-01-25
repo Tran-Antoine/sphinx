@@ -27,6 +27,7 @@ public class BotMain {
 
         dispatcher
                 .on(ReactionAddEvent.class)
+                .filter(ReactionInputListener.createFilter())
                 .retry()
                 .subscribe(reactionListener);
         dispatcher

@@ -1,6 +1,8 @@
 package net.starpye.quiz.discordimpl.game;
 
 import discord4j.core.object.entity.channel.TextChannel;
+import discord4j.core.util.ImageUtil;
+import net.starpye.quiz.discordimpl.util.ImageUtils;
 import net.starype.quiz.api.game.GameRoundReport;
 import net.starype.quiz.api.game.PlayerGuessContext;
 import net.starype.quiz.api.game.player.Player;
@@ -33,7 +35,7 @@ public class DiscordGameServer implements GameServer<DiscordQuizGame> {
         StringBuilder builder = new StringBuilder();
         builder.append("---------------\n").append("That is the end of the round!\nHere are the results:\n");
         for(String value : report.rawMessages()) {
-            builder.append(value);
+            builder.append(value).append("\n");
         }
         builder.append("\n---------------\n").append("Waiting for the next round... Use command 'next' to get ready\n");
         if(builder.length() != 0) {
@@ -77,16 +79,7 @@ public class DiscordGameServer implements GameServer<DiscordQuizGame> {
         TeXFormula teXFormula = new TeXFormula(message);
         Image image = teXFormula.createBufferedImage(TeXFormula.SERIF, 200, Color.BLACK, Color.WHITE);
         BufferedImage bufferedImage = toBufferedImage(image);
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-
-        try {
-            ImageIO.write(bufferedImage, "png", os);
-        } catch (IOException e) {
-            return;
-        }
-
-        InputStream inputStream = new ByteArrayInputStream(os.toByteArray());
-
+        InputStream inputStream = ImageUtils.toInputStream(bufferedImage);
         channel.createMessage(spec -> spec.addFile("image.png", inputStream)).block();
     }
 
