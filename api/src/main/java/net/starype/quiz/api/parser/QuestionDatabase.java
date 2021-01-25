@@ -67,8 +67,8 @@ public class QuestionDatabase {
     private boolean getQuery(QuestionQuery queryMatcher, Set<? extends ArgumentValue<String>> argumentValues) {
         Map<String,String> map = argumentValues.stream()
                 .collect(Collectors.toMap(ArgumentValue::getName, ArgumentValue::getValue));
-        return queryMatcher.apply(new HashSet<>(StringUtils.unpack(map.get("tags"))),
-                map.get("text"), map.get("difficulty"), map.get("file"));
+        return queryMatcher.apply(new QuestionQuery.QueryData(new HashSet<>(StringUtils.unpack(map.get("tags"))),
+                map.get("text"), map.get("difficulty"), map.get("file")));
     }
 
     public List<Question> randomizedQuery(QuestionQuery queryMatcher, int maxCount) {

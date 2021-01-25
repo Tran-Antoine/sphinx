@@ -11,6 +11,6 @@ public class QuestionDBTest {
         QuestionDatabase db = new QuestionDatabase("api/src/main/resources/questions", "db.bin",
                 false, false);
         db.sync();
-        List<Question> lQ = db.queryAll((tags, text, difficulty, file) -> tags.contains("Math"));
+        List<Question> lQ = db.queryAll((data) -> data.getTags().contains("Math"));
     }
 }
