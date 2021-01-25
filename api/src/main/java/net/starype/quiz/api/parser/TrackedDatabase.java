@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 /**
  * Class {@link TrackedDatabase} defines  an IndexDatabase created from a  list of files. Each files is parsed using  an
- * {@link FileParser} and  then registered  in the Database. We  can then use the {@link SerializableObject} to save the
+ * {@link FileParser} and  then registered  in the Database. We  can then use the {@link SerializedIO} to save the
  * current state of  the database to a unique binary  file and therefore prevent the parsing of every file every time we
  * start  the  program. Each  tracked-File  is  automatically compare  to  the file  present in the  database and if any
  * differences are notice the file is re-parsed. <br>
@@ -39,13 +39,13 @@ import java.util.stream.Collectors;
 public class TrackedDatabase implements IndexDatabase {
     private final DBTable table;
     private final FileParser parser;
-    private final SerializableObject io;
+    private final SerializedIO io;
     private final List<? extends String> trackedFiles;
     private final boolean dbStandalone;
     private Set<DBEntry> entries;
     private boolean hasBeenSync = false;
 
-    private TrackedDatabase(DBTable table, FileParser parser, SerializableObject io, List<? extends String> trackedFiles,
+    private TrackedDatabase(DBTable table, FileParser parser, SerializedIO io, List<? extends String> trackedFiles,
                             boolean dbStandalone) {
         this.table = table;
         this.io = io;
@@ -87,7 +87,7 @@ public class TrackedDatabase implements IndexDatabase {
         catch (RuntimeException ignored) {}
 
         // If database is in standalone mode then simply return here
-        if(dbStandalone)  return;
+        if(dbStandalone) return;
 
         // Secondly compare each file in the list with the Database
         // Retrieve a list of file to sync
@@ -171,7 +171,7 @@ public class TrackedDatabase implements IndexDatabase {
     public static class Builder {
         private DBTable table;
         private FileParser parser;
-        private SerializableObject io;
+        private SerializedIO io;
         private List<? extends String> trackedFiles;
         private boolean standalone = false;
 
@@ -190,7 +190,7 @@ public class TrackedDatabase implements IndexDatabase {
             return this;
         }
 
-        public Builder setIO(SerializableObject io) {
+        public Builder setIO(SerializedIO io) {
             this.io = io;
             return this;
         }

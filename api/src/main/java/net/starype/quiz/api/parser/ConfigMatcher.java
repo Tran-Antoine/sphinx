@@ -17,7 +17,7 @@ public class ConfigMatcher<T> {
     private ConfigMapper<T> defaultMapper;
 
     /**
-     * Constructs a ConfigMatcher with a default mapper, used in case {@link #loadFromKeyOrDefault(String, CommentedConfig)} fails
+     * Constructs a ConfigMatcher with a default mapper, used in case {@link #loadFromKeyOrDefault(String, ReadableMap)} fails
      * to find any mapper.
      * @param mappers the collection of mappers used for matchings
      * @param defaultMapper a default value when matching fails (may be null)
@@ -34,8 +34,8 @@ public class ConfigMatcher<T> {
      * @param config the config loaded from the TOML file
      * @return an optional containing the result created, if present
      */
-    public Optional<T> loadFromKey(String key, CommentedConfig config) {
-        return loadFromValue(config.get(key), config);
+    public Optional<T> loadFromKey(String key, ReadableMap config) {
+        return loadFromValue(config.get(key).orElse(null), config);
     }
 
     /**
@@ -44,7 +44,7 @@ public class ConfigMatcher<T> {
      * @param config the config loaded from the TOML file
      * @return an optional containing the result created, if present
      */
-    public Optional<T> loadFromValue(String value, CommentedConfig config) {
+    public Optional<T> loadFromValue(String value, ReadableMap config) {
         return mappers
                 .stream()
                 .filter(mapper -> mapper.getMapperName().equalsIgnoreCase(value))
@@ -59,7 +59,7 @@ public class ConfigMatcher<T> {
      * @param config the config loaded from the TOML file
      * @return a potentially empty collection containing all the results successfully computed
      */
-    public Collection<T> loadList(String key, CommentedConfig config) {
+    public Collection<T> loadList(String key, ReadableMap config) {
         return config.<List<String>>get(key)
                 .stream()
                 .map(name -> loadFromValue(name, config))
@@ -74,7 +74,7 @@ public class ConfigMatcher<T> {
      * @param config the config loaded from the TOML file
      * @return the result created if present, otherwise the default value defined when constructing the object
      */
-    public T loadFromKeyOrDefault(String key, CommentedConfig config) {
+    public T loadFromKeyOrDefault(String key, ReadableMap config) {
         return loadFromKey(key, config).orElse(defaultMapper.map(config));
     }
 }

@@ -15,7 +15,7 @@ public class TrueFalseProcessorMapper implements ConfigMapper<AnswerProcessor> {
     }
 
     @Override
-    public AnswerProcessor map(CommentedConfig config) {
+    public AnswerProcessor map(ReadableMap config) {
         return new TrueFalseProcessor();
     }
 }

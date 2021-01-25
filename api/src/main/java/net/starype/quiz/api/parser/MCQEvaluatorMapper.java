@@ -15,7 +15,7 @@ public class MCQEvaluatorMapper implements ConfigMapper<PartialEvaluator> {
     }
 
     @Override
-    public PartialEvaluator map(CommentedConfig config) {
+    public PartialEvaluator map(ReadableMap config) {
         MCQAnswerFactory factory = new MCQAnswerFactory();
         return factory::createCorrectAnswer;
     }
