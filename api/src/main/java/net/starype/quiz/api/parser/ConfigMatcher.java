@@ -17,7 +17,8 @@ public class ConfigMatcher<T> {
     private ConfigMapper<T> defaultMapper;
 
     /**
-     * Constructs a ConfigMatcher with a default mapper, used in case {@link #loadFromKeyOrDefault(String, ReadableMap)} fails
+     * Construct a ConfigMatcher with a default mapper, used in case {@link #loadFromKeyOrDefault(String, ReadableMap)} fails
+
      * to find any mapper.
      * @param mappers the collection of mappers used for matchings
      * @param defaultMapper a default value when matching fails (may be null)
