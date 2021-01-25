@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Class {@link DBEntry} stored an entries for each corresponding argument defines in the {@link DBTable} <br>
+ * Stores an entry for each corresponding argument defined in the {@link DBTable}
  *
  */
 public class DBEntry extends Serializer {
