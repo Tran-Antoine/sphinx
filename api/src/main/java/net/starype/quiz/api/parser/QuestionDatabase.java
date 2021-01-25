@@ -5,13 +5,10 @@ import net.starype.quiz.api.util.FileUtils;
 import net.starype.quiz.api.util.RandomComparator;
 
 import java.io.*;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 public class QuestionDatabase {
 
@@ -44,36 +41,7 @@ public class QuestionDatabase {
                 .create();
 
         // Create the serializable object
-        SerializedIO serializer = new SerializedIO() {
-            @Override
-            public Optional<ByteBuffer> read() {
-                try {
-                    InputStream inputStream = compressed ?
-                            (new GZIPInputStream(new FileInputStream(databaseFile))) :
-                            (new FileInputStream(databaseFile));
-                    return Optional.of(ByteBuffer.wrap(inputStream.readAllBytes()));
-                } catch (IOException e) {
-                    return Optional.empty();
-                }
-            }
-
-            @Override
-            public void write(ByteBuffer buffer) {
-                try {
-                    if(compressed) {
-                        GZIPOutputStream outputStream = new GZIPOutputStream(new FileOutputStream(databaseFile));
-                        outputStream.write(buffer.array());
-                        outputStream.finish();
-                        outputStream.close();
-                    }
-                    else  {
-                        OutputStream outputStream = new FileOutputStream(databaseFile);
-                        outputStream.write(buffer.array());
-                        outputStream.close();
-                    }
-                } catch (IOException ignored) { }
-            }
-        };
+        SerializedIO serializer = new FileSerializeIO(databaseFile, compressed);
 
         // Create the file parser
         FileParser fileParser = QuestionParser.getFileParser(file -> trackedFiles.contains(file) ?
