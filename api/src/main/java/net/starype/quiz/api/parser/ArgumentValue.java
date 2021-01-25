@@ -3,7 +3,7 @@ package net.starype.quiz.api.parser;
 import java.util.Collection;
 
 /**
- * Class {@link ArgumentValue} defines an argument based on a name and a value
+ * Defines an argument based on a name and a value
  * @param <T> The type of the value associate to the name
  */
 public class ArgumentValue<T> implements Argument {
