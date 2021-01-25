@@ -2,7 +2,9 @@ package net.starype.quiz.api.util;
 
 import net.starype.quiz.api.parser.Argument;
 
+import java.util.Collection;
 import java.util.Optional;
+import java.util.stream.Collector;
 
 public class SerializedArgument implements Argument {
     private final int size;

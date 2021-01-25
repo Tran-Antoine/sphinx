@@ -12,20 +12,47 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Class {@link TrackedDatabase} defines  an IndexDatabase created from a  list of files. Each files is parsed using  an
+ * {@link FileParser} and then registered in the Database. {@link SerializedIO} can then be used to save the
+ * current state of  the database into a unique binary file and therefore prevent the parsing of every file every time we
+ * launch the program. Each tracked file is automatically compared to the file present in the database and if any
+ * difference is noticed the file is parsed again. <br>
+ * <br>
+ * <b>Example of usage:</b>
+ * <pre>
+ *     DBTable table = new DBTable.Builder()
+ *                 .registerArgument("arg1")
+ *                 .registerArgument("arg2")
+ *                 .registerIndexedArguments("name")
+ *                 .registerIndexedArguments("index")
+ *                 .create();
+ *      TrackedDatabase db = new TrackedDatabase.Builder().setIO(io)
+ *                                   .setParser(parser)
+ *                                   .setTable(table)
+ *                                   .setTrackedDirectory("../path/to/tracked/directory")
+ *                                   .create();
+ *      db.sync();
+ * </pre>
+ *  For further information about the query see {@link IndexDatabase}
+ */
 public class TrackedDatabase implements IndexDatabase {
     private final DBTable table;
-    private final DBParser parser;
-    private final DBInputOutput io;
+    private final FileParser parser;
+    private final SerializedIO io;
     private final List<? extends String> trackedFiles;
+    private final boolean dbStandalone;
     private Set<DBEntry> entries;
     private boolean hasBeenSync = false;
 
-    private TrackedDatabase(DBTable table, DBParser parser, DBInputOutput io, List<? extends String> trackedFiles) {
+    private TrackedDatabase(DBTable table, FileParser parser, SerializedIO io, List<? extends String> trackedFiles,
+                            boolean dbStandalone) {
         this.table = table;
         this.io = io;
         this.entries = new HashSet<>();
         this.parser = parser;
         this.trackedFiles = trackedFiles;
+        this.dbStandalone = dbStandalone;
     }
 
     public void sync() {
@@ -58,6 +85,9 @@ public class TrackedDatabase implements IndexDatabase {
             }
         }
         catch (RuntimeException ignored) {}
+
+        // If database is in standalone mode then simply return here
+        if(dbStandalone) return;
 
         // Secondly compare each file in the list with the Database
         // Retrieve a list of file to sync
@@ -140,21 +170,27 @@ public class TrackedDatabase implements IndexDatabase {
 
     public static class Builder {
         private DBTable table;
-        private DBParser parser;
-        private DBInputOutput io;
+        private FileParser parser;
+        private SerializedIO io;
         private List<? extends String> trackedFiles;
+        private boolean standalone = false;
 
         public Builder setTable(DBTable table) {
             this.table = table;
             return this;
         }
 
-        public Builder setParser(DBParser parser) {
+        public Builder setParser(FileParser parser) {
             this.parser = parser;
             return this;
         }
 
-        public Builder setIO(DBInputOutput io) {
+        public Builder setStandalone(boolean standalone) {
+            this.standalone = standalone;
+            return this;
+        }
+
+        public Builder setIO(SerializedIO io) {
             this.io = io;
             return this;
         }
@@ -171,7 +207,7 @@ public class TrackedDatabase implements IndexDatabase {
         }
 
         public TrackedDatabase create() {
-            return new TrackedDatabase(table, parser, io, trackedFiles);
+            return new TrackedDatabase(table, parser, io, trackedFiles, standalone);
         }
     }
 }

@@ -1,24 +1,47 @@
 package net.starype.quiz.api.parser;
 
-public class ArgumentValue implements Argument {
-    private final String name;
-    private String value;
+import java.util.Collection;
 
-    public ArgumentValue(String name, String value) {
+/**
+ * Defines an argument based on a name and a value
+ * @param <T> The type of the value associate to the name
+ */
+public class ArgumentValue<T> implements Argument {
+    private final String name;
+    private T value;
+
+    /**
+     * Default constructor of the ArgumentValue
+     * @param name the name of the argument associate to the given value
+     * @param value generic value that is associate to the given name
+     */
+    public ArgumentValue(String name, T value) {
         this.name = name;
         this.value = value;
     }
 
+    /**
+     * Retrieve the name of the argument of current instance of {@link ArgumentValue}
+     * @return The name of the argument
+     */
     @Override
     public String getName() {
         return name;
     }
 
-    public String getValue() {
+    /**
+     * Retrieve the value associate to the argument
+     * @return T the value stored in the current {@link ArgumentValue} instance
+     */
+    public T getValue() {
         return value;
     }
 
-    public void setValue(String value) {
+    /**
+     * Set the value stored by the {@link ArgumentValue} to a given value
+     * @param value the new value stored by the {@link ArgumentValue} instance
+     */
+    public void setValue(T value) {
         this.value = value;
     }
 }

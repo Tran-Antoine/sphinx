@@ -3,6 +3,7 @@ package net.starype.quiz.api.parser;
 import com.electronwill.nightconfig.core.CommentedConfig;
 import net.starype.quiz.api.game.answer.BinaryLossFunction;
 import net.starype.quiz.api.game.answer.LossFunction;
+import net.starype.quiz.api.util.StringUtils;
 
 /**
  * Mapper for the {@link BinaryLossFunction} object
@@ -15,7 +16,8 @@ public class BinaryLossMapper implements ConfigMapper<LossFunction> {
     }
 
     @Override
-    public LossFunction map(CommentedConfig config) {
-        return new BinaryLossFunction(config.getOrElse("answer.evaluator.threshold", 0.1));
+    public LossFunction map(ReadableMap config) {
+        return new BinaryLossFunction(StringUtils.mapOptionalNoThrow(config.get("answer.evaluator.threshold"), Double::parseDouble)
+                .orElse(0.1));
     }
 }

@@ -13,7 +13,7 @@ public class ExactEvaluatorMapper implements ConfigMapper<PartialEvaluator> {
     }
 
     @Override
-    public PartialEvaluator map(CommentedConfig config) {
+    public PartialEvaluator map(ReadableMap config) {
         return (answers, processor) -> new ExactAnswerEvaluator(answers);
     }
 }

@@ -2,6 +2,7 @@ package net.starype.quiz.api.parser;
 
 import com.electronwill.nightconfig.core.CommentedConfig;
 import net.starype.quiz.api.game.answer.*;
+import net.starype.quiz.api.util.StringUtils;
 
 import java.util.Arrays;
 
@@ -25,9 +26,9 @@ public class DoubleEvaluatorMapper implements ConfigMapper<PartialEvaluator> {
     }
 
     @Override
-    public PartialEvaluator map(CommentedConfig config) {
+    public PartialEvaluator map(ReadableMap config) {
         RangedAnswerFactory factory = new DoubleAnswerFactory()
-                .withAcceptedRange(config.getOrElse("answer.evaluator.range", 0.1f))
+                .withAcceptedRange(StringUtils.mapOptionalNoThrow(config.get("answer.evaluator.range"), Float::parseFloat).orElse(0.1f))
                 .withInterpolation(LOSS_FUNCTIONS_MATCHER.loadFromKey("answer.evaluator.interpolation", config).orElse(new LinearLossFunction()));
         return factory::createCorrectAnswer;
     }
