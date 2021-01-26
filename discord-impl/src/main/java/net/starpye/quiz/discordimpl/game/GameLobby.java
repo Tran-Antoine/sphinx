@@ -112,7 +112,8 @@ public class GameLobby {
         setUpReaction(
                 message, "\u25B6",
                 cont -> registerPlayer(cont.getUserId(), cont.getUserName()),
-                reactionListener);
+                reactionListener
+        );
 
         setUpReaction(
                 message, "\u274C",
