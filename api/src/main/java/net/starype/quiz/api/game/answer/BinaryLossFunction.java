@@ -1,5 +1,7 @@
 package net.starype.quiz.api.game.answer;
 
+import net.starype.quiz.api.game.ScoreDistribution;
+
 public class BinaryLossFunction implements LossFunction {
     private double threshold = .5;
 
@@ -8,7 +10,7 @@ public class BinaryLossFunction implements LossFunction {
     }
 
     public BinaryLossFunction() {
-        this(0.001);
+        this(ScoreDistribution.EPSILON);
     }
 
     @Override
