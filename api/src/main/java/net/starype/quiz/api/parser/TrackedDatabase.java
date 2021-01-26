@@ -108,7 +108,7 @@ public class TrackedDatabase implements IndexDatabase {
 
     private void sync(String file) {
         // Compute the checksum of the file
-        CheckSum checkSum = CheckSum.fromFile(file).orElseThrow();
+        CheckSum checkSum = parser.computeChecksum(file).orElseThrow();
 
         // Update the entries (remove all the old instance of the file)
         entries = entries.stream()

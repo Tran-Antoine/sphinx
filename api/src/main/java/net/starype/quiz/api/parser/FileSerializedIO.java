@@ -6,12 +6,12 @@ import java.util.Optional;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-public class FileSerializeIO implements SerializedIO {
+public class FileSerializedIO implements SerializedIO {
 
     private final String filepath;
     private final boolean compressed;
 
-    public FileSerializeIO(String filepath, boolean compressed) {
+    public FileSerializedIO(String filepath, boolean compressed) {
         this.filepath = filepath;
         this.compressed = compressed;
     }

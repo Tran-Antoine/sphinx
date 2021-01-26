@@ -1,5 +1,8 @@
 package net.starype.quiz.api.parser;
 
+import net.starype.quiz.api.util.CheckSum;
+
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -8,4 +11,5 @@ import java.util.Set;
  */
 public interface FileParser {
     Set<DBEntry> read(String file);
+    Optional<CheckSum> computeChecksum(String file);
 }
