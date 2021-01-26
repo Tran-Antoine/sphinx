@@ -97,10 +97,7 @@ public class DiscordGameServer implements GameServer<DiscordQuizGame> {
 
     private static Color randomColor() {
         Random random = new Random();
-        int r = random.nextInt(256);
-        int g = random.nextInt(256);
-        int b = random.nextInt(256);
-        return new Color(r, g, b);
+        return new Color(Color.HSBtoRGB(random.nextFloat(), 0.75F, 0.5F));
     }
 
     @Override
