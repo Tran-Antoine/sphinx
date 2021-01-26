@@ -2,13 +2,14 @@ package net.starype.quiz.api.game;
 
 import net.starype.quiz.api.game.player.Player;
 
+import java.util.List;
 import java.util.Map;
 
 public class GameRoundContext {
 
     private EntityEligibility playerEligibility;
     private RoundEndingPredicate endingCondition;
-    private ScoreDistribution scoreDistributionCreator;
+    private List<ScoreDistribution> scoreDistributionCreator;
     private GameRoundReport reportCreator;
 
     private GameRound round;
@@ -45,7 +46,7 @@ public class GameRoundContext {
         return endingCondition;
     }
 
-    public ScoreDistribution getScoreDistribution() {
+    public List<ScoreDistribution> getScoreDistribution() {
         if(scoreDistributionCreator == null) {
             scoreDistributionCreator = round.initScoreDistribution();
         }

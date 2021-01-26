@@ -134,15 +134,32 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
             paused.set(true);
             waitingForNextRound = true;
 
-            Map<Player<?>, Double> standings = updateScores(context);
+            List<ScoreDistribution> scoreDistributions = context.getScoreDistribution();
+            Map<Player<?>, Double> standings = recursiveScoreUpdate(scoreDistributions.size()-1,
+                    players, scoreDistributions);
             round.onRoundStopped();
             gate.gameCallback((server, game) -> server.onRoundEnded(context.getReportCreator(standings), game));
         }
     }
 
-    private Map<Player<?>, Double> updateScores(GameRoundContext context) {
-        ScoreDistribution scoreDistribution = context.getScoreDistribution();
-        return scoreDistribution.applyAll(players, this::updateScore);
+//    private Map<Player<?>, Double> updateScores(ScoreDistribution scoreDistribution) {
+//        return scoreDistribution.applyAll(players, this::updateScore);
+//    }
+
+    private Map<Player<?>, Double> recursiveScoreUpdate(int currentDepth, Collection<? extends Player<?>> players,
+                                                        List<ScoreDistribution> scoreDistributions) {
+        ScoreDistribution scoreDistribution = scoreDistributions.get(currentDepth);
+        Map<Player<?>, Double> standing = scoreDistribution.applyAll(players, this::updateScore);
+
+        if(currentDepth == 0) {
+            return standing;
+        }
+
+        for(Player<?> player : players) {
+            recursiveScoreUpdate(currentDepth-1, player.getChildren(), scoreDistributions);
+        }
+
+        return standing;
     }
 
     private void updateScore(Player<?> player, double score) {

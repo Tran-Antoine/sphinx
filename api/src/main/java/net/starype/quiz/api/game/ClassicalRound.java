@@ -16,6 +16,7 @@ public class ClassicalRound implements GameRound {
     private MaxGuessCounter counter;
     private double maxAwarded;
     private LeaderboardDistribution leaderboard;
+    private List<ScoreDistribution> scoreDistributions = new ArrayList<>();
 
     public ClassicalRound(Question pickedQuestion, int maxGuesses, double maxAwarded) {
         this.pickedQuestion = pickedQuestion;
@@ -27,6 +28,7 @@ public class ClassicalRound implements GameRound {
     public void start(QuizGame game, Collection<? extends IDHolder<?>> players, EventHandler eventHandler) {
         this.players = players;
         this.leaderboard = new LeaderboardDistribution(maxAwarded, players.size());
+        scoreDistributions.add(leaderboard);
         game.sendInputToServer(server -> server.onQuestionReleased(pickedQuestion));
     }
 
@@ -66,8 +68,8 @@ public class ClassicalRound implements GameRound {
     }
 
     @Override
-    public ScoreDistribution initScoreDistribution() {
-        return leaderboard;
+    public List<ScoreDistribution> initScoreDistribution() {
+        return scoreDistributions;
     }
 
     @Override

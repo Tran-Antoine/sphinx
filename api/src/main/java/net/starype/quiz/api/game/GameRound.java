@@ -5,6 +5,7 @@ import net.starype.quiz.api.game.player.IDHolder;
 import net.starype.quiz.api.game.player.Player;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 public interface GameRound {
@@ -16,7 +17,7 @@ public interface GameRound {
 
     EntityEligibility initPlayerEligibility();
     RoundEndingPredicate initEndingCondition();
-    ScoreDistribution initScoreDistribution();
+    List<ScoreDistribution> initScoreDistribution();
     GameRoundReport initReport(Map<Player<?>, Double> standings);
 
     GameRoundContext getContext();

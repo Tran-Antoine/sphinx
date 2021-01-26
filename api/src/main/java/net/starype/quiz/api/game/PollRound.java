@@ -60,7 +60,7 @@ public class PollRound implements GameRound {
     }
 
     @Override
-    public ScoreDistribution initScoreDistribution() {
+    public List<ScoreDistribution> initScoreDistribution() {
         return new ZeroScoreDistribution();
     }
 
