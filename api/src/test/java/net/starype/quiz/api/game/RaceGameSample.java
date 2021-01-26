@@ -4,7 +4,7 @@ import net.starype.quiz.api.game.mock.MockPlayer;
 import net.starype.quiz.api.game.mock.MockServer;
 import net.starype.quiz.api.game.player.Player;
 
-import java.util.*;
+import java.util.Scanner;
 
 public class RaceGameSample {
 

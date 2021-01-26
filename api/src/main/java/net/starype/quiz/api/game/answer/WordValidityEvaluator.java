@@ -18,6 +18,6 @@ public class WordValidityEvaluator implements ValidityEvaluator {
     public boolean isValid(Answer answer) {
         return answer
                 .getAnswerText()
-                .matches("[a-zA-Z'0-9]+");
+                .matches("[a-zA-Z'0-9\\-]+");
     }
 }

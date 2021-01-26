@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 
 public interface ScoreDistribution extends Function<Player<?>, Double> {
 
+    double EPSILON = 0.001;
+  
     default List<Standing> applyAll(Collection<? extends Player<?>> players, BiConsumer<Player<?>, Double> action) {
         List<Standing> standings = players
                 .stream()

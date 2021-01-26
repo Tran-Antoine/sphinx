@@ -25,7 +25,7 @@ public class FixedLeaderboardEnding implements RoundEndingPredicate {
         }
         return leaderboard
                 .stream()
-                .allMatch((seat) -> Math.abs(seat.getScore() - 1) < 0.001);
+                .allMatch((seat) -> Math.abs(seat.getScore() - 1) < ScoreDistribution.EPSILON);
     }
 
     private boolean fullAndOneBelow() {
@@ -34,7 +34,7 @@ public class FixedLeaderboardEnding implements RoundEndingPredicate {
         }
         return leaderboard
                 .stream()
-                .filter((seat) -> Math.abs(seat.getScore() - 1) > 0.001)
+                .filter((seat) -> Math.abs(seat.getScore() - 1) > ScoreDistribution.EPSILON)
                 .count() == 1;
     }
 }
