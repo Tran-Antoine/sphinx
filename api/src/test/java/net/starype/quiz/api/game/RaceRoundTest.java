@@ -34,7 +34,7 @@ public class RaceRoundTest {
         GameRoundContext context = round.getContext();
 
         for(Player<?> player : players) {
-            round.onGuessReceived(player, "INCORRECT ANSWER");
+            round.onGuessReceived(player, "INCORRECT-ANSWER");
         }
 
         Assert.assertTrue(context.getEndingCondition().ends());
