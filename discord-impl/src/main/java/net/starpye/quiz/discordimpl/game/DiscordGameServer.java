@@ -40,16 +40,16 @@ public class DiscordGameServer implements GameServer<DiscordQuizGame> {
     }
 
     private InputStream generateStandingsImage(GameRoundReport report) {
-        int width = 500;
-        int height = 300;
+        int width = 1500;
+        int height = 900;
 
-        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB_PRE);
         Graphics2D graphics = image.createGraphics();
         graphics.setBackground(new Color(54, 57, 63));
         graphics.clearRect(0, 0, width, height);
         graphics.setColor(Color.WHITE);
-        graphics.setFont(new Font("Bowlby One SC", Font.BOLD, 35));
-        graphics.drawString("Results", width/2 - 80, height/7);
+        graphics.setFont(new Font("Bowlby One SC", Font.PLAIN, height/9)); // Bowlby One SC
+        graphics.drawString("Results", width/2 - 150, height/7);
         int index = 0;
         List<Standing> standings = report.orderedStandings();
         for(Standing standing : standings.subList(0, Math.min(standings.size(), 10))) {
@@ -62,7 +62,7 @@ public class DiscordGameServer implements GameServer<DiscordQuizGame> {
 
     private void addLine(Graphics2D graphics, int width, int height, int index, Standing standing, int size, double maxScore) {
 
-        int yShift = 20;
+        int yShift = height / 15;
 
         int lineSpace = (height - yShift) / (size + 1);
         int lineThickness = (int) (0.55 * lineSpace);
@@ -77,7 +77,7 @@ public class DiscordGameServer implements GameServer<DiscordQuizGame> {
         graphics.setColor(randomColor());
         graphics.fill(new Rectangle(0, lineTopY + yShift, lineLength, lineThickness));
         graphics.setColor(Color.WHITE);
-        graphics.setFont(new Font( "SansSerif", Font.BOLD, 12));
+        graphics.setFont(new Font( "SansSerif", Font.BOLD, height/20));
         graphics.drawString(String.valueOf(standing.getScoreAcquired()), lineLength + 12, lineCenterY + 3 + yShift);
         Object id = standing.getPlayer().getId();
         byte[] data = channel
