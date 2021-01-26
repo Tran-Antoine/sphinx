@@ -77,7 +77,7 @@ public class RaceRound implements GameRound {
     @Override
     public GameRoundReport initReport(List<Standing> standings) {
         return winnerContainer.get() == null
-                ? winnerlessReport()
+                ? winnerlessReport(standings)
                 : winnerReport(standings);
     }
 
@@ -85,8 +85,8 @@ public class RaceRound implements GameRound {
         return new SimpleGameReport(standings);
     }
 
-    private GameRoundReport winnerlessReport() {
-        return new SimpleGameReport(Collections.singletonList("No winner for this round"), Collections.emptyList());
+    private GameRoundReport winnerlessReport(List<Standing> standings) {
+        return new SimpleGameReport(Collections.singletonList("No winner for this round"), standings);
     }
 
     @Override

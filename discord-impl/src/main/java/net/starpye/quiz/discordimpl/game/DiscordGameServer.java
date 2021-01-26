@@ -52,7 +52,7 @@ public class DiscordGameServer implements GameServer<DiscordQuizGame> {
         graphics.drawString("Results", width/2 - 80, height/7);
         int index = 0;
         List<Standing> standings = report.orderedStandings();
-        for(Standing standing : standings) {
+        for(Standing standing : standings.subList(0, Math.min(standings.size(), 10))) {
             addLine(graphics, width, height, index++, standing, standings.size(), standings.get(0).getScoreAcquired());
         }
 
