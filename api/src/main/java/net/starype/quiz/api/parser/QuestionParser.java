@@ -55,7 +55,7 @@ public class QuestionParser {
     private static final String DIFFICULTY = "difficulty";
 
     public static Question parseRaw(String rawDifficulty, String inlineTags, String rawText, String inlineAnswers,
-                                             String inlineEvaluators, String inlineProcessors) {
+                                    String inlineEvaluators, String inlineProcessors) {
         List<String> rawAnswers = StringUtils.unpack(inlineAnswers);
         Map<String, String> rawEvaluators = StringUtils.unpackMap(inlineEvaluators);
         Map<String, String> rawProcessors = StringUtils.unpackMap(inlineProcessors);
@@ -78,10 +78,10 @@ public class QuestionParser {
     private static Set<String> getKeysBySubPath(String subPath, Set<? extends CommentedConfig.Entry> config) {
         return config.stream()
                 .map(s -> (s.getValue() instanceof CommentedConfig) ?
-                        getKeysBySubPath(StringUtils.concatWithSeparator(subPath, s.getKey(),"."),
+                        getKeysBySubPath(StringUtils.concatWithSeparator(subPath, s.getKey(), "."),
                                 s.<CommentedConfig>getValue().entrySet()) :
                         Set.of(StringUtils.concatWithSeparator(subPath, s.getKey(), ".")))
-                .reduce((s1,s2) -> Stream.concat(s1.stream(), s2.stream()).collect(Collectors.toSet())).orElse(new HashSet<>());
+                .reduce((s1, s2) -> Stream.concat(s1.stream(), s2.stream()).collect(Collectors.toSet())).orElse(new HashSet<>());
     }
 
     public static FileParser getFileParser(DBTable table, FileInput fileInput) {
@@ -99,37 +99,37 @@ public class QuestionParser {
     }
 
     public static Set<DBEntry> getDatabaseEntries(String file, DBTable table, FileInput fileInput) {
-        try {
-            CommentedConfig config = loadConfigFromString(fileInput.read(file).orElseThrow());
-            Set<String> inlineEntriesSet = getKeysBySubPath("", config.entrySet());
-            Map<String, String> argMap = inlineEntriesSet.stream()
-                    .collect(Collectors.toMap(path -> path, path -> (config.get(path) instanceof List<?>) ?
-                            StringUtils.pack(config.get(path)) : config.get(path)));
-
-            String rawText = config.get("question.text");
-            String inlineTags = StringUtils.pack(config.get("tags"));
-            String inlineAnswers = StringUtils.pack(config.get(CORRECT));
-            String inlineProcessors = StringUtils.packMap(argMap.keySet()
-                    .stream()
-                    .filter(key -> key.startsWith(PROCESSORS))
-                    .collect(Collectors.toMap(k -> k, argMap::get)));
-            String inlineEvaluator = StringUtils.packMap(argMap.keySet()
-                    .stream()
-                    .filter(key -> key.startsWith(EVALUATOR))
-                    .collect(Collectors.toMap(k -> k, argMap::get)));
-            String rawDifficulty = config.get(DIFFICULTY);
-            DBEntry entry = new DBEntry(table);
-            entry.set("text", rawText);
-            entry.set("difficulty", rawDifficulty);
-            entry.set("tags", inlineTags);
-            entry.set("processors", inlineProcessors);
-            entry.set("answers", inlineAnswers);
-            entry.set("evaluator", inlineEvaluator);
-            entry.set("processors", inlineProcessors);
-            return Set.of(entry);
-        } catch (NoSuchElementException e) {
+        Optional<String> parsedFile = fileInput.read(file);
+        if (parsedFile.isEmpty())
             return new HashSet<>();
-        }
+
+        CommentedConfig config = loadConfigFromString(parsedFile.get());
+        Set<String> inlineEntriesSet = getKeysBySubPath("", config.entrySet());
+        Map<String, String> argMap = inlineEntriesSet.stream()
+                .collect(Collectors.toMap(path -> path, path -> (config.get(path) instanceof List<?>) ?
+                        StringUtils.pack(config.get(path)) : config.get(path)));
+
+        String rawText = config.get("question.text");
+        String inlineTags = StringUtils.pack(config.get("tags"));
+        String inlineAnswers = StringUtils.pack(config.get(CORRECT));
+        String inlineProcessors = StringUtils.packMap(argMap.keySet()
+                .stream()
+                .filter(key -> key.startsWith(PROCESSORS))
+                .collect(Collectors.toMap(k -> k, argMap::get)));
+        String inlineEvaluator = StringUtils.packMap(argMap.keySet()
+                .stream()
+                .filter(key -> key.startsWith(EVALUATOR))
+                .collect(Collectors.toMap(k -> k, argMap::get)));
+        String rawDifficulty = config.get(DIFFICULTY);
+        DBEntry entry = new DBEntry(table);
+        entry.set("text", rawText);
+        entry.set("difficulty", rawDifficulty);
+        entry.set("tags", inlineTags);
+        entry.set("processors", inlineProcessors);
+        entry.set("answers", inlineAnswers);
+        entry.set("evaluator", inlineEvaluator);
+        entry.set("processors", inlineProcessors);
+        return Set.of(entry);
     }
 
     public static Question parseTOML(String filePath) throws IOException {
