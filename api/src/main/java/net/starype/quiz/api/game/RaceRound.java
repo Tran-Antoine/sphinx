@@ -43,7 +43,7 @@ public class RaceRound implements GameRound {
         if(correctness.isEmpty()) {
             return new PlayerGuessContext(source, 0, true);
         }
-        boolean binaryCorrectness = Math.abs(correctness.orElse(0D) - 1) < 0.001;
+        boolean binaryCorrectness = Math.abs(correctness.get() - 1) < 0.001;
 
         counter.incrementGuess(source);
         if(binaryCorrectness) {
