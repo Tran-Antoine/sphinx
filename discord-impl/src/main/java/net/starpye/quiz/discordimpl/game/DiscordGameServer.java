@@ -49,7 +49,8 @@ public class DiscordGameServer implements GameServer<DiscordQuizGame> {
         graphics.clearRect(0, 0, width, height);
         graphics.setColor(Color.WHITE);
         graphics.setFont(new Font("Bowlby One SC", Font.PLAIN, height/9)); // Bowlby One SC
-        graphics.drawString("Results", width/2 - 150, height/7);
+        graphics.drawString("Results", width/2 - 200, height/7);
+
         int index = 0;
         List<Standing> standings = report.orderedStandings();
         for(Standing standing : standings.subList(0, Math.min(standings.size(), 10))) {
@@ -77,8 +78,8 @@ public class DiscordGameServer implements GameServer<DiscordQuizGame> {
         graphics.setColor(randomColor());
         graphics.fill(new Rectangle(0, lineTopY + yShift, lineLength, lineThickness));
         graphics.setColor(Color.WHITE);
-        graphics.setFont(new Font( "SansSerif", Font.BOLD, height/20));
-        graphics.drawString(String.valueOf(standing.getScoreAcquired()), lineLength + 12, lineCenterY + 3 + yShift);
+        graphics.setFont(new Font( "SansSerif", Font.BOLD, height/25));
+        graphics.drawString(String.valueOf(standing.getScoreAcquired()), lineLength + 12, lineCenterY + 6 + yShift);
         Object id = standing.getPlayer().getId();
         byte[] data = channel
                 .getGuild()
@@ -97,7 +98,7 @@ public class DiscordGameServer implements GameServer<DiscordQuizGame> {
 
     private static Color randomColor() {
         Random random = new Random();
-        return new Color(Color.HSBtoRGB(random.nextFloat(), 0.75F, 0.5F));
+        return new Color(Color.HSBtoRGB(random.nextFloat(), 0.85F, 0.7F));
     }
 
     @Override
