@@ -10,6 +10,8 @@ import java.util.function.Function;
 
 public interface ScoreDistribution extends Function<Player<?>, Double> {
 
+    double EPSILON = 0.001;
+
     default Map<Player<?>, Double> applyAll(Collection<? extends Player<?>> players, BiConsumer<Player<?>, Double> action) {
         Map<Player<?>, Double> standings = new HashMap<>();
         for(Player<?> player : players) {

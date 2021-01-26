@@ -40,7 +40,10 @@ public class RaceRound implements GameRound {
 
         // eligibility checks are performed in the game class
         Optional<Double> correctness = pickedQuestion.evaluateAnswer(Answer.fromString(message));
-        boolean binaryCorrectness = Math.abs(correctness.orElse(0D) - 1) < 0.01;
+        if(correctness.isEmpty()) {
+            return new PlayerGuessContext(source, 0, true);
+        }
+        boolean binaryCorrectness = Math.abs(correctness.get() - 1) < ScoreDistribution.EPSILON;
 
         counter.incrementGuess(source);
         if(binaryCorrectness) {

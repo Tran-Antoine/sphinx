@@ -43,7 +43,7 @@ public class ClassicalRound implements GameRound {
         counter.incrementGuess(source);
         leaderboard.scoreUpdate(source, correctness);
 
-        if(Math.abs(correctness - 1) < 0.001) {
+        if(Math.abs(correctness - 1) < ScoreDistribution.EPSILON) {
             counter.consumeAllGuesses(source);
         }
 
