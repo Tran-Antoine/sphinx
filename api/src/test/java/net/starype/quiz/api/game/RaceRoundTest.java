@@ -4,8 +4,8 @@ package net.starype.quiz.api.game;
 import net.starype.quiz.api.game.answer.*;
 import net.starype.quiz.api.game.event.EventHandler;
 import net.starype.quiz.api.game.event.GameEventHandler;
-import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.player.IDHolder;
+import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.question.Question;
 import net.starype.quiz.api.game.question.QuestionDifficulty;
 import net.starype.quiz.api.game.question.QuestionTag;
@@ -34,7 +34,7 @@ public class RaceRoundTest {
         GameRoundContext context = round.getContext();
 
         for(Player<?> player : players) {
-            round.onGuessReceived(player, "INCORRECT ANSWER");
+            round.onGuessReceived(player, "INCORRECT-ANSWER");
         }
 
         Assert.assertTrue(context.getEndingCondition().ends());

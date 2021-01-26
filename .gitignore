@@ -2,6 +2,7 @@
 .idea
 .classpath
 .project
+*.bin
 build
 out
 discord-impl/src/main/resources/token.txt

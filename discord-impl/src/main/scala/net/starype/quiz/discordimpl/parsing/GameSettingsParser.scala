@@ -2,8 +2,8 @@ package net.starype.quiz.discordimpl.parsing
 
 import java.util.concurrent.TimeUnit
 
-import net.starype.quiz.api.game.{ClassicalRound, GameRound, IndividualRound, PollRound, TimedRaceRound}
 import net.starype.quiz.api.game.question.Question
+import net.starype.quiz.api.game._
 
 import scala.util.parsing.combinator.RegexParsers
 

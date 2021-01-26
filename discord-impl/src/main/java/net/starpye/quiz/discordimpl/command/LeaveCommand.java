@@ -1,7 +1,6 @@
 package net.starpye.quiz.discordimpl.command;
 
 import discord4j.common.util.Snowflake;
-import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.channel.TextChannel;
 import net.starpye.quiz.discordimpl.game.GameList;
 

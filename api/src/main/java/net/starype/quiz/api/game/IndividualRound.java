@@ -47,6 +47,7 @@ public class IndividualRound implements GameRound {
     @Override
     public void onGiveUpReceived(IDHolder<?> source) {
         scoreDistribution.addIfNew(source, 0);
+        maxGuessCounter.consumeAllGuesses(source);
     }
 
     @Override
