@@ -11,6 +11,7 @@ import net.starype.quiz.api.game.question.DefaultQuestion;
 import net.starype.quiz.api.game.question.Question;
 import net.starype.quiz.api.game.question.QuestionDifficulty;
 import net.starype.quiz.api.game.question.QuestionTag;
+import net.starype.quiz.api.util.CheckSum;
 import net.starype.quiz.api.util.StringUtils;
 
 import java.io.File;
@@ -60,8 +61,8 @@ public class QuestionParser {
         Map<String, String> rawProcessors = StringUtils.unpackMap(inlineProcessors);
 
         Set<QuestionTag> tags = new HashSet<>(StringUtils.unpack(inlineTags, QuestionTag::new));
-        AnswerProcessor processor = loadProcessor(arg -> Optional.ofNullable(rawProcessors.getOrDefault(arg, null)));
-        AnswerEvaluator evaluator = loadEvaluator(arg -> Optional.ofNullable(rawEvaluators.getOrDefault(arg, null)),
+        AnswerProcessor processor = loadProcessor(arg -> Optional.ofNullable(rawProcessors.get(arg)));
+        AnswerEvaluator evaluator = loadEvaluator(arg -> Optional.ofNullable(rawEvaluators.get(arg)),
                 processor, rawAnswers);
         QuestionDifficulty difficulty = loadDifficulty(arg -> Optional.of(rawDifficulty));
 
@@ -83,45 +84,57 @@ public class QuestionParser {
                 .reduce((s1,s2) -> Stream.concat(s1.stream(), s2.stream()).collect(Collectors.toSet())).orElse(new HashSet<>());
     }
 
-    public static FileParser getFileParser(Function<String, Optional<String>> filePath, DBTable table) {
-        return file -> {
-            try {
-                CommentedConfig config = loadConfig(filePath.apply(file).orElseThrow());
-                Set<String> inlineEntriesSet = getKeysBySubPath("", config.entrySet());
-                Map<String, String> argMap = inlineEntriesSet.stream()
-                        .collect(Collectors.toMap(path -> path, path -> (config.get(path) instanceof List<?>) ?
-                                StringUtils.pack(config.get(path)) : config.get(path)));
+    public static FileParser getFileParser(DBTable table, FileInput fileInput) {
+        return new FileParser() {
+            @Override
+            public Set<DBEntry> read(String file) {
+                return getDatabaseEntries(file, table, fileInput);
+            }
 
-                String rawText = config.get("question.text");
-                String inlineTags = StringUtils.pack(config.get("tags"));
-                String inlineAnswers = StringUtils.pack(config.get(CORRECT));
-                String inlineProcessors = StringUtils.packMap(argMap.keySet()
-                        .stream()
-                        .filter(key -> key.startsWith(PROCESSORS))
-                        .collect(Collectors.toMap(k -> k, argMap::get)));
-                String inlineEvaluator = StringUtils.packMap(argMap.keySet()
-                        .stream()
-                        .filter(key -> key.startsWith(EVALUATOR))
-                        .collect(Collectors.toMap(k -> k, argMap::get)));
-                String rawDifficulty = config.get(DIFFICULTY);
-                DBEntry entry = new DBEntry(table);
-                entry.set("text", rawText);
-                entry.set("difficulty", rawDifficulty);
-                entry.set("tags", inlineTags);
-                entry.set("processors", inlineProcessors);
-                entry.set("answers", inlineAnswers);
-                entry.set("evaluator", inlineEvaluator);
-                entry.set("processors", inlineProcessors);
-                return Set.of(entry);
-            } catch (IOException | NoSuchElementException e) {
-                return new HashSet<>();
+            @Override
+            public Optional<CheckSum> computeChecksum(String file) {
+                return fileInput.read(file).map(CheckSum::fromString);
             }
         };
     }
 
+    public static Set<DBEntry> getDatabaseEntries(String file, DBTable table, FileInput fileInput) {
+        try {
+            CommentedConfig config = loadConfigFromString(fileInput.read(file).orElseThrow());
+            Set<String> inlineEntriesSet = getKeysBySubPath("", config.entrySet());
+            Map<String, String> argMap = inlineEntriesSet.stream()
+                    .collect(Collectors.toMap(path -> path, path -> (config.get(path) instanceof List<?>) ?
+                            StringUtils.pack(config.get(path)) : config.get(path)));
+
+            String rawText = config.get("question.text");
+            String inlineTags = StringUtils.pack(config.get("tags"));
+            String inlineAnswers = StringUtils.pack(config.get(CORRECT));
+            String inlineProcessors = StringUtils.packMap(argMap.keySet()
+                    .stream()
+                    .filter(key -> key.startsWith(PROCESSORS))
+                    .collect(Collectors.toMap(k -> k, argMap::get)));
+            String inlineEvaluator = StringUtils.packMap(argMap.keySet()
+                    .stream()
+                    .filter(key -> key.startsWith(EVALUATOR))
+                    .collect(Collectors.toMap(k -> k, argMap::get)));
+            String rawDifficulty = config.get(DIFFICULTY);
+            DBEntry entry = new DBEntry(table);
+            entry.set("text", rawText);
+            entry.set("difficulty", rawDifficulty);
+            entry.set("tags", inlineTags);
+            entry.set("processors", inlineProcessors);
+            entry.set("answers", inlineAnswers);
+            entry.set("evaluator", inlineEvaluator);
+            entry.set("processors", inlineProcessors);
+            return Set.of(entry);
+        } catch (NoSuchElementException e) {
+            return new HashSet<>();
+        }
+    }
+
     public static Question parseTOML(String filePath) throws IOException {
 
-        CommentedConfig config = loadConfig(filePath);
+        CommentedConfig config = loadConfigFromFile(filePath);
 
         String rawText = config.get("question.text");
         Set<QuestionTag> tags = StringUtils.map(config.get("tags"), QuestionTag::new);
@@ -145,12 +158,16 @@ public class QuestionParser {
         return DIFFICULTY_MATCHER.loadFromKeyOrDefault(DIFFICULTY, config);
     }
 
-    private static CommentedConfig loadConfig(String filePath) throws IOException {
+    private static CommentedConfig loadConfigFromFile(String filePath) throws IOException {
         ConfigParser<CommentedConfig> parser = new TomlParser();
         Reader reader = new FileReader(new File(filePath));
         CommentedConfig result = parser.parse(reader);
         reader.close();
         return result;
+    }
+
+    private static CommentedConfig loadConfigFromString(String str) {
+        return new TomlParser().parse(str);
     }
 
     private static AnswerProcessor loadProcessor(ReadableMap config) {

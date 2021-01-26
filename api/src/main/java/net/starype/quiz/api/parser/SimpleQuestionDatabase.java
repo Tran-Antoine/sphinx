@@ -12,7 +12,16 @@ import java.util.stream.Collectors;
 public class SimpleQuestionDatabase implements QuestionDatabase {
 
     private TrackedDatabase database;
-    private DBTable table;
+
+    public final static DBTable TABLE = new DBTable.Builder()
+                    .registerIndexedArguments("text")
+                    .registerIndexedArguments("difficulty")
+                    .registerIndexedArguments("tags")
+                    .registerArgument("processors")
+                    .registerArgument("answers")
+                    .registerArgument("evaluator")
+                    .registerArgument("processors")
+                    .create();
 
     public SimpleQuestionDatabase(String trackedDirectory, String databaseFile) {
         this(trackedDirectory, databaseFile, false, true);
@@ -27,37 +36,31 @@ public class SimpleQuestionDatabase implements QuestionDatabase {
         setup(trackedFiles, databaseFile, standalone, compressed);
     }
 
-    private void setup(List<String> trackedFiles, String databaseFile, boolean standalone, boolean compressed) {
-        // First initialize the table
-        table = new DBTable.Builder()
-                .registerIndexedArguments("text")
-                .registerIndexedArguments("difficulty")
-                .registerIndexedArguments("tags")
-                .registerArgument("processors")
-                .registerArgument("answers")
-                .registerArgument("evaluator")
-                .registerArgument("processors")
-                .create();
+    public SimpleQuestionDatabase(List<String> trackedFiles, SerializedIO serializedIO, FileParser fileParser,
+                                  boolean standalone) {
+        setup(trackedFiles, serializedIO, fileParser, standalone);
+    }
 
-        // Create the serializable object
-        SerializedIO serializer = new FileSerializeIO(databaseFile, compressed);
-
-        // Create the file parser
-        FileParser fileParser = QuestionParser.getFileParser(file -> trackedFiles.contains(file) ?
-                (Optional.of(file)) : (Optional.empty()), table);
-
+    private void setup(List<String> trackedFiles, SerializedIO serializedIO, FileParser fileParser, boolean standalone) {
         // Input & Output
         database = new TrackedDatabase.Builder()
-                .setTable(table)
+                .setTable(TABLE)
                 .setTrackedFiles(trackedFiles)
-                .setIO(serializer)
+                .setIO(serializedIO)
                 .setParser(fileParser)
                 .setStandalone(standalone)
                 .create();
     }
 
-    public DBTable getTable() {
-        return table;
+    private void setup(List<String> trackedFiles, String databaseFile, boolean standalone, boolean compressed) {
+        // Create the serializable object
+        SerializedIO serializer = new FileSerializedIO(databaseFile, compressed);
+
+        // Create the file parser
+        FileParser fileParser = QuestionParser.getFileParser(TABLE,
+                new SimpleFileInput(s -> trackedFiles.contains(s) ? Optional.of(s) : Optional.empty()));
+
+        setup(trackedFiles, serializer, fileParser, standalone);
     }
 
     public void sync() {
