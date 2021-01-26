@@ -1,6 +1,7 @@
 package net.starype.quiz.api.game;
 
 import net.starype.quiz.api.DefaultSimpleGame;
+import net.starype.quiz.api.game.ScoreDistribution.Standing;
 import net.starype.quiz.api.game.event.EventHandler;
 import net.starype.quiz.api.game.event.GameEventHandler;
 import net.starype.quiz.api.game.player.Player;
@@ -134,13 +135,13 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
             paused.set(true);
             waitingForNextRound = true;
 
-            Map<Player<?>, Double> standings = updateScores(context);
+            List<Standing> standings = updateScores(context);
             round.onRoundStopped();
             gate.gameCallback((server, game) -> server.onRoundEnded(context.getReportCreator(standings), game));
         }
     }
 
-    private Map<Player<?>, Double> updateScores(GameRoundContext context) {
+    private List<Standing> updateScores(GameRoundContext context) {
         ScoreDistribution scoreDistribution = context.getScoreDistribution();
         return scoreDistribution.applyAll(players, this::updateScore);
     }

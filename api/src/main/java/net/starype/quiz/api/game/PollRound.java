@@ -1,14 +1,13 @@
 package net.starype.quiz.api.game;
 
+import net.starype.quiz.api.game.ScoreDistribution.Standing;
 import net.starype.quiz.api.game.answer.Answer;
 import net.starype.quiz.api.game.event.EventHandler;
 import net.starype.quiz.api.game.player.IDHolder;
 import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.question.Question;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -65,12 +64,13 @@ public class PollRound implements GameRound {
     }
 
     @Override
-    public GameRoundReport initReport(Map<Player<?>, Double> standings) {
-        return () -> definitiveAnswers
+    public GameRoundReport initReport(List<Standing> standings) {
+        List<String> answers = definitiveAnswers
                 .entrySet()
                 .stream()
                 .map((entry) -> entry.getKey().getId()+": "+entry.getValue().getAnswerText())
                 .collect(Collectors.toList());
+        return new SimpleGameReport(answers, Collections.emptyList());
     }
 
     @Override

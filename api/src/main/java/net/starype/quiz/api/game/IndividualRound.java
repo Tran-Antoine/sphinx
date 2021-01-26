@@ -1,5 +1,6 @@
 package net.starype.quiz.api.game;
 
+import net.starype.quiz.api.game.ScoreDistribution.Standing;
 import net.starype.quiz.api.game.answer.Answer;
 import net.starype.quiz.api.game.event.EventHandler;
 import net.starype.quiz.api.game.player.IDHolder;
@@ -65,29 +66,8 @@ public class IndividualRound implements GameRound {
     }
 
     @Override
-    public GameRoundReport initReport(Map<Player<?>, Double> standings) {
-        return () -> createReport(standings);
-    }
-
-    private List<String> createReport(Map<Player<?>, Double> standings) {
-        List<String> report = new ArrayList<>();
-        List<Double> values = standings
-                .values()
-                .stream()
-                .distinct()
-                .sorted()
-                .collect(Collectors.toList());
-        for(double value : values) {
-            Set<String> playersMatchingValue = standings
-                    .entrySet()
-                    .stream()
-                    .filter(entry -> entry.getValue().equals(value))
-                    .map(Entry::getKey)
-                    .map(Player::getNickname)
-                    .collect(Collectors.toSet());
-            report.add(String.join(", ", playersMatchingValue) + " got " + value + " points");
-        }
-        return report;
+    public GameRoundReport initReport(List<Standing> standings) {
+        return new SimpleGameReport(standings);
     }
 
     @Override

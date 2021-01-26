@@ -3,9 +3,11 @@ package net.starpye.quiz.discordimpl.command;
 import discord4j.common.util.Snowflake;
 import discord4j.core.object.entity.channel.TextChannel;
 import discord4j.core.object.reaction.ReactionEmoji;
+import net.starpye.quiz.discordimpl.game.DiscordQuizGame;
 import net.starpye.quiz.discordimpl.game.GameList;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -21,15 +23,15 @@ public class NextRoundCommand implements QuizCommand {
         if(StopConditions.shouldStop(createStopConditions(gameList, playerId), channel)) {
             return;
         }
-        context.getMessage().addReaction(ReactionEmoji.unicode("\uD83D\uDC4D")).block();
-        boolean sufficient = gameList.getFromPlayer(playerId).get().addVote(playerId);
-        if(sufficient) {
-            channel.createMessage("All players seem ready. Moving on to the next round!").block();
-        }
+        context.getMessage().addReaction(ReactionEmoji.unicode("\uD83D\uDC4D")).subscribe();
+        DiscordQuizGame game = gameList.getFromPlayer(playerId).get(); // value guaranteed to be present in our case
+        game.addVote(
+                playerId,
+                () -> channel.createMessage("All players seem ready. Moving on to the next round!").subscribe());
     }
 
     public static Map<Supplier<Boolean>, String> createStopConditions(GameList gameList, Snowflake playerId) {
-        Map<Supplier<Boolean>, String> conditions = new HashMap<>();
+        Map<Supplier<Boolean>, String> conditions = new LinkedHashMap<>();
         conditions.put(
                 () -> gameList.getFromPlayer(playerId).isEmpty(),
                 "You are not in any game");

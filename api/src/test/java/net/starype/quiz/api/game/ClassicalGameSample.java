@@ -4,6 +4,7 @@ import net.starype.quiz.api.game.mock.MockPlayer;
 import net.starype.quiz.api.game.mock.MockServer;
 import net.starype.quiz.api.game.player.Player;
 
+import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;

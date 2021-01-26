@@ -1,6 +1,8 @@
 package net.starpye.quiz.discordimpl.game;
 
+import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.channel.TextChannel;
+import net.starpye.quiz.discordimpl.util.ImageUtils;
 import net.starype.quiz.api.game.GameRoundReport;
 import net.starype.quiz.api.game.PlayerGuessContext;
 import net.starype.quiz.api.game.player.Player;
@@ -8,12 +10,8 @@ import net.starype.quiz.api.game.question.Question;
 import net.starype.quiz.api.server.GameServer;
 import org.scilab.forge.jlatexmath.TeXFormula;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.function.Consumer;
@@ -30,15 +28,11 @@ public class DiscordGameServer implements GameServer<DiscordQuizGame> {
 
     @Override
     public void onRoundEnded(GameRoundReport report, DiscordQuizGame game) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("---------------\n").append("That is the end of the round!\nHere are the results:\n");
-        for(String value : report.rawMessages()) {
-            builder.append(value);
-        }
-        builder.append("\n---------------\n").append("Waiting for the next round... Use command 'next' to get ready\n");
-        if(builder.length() != 0) {
-            sendAsText(builder.toString());
-        }
+        Guild guild = channel
+                .getGuild()
+                .block();
+        InputStream image = ImageUtils.generateLeaderboard(report.orderedStandings(), guild);
+        channel.createMessage(spec -> spec.addFile("standings.png", image)).subscribe();
     }
 
     @Override
@@ -64,29 +58,19 @@ public class DiscordGameServer implements GameServer<DiscordQuizGame> {
 
     @Override
     public void onPlayerScoreUpdated(Player<?> player) {
-        sendAsText(player.getNickname()+" now has " + player.getScore() + " points");
+        // nothing to do
     }
 
     @Override
     public void onQuestionReleased(Question question) {
-        sendAsFile(question.getRawQuestion());
+        sendAsLatexFile(question.getRawQuestion());
     }
 
-    private void sendAsFile(String message) {
-
+    private void sendAsLatexFile(String message) {
         TeXFormula teXFormula = new TeXFormula(message);
         Image image = teXFormula.createBufferedImage(TeXFormula.SERIF, 200, Color.BLACK, Color.WHITE);
         BufferedImage bufferedImage = toBufferedImage(image);
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-
-        try {
-            ImageIO.write(bufferedImage, "png", os);
-        } catch (IOException e) {
-            return;
-        }
-
-        InputStream inputStream = new ByteArrayInputStream(os.toByteArray());
-
+        InputStream inputStream = ImageUtils.toInputStream(bufferedImage);
         channel.createMessage(spec -> spec.addFile("image.png", inputStream)).block();
     }
 

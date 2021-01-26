@@ -1,7 +1,9 @@
 package net.starype.quiz.api.game;
 
+import net.starype.quiz.api.game.ScoreDistribution.Standing;
 import net.starype.quiz.api.game.player.Player;
 
+import java.util.List;
 import java.util.Map;
 
 public class GameRoundContext {
@@ -31,7 +33,7 @@ public class GameRoundContext {
         return reportCreator;
     }
 
-    public GameRoundReport getReportCreator(Map<Player<?>, Double> standings) {
+    public GameRoundReport getReportCreator(List<Standing> standings) {
         if (reportCreator == null) {
             this.reportCreator = round.initReport(standings);
         }
