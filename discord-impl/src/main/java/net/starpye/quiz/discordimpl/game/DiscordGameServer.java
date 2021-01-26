@@ -45,11 +45,11 @@ public class DiscordGameServer implements GameServer<DiscordQuizGame> {
 
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics2D graphics = image.createGraphics();
-        graphics.setBackground(Color.DARK_GRAY);
+        graphics.setBackground(new Color(54, 57, 63));
         graphics.clearRect(0, 0, width, height);
         graphics.setColor(Color.WHITE);
-        graphics.setFont(new Font("SansSerif", Font.BOLD, 20));
-        graphics.drawString("Results", width/2 - 33, height/10);
+        graphics.setFont(new Font("Bowlby One SC", Font.BOLD, 35));
+        graphics.drawString("Results", width/2 - 80, height/7);
         int index = 0;
         List<Standing> standings = report.orderedStandings();
         for(Standing standing : standings) {
@@ -68,7 +68,9 @@ public class DiscordGameServer implements GameServer<DiscordQuizGame> {
         int lineThickness = (int) (0.55 * lineSpace);
         int imageThickness = (int) (1.2 * lineThickness);
 
-        int lineLength = (int) (standing.getScoreAcquired() / maxScore * width * 0.7) + (int) (1.4 * imageThickness);
+        int lineLength = Math.min(
+                (int) (standing.getScoreAcquired() / maxScore * width * 0.7) + (int) (1.4 * imageThickness),
+                (int) (width * 0.9));
 
         int lineCenterY = (index+1) * lineSpace;
         int lineTopY =  lineCenterY - lineThickness/2;
