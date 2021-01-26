@@ -12,6 +12,7 @@ import net.starype.quiz.api.game.question.Question;
 import net.starype.quiz.api.game.question.QuestionDifficulty;
 import net.starype.quiz.api.game.question.QuestionTag;
 import net.starype.quiz.api.util.CheckSum;
+import net.starype.quiz.api.util.CollectionUtils;
 import net.starype.quiz.api.util.StringUtils;
 
 import java.io.File;
@@ -81,7 +82,7 @@ public class QuestionParser {
                         getKeysBySubPath(StringUtils.concatWithSeparator(subPath, s.getKey(), "."),
                                 s.<CommentedConfig>getValue().entrySet()) :
                         Set.of(StringUtils.concatWithSeparator(subPath, s.getKey(), ".")))
-                .reduce((s1, s2) -> Stream.concat(s1.stream(), s2.stream()).collect(Collectors.toSet())).orElse(new HashSet<>());
+                .reduce(CollectionUtils::concat).orElse(new HashSet<>());
     }
 
     public static FileParser getFileParser(DBTable table, FileInput fileInput) {
