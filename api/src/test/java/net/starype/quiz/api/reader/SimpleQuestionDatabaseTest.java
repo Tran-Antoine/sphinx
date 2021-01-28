@@ -3,12 +3,12 @@ package net.starype.quiz.api.reader;
 import net.starype.quiz.api.game.question.Question;
 import net.starype.quiz.api.game.question.QuestionDifficulty;
 import net.starype.quiz.api.parser.*;
+import net.starype.quiz.api.parser.TrackedDatabase.UpdatableEntry;
 import net.starype.quiz.api.util.CheckSum;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.nio.ByteBuffer;
-import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -29,22 +29,12 @@ public class SimpleQuestionDatabaseTest {
 
     @Test
     public void database_test_parsing() {
-        FileInput fileInput = file -> file.equals("test.toml") ? Optional.of(TOML_FILE) : Optional.empty();
+
+        FilePathReader filePathReader = file -> file.equals("test.toml")
+                ? Optional.of(TOML_FILE)
+                : Optional.empty();
         AtomicBoolean dbHasBeenWritten = new AtomicBoolean(Boolean.FALSE);
         AtomicBoolean fileHasBeenReadFrom = new AtomicBoolean(Boolean.FALSE);
-
-        FileParser fileParser = new FileParser() {
-            @Override
-            public Set<DBEntry> read(String file) {
-                fileHasBeenReadFrom.set(Boolean.TRUE);
-                return QuestionParser.getDatabaseEntries(file, SimpleQuestionDatabase.TABLE, fileInput);
-            }
-
-            @Override
-            public Optional<CheckSum> computeChecksum(String file) {
-                return fileInput.read(file).map(CheckSum::fromString);
-            }
-        };
 
         SerializedIO serializedIO = new SerializedIO() {
             @Override
@@ -59,9 +49,32 @@ public class SimpleQuestionDatabaseTest {
             }
         };
 
+        UpdatableEntry singleUpdater = new UpdatableEntry() {
+
+            @Override
+            public boolean needsUpdate(Set<DBEntry> entries) {
+                return true;
+            }
+
+            @Override
+            public String getId() {
+                return "test.toml";
+            }
+
+            @Override
+            public CheckSum computeCheckSum() {
+                return filePathReader.read(getId()).map(CheckSum::fromString).get();
+            }
+
+            @Override
+            public Set<DBEntry> generateNewEntries() {
+                fileHasBeenReadFrom.set(Boolean.TRUE);
+                return QuestionParser.getDatabaseEntries(getId(), SimpleQuestionDatabase.TABLE, filePathReader);
+            }
+        };
+
         // Create the database
-        SimpleQuestionDatabase simpleQuestionDatabase =
-                new SimpleQuestionDatabase(List.of("test.toml"), serializedIO, fileParser, false);
+        QuestionDatabase simpleQuestionDatabase = new SimpleQuestionDatabase(List.of(singleUpdater), serializedIO,false);
         simpleQuestionDatabase.sync();
 
         // CHeck the validity of the result question
