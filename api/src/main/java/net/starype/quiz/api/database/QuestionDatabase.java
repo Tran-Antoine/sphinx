@@ -1,4 +1,4 @@
-package net.starype.quiz.api.parser;
+package net.starype.quiz.api.database;
 
 import net.starype.quiz.api.game.question.Question;
 

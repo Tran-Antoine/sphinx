@@ -1,17 +1,20 @@
-package net.starype.quiz.api.parser;
+package net.starype.quiz.api.database;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
- * An {@link DBTable} is an object that contains a list of argument and a sublist of indexedArguments <br>
+ * An {@link DatabaseTable} is an object that contains a list of argument and a sublist of indexedArguments <br>
  * It is used to defines an generic entry for any DataBase
  */
-public class DBTable {
-    private final Set<? extends String> arguments;
-    private final Set<? extends String> indexedArguments;
+public class DatabaseTable {
+    private final List<? extends String> arguments;
+    private final List<? extends String> indexedArguments;
 
-    private DBTable(Set<? extends String> arguments, Set<? extends String> indexedArguments) {
+    private DatabaseTable(List<? extends String> arguments, List<? extends String> indexedArguments) {
         this.arguments = arguments;
         this.indexedArguments = indexedArguments;
     }
@@ -20,7 +23,7 @@ public class DBTable {
      * Get the list of all the arguments of the table
      * @return {@link Set} of {@link String}s representing the argument of the DB
      */
-    public Set<? extends String> getArguments() {
+    public List<? extends String> getArguments() {
         return arguments;
     }
 
@@ -29,7 +32,7 @@ public class DBTable {
      * list.
      * @return {@link Set} of {@link String}s that hold all the arguments
      */
-    public Set<? extends String> getIndexedArguments() {
+    public List<? extends String> getIndexedArguments() {
         return indexedArguments;
     }
 
@@ -43,21 +46,21 @@ public class DBTable {
     }
 
     public static class Builder {
-        private final Set<String> arguments;
-        private final Set<String> indexedArguments;
+        private final List<String> arguments;
+        private final List<String> indexedArguments;
 
         /**
-         * Default {@link DBTable.Builder} constructor
+         * Default {@link DatabaseTable.Builder} constructor
          */
         public Builder() {
-            arguments = new HashSet<>();
-            indexedArguments = new HashSet<>();
+            arguments = new ArrayList<>();
+            indexedArguments = new ArrayList<>();
         }
 
         /**
          * Register a new argument to the constructed table
          * @param argument {@link String} that hold the new argument
-         * @return {@link DBTable.Builder} reference to itself
+         * @return {@link DatabaseTable.Builder} reference to itself
          */
         public Builder registerArgument(String argument) {
             arguments.add(argument);
@@ -67,7 +70,7 @@ public class DBTable {
         /**
          * Register a new indexed argument to the constructed table
          * @param argument @link String} that hold the new indexed arguments
-         * @return {@link DBTable.Builder} reference to itself
+         * @return {@link DatabaseTable.Builder} reference to itself
          */
         public Builder registerIndexedArguments(String argument) {
             arguments.add(argument);
@@ -75,12 +78,19 @@ public class DBTable {
             return this;
         }
 
+        public Builder registerTable(DatabaseTable table) {
+            arguments.addAll(table.getArguments());
+            indexedArguments.addAll(table.getIndexedArguments());
+            return this;
+        }
+
         /**
-         * Create a new instance of {@link DBTable}
-         * @return {@link DBTable} created from the configuration given above
+         * Create a new instance of {@link DatabaseTable}
+         * @return {@link DatabaseTable} created from the configuration given above
          */
-        public DBTable create() {
-            return new DBTable(new HashSet<>(arguments), new HashSet<>(indexedArguments));
+        public DatabaseTable create() {
+            return new DatabaseTable(arguments.stream().distinct().collect(Collectors.toList()),
+                    indexedArguments.stream().distinct().collect(Collectors.toList()));
         }
     }
 }

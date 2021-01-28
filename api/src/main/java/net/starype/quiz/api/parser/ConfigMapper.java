@@ -1,6 +1,6 @@
 package net.starype.quiz.api.parser;
 
-import com.electronwill.nightconfig.core.CommentedConfig;
+import net.starype.quiz.api.database.ReadableMap;
 
 /**
  * Maps a key name with an object generating procedure. <br>
