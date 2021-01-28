@@ -62,10 +62,12 @@ public class SimpleDatabase implements Database {
         return entry;
     }
 
+    @Override
     public Optional<DatabaseEntry> getEntryById(DatabaseId id) {
         return Optional.ofNullable(entriesById.getOrDefault(id, null));
     }
 
+    @Override
     public void removeEntry(DatabaseId id) {
         entries.removeIf(entry -> entry.getId().equals(id));
         entriesById.remove(id);

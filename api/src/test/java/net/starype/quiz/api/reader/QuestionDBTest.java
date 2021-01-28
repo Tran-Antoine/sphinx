@@ -16,6 +16,5 @@ public class QuestionDBTest {
                 .createDatabaseFromDirectory("api/src/test/resources/questions", "api/src/test/resources/db.bin",
                         false, true);
         db.sync();
-        db.write();
     }
 }

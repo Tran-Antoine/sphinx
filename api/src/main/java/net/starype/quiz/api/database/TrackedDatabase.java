@@ -54,7 +54,7 @@ public class TrackedDatabase extends SimpleDatabase {
         CheckSum checkSum = fileParser.computeChecksum(file).orElseThrow();
 
         // Update the entries (remove all the old instance of the file)
-        entriesRemoveIf(entry -> !entry.get("file").orElseThrow().equals(file));
+        entriesRemoveIf(entry -> entry.get("file").orElseThrow().equals(file));
 
         // Updating the entries presents in the file
         Set<DatabaseEntry> newEntries = fileParser.read(file, this);

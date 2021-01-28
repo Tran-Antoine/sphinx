@@ -22,8 +22,8 @@ public class SimpleQuestionDatabase extends TrackedDatabase implements QuestionD
                     .registerArgument("processors")
                     .create();
 
-    public static SimpleQuestionDatabase createDatabaseFromFileList(Set<? extends String> trackedFiles, String databaseFile,
-                                                                    boolean standalone, boolean compressed)
+    public static SimpleQuestionDatabase createDatabaseFromFileList(Set<? extends String> trackedFiles, String relativeDirectory,
+                                                                    String databaseFile, boolean standalone, boolean compressed)
     {
         // Create the serializer object
         SerializedIO serializedIO = (compressed)
@@ -31,10 +31,20 @@ public class SimpleQuestionDatabase extends TrackedDatabase implements QuestionD
                 : (new FileSerializedIO(databaseFile));
 
         // Create the file parser
-        FileParser fileParser = QuestionParser.getFileParser(TABLE,
-                new SimpleFileInput(s -> trackedFiles.contains(s) ? Optional.of(s) : Optional.empty()));
+        Map<String, String> absoluteToRelativeMap = trackedFiles.stream()
+                .collect(Collectors.toMap(f -> f, file -> FileUtils.getRelativePath(file, relativeDirectory)));
+        Map<String, String> relativeToAbsoluteMap = trackedFiles.stream()
+                .collect(Collectors.toMap(file -> FileUtils.getRelativePath(file, relativeDirectory), f -> f));
 
-        return new SimpleQuestionDatabase(trackedFiles, serializedIO, fileParser, standalone);
+        FileParser fileParser = QuestionParser.getFileParser(TABLE,
+                new SimpleFileInput(file -> trackedFiles.contains(relativeToAbsoluteMap.getOrDefault(file, "")) ?
+                        Optional.of(relativeToAbsoluteMap.getOrDefault(file, "")) :
+                        Optional.empty()));
+
+        return new SimpleQuestionDatabase(trackedFiles.stream().map(absoluteToRelativeMap::get).collect(Collectors.toSet()),
+                serializedIO,
+                fileParser,
+                standalone);
     }
 
     public static SimpleQuestionDatabase createDatabaseFromDirectory(String directory, String databaseFile,
@@ -45,7 +55,7 @@ public class SimpleQuestionDatabase extends TrackedDatabase implements QuestionD
                 .map(File::getPath)
                 .collect(Collectors.toSet());
 
-        return createDatabaseFromFileList(trackedFiles, databaseFile, standalone, compressed);
+        return createDatabaseFromFileList(trackedFiles, directory, databaseFile, standalone, compressed);
     }
 
     private SimpleQuestionDatabase(Set<? extends String> trackedFiles, SerializedIO serializedIO, FileParser fileParser,
