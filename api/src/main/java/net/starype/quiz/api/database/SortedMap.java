@@ -3,7 +3,7 @@ package net.starype.quiz.api.database;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class CustomSortedMapCauseTreeDontWorkFukYouJava implements Map<String, String> {
+public class SortedMap implements Map<String, String> {
 
     private final List<Entry<String, String>> elements = new ArrayList<>();
 

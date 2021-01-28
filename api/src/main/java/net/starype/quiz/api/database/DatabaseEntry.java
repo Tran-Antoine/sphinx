@@ -15,7 +15,7 @@ import java.util.stream.IntStream;
  */
 public class DatabaseEntry {
     private final DatabaseId id;
-    private final Map<String,String> argument = new CustomSortedMapCauseTreeDontWorkFukYouJava();
+    private final Map<String,String> argument = new SortedMap();
     private final List<String> indexedArguments = new ArrayList<>();
     private final DatabaseTable table;
     private final Consumer<DatabaseId> onChange;
