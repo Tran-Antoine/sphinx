@@ -9,11 +9,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Defines  an indexable database created from a list of files. Each file is parsed using a
- * {@link FileParser} and then registered in the Database. {@link SerializedIO} can then be used to save the
- * current state of the database into a unique binary file and therefore prevent the parsing of every file every time the program
- * is launched. Each tracked file is automatically compared to the file present in the database and if any
- * difference is noticed the file is parsed again. <br>
+ * Defines  an indexable database created from updatable entries that are then registered in the Database.
+ * A {@link SerializedIO} object can be used to save the current state of the database into a unique binary file
+ * and therefore prevent the parsing of every file every time the program is launched. Each tracked entry is automatically
+ * compared to the entry present in the database and if any difference is noticed the entry is parsed again. <br>
  * <br>
  * <b>Example of usage:</b>
  * <pre>

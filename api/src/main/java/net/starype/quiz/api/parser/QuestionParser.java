@@ -83,20 +83,6 @@ public class QuestionParser {
                 .reduce(CollectionUtils::concat).orElse(new HashSet<>());
     }
 
-    public static FileParser getFileParser(DBTable table, FilePathReader filePathReader) {
-        return new FileParser() {
-            @Override
-            public Set<DBEntry> read(String file) {
-                return getDatabaseEntries(file, table, filePathReader);
-            }
-
-            @Override
-            public Optional<CheckSum> computeChecksum(String file) {
-                return filePathReader.read(file).map(CheckSum::fromString);
-            }
-        };
-    }
-
     public static Set<DBEntry> getDatabaseEntries(String content, DBTable table) {
 
         CommentedConfig config = loadConfigFromString(content);
