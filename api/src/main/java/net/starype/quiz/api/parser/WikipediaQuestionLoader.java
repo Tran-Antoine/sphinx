@@ -81,11 +81,11 @@ public class WikipediaQuestionLoader {
         return Optional.of(parsedData.<List<Config>>get("quiz")
                 .stream()
                 .filter(config -> config.get("type").equals("mcq"))
-                .map(config -> instantiateQuestion(config, topics))
+                .map(config -> createQuestion(config, topics))
                 .collect(Collectors.toList()));
     }
 
-    private static Question instantiateQuestion(Config config, String topics) {
+    private static Question createQuestion(Config config, String topics) {
         // Retrieve the question
         String rawQuestion = config.<String>get("question").toLowerCase();
 
@@ -130,7 +130,7 @@ public class WikipediaQuestionLoader {
                     .build();
         }
         catch (IndexOutOfBoundsException e) {
-            throw new RuntimeException("Doesn't support more than 24 possible answers");
+            throw new IllegalArgumentException("Doesn't support more than 24 possible answers");
         }
     }
 }
