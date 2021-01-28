@@ -20,9 +20,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Util class that allows toml configuration file to {@link Question} conversions
@@ -85,26 +83,23 @@ public class QuestionParser {
                 .reduce(CollectionUtils::concat).orElse(new HashSet<>());
     }
 
-    public static FileParser getFileParser(DBTable table, FileInput fileInput) {
+    public static FileParser getFileParser(DBTable table, FilePathReader filePathReader) {
         return new FileParser() {
             @Override
             public Set<DBEntry> read(String file) {
-                return getDatabaseEntries(file, table, fileInput);
+                return getDatabaseEntries(file, table, filePathReader);
             }
 
             @Override
             public Optional<CheckSum> computeChecksum(String file) {
-                return fileInput.read(file).map(CheckSum::fromString);
+                return filePathReader.read(file).map(CheckSum::fromString);
             }
         };
     }
 
-    public static Set<DBEntry> getDatabaseEntries(String file, DBTable table, FileInput fileInput) {
-        Optional<String> parsedFile = fileInput.read(file);
-        if (parsedFile.isEmpty())
-            return new HashSet<>();
+    public static Set<DBEntry> getDatabaseEntries(String content, DBTable table) {
 
-        CommentedConfig config = loadConfigFromString(parsedFile.get());
+        CommentedConfig config = loadConfigFromString(content);
         Set<String> inlineEntriesSet = getKeysBySubPath("", config.entrySet());
         Map<String, String> argMap = inlineEntriesSet.stream()
                 .collect(Collectors.toMap(path -> path, path -> (config.get(path) instanceof List<?>) ?
@@ -131,6 +126,12 @@ public class QuestionParser {
         entry.set("evaluator", inlineEvaluator);
         entry.set("processors", inlineProcessors);
         return Set.of(entry);
+    }
+    public static Set<DBEntry> getDatabaseEntries(String path, DBTable table, FilePathReader filePathReader) {
+        Optional<String> parsedFile = filePathReader.read(path);
+        if (parsedFile.isEmpty())
+            return new HashSet<>();
+        return getDatabaseEntries(parsedFile.get(), table);
     }
 
     public static Question parseTOML(String filePath) throws IOException {

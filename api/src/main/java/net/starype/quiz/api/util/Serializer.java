@@ -11,6 +11,7 @@ import java.security.KeyPair;
 import java.util.*;
 
 public class Serializer {
+
     private final List<? extends SerializedArgument> arguments;
 
     public Serializer(List<? extends  SerializedArgument> arguments) {

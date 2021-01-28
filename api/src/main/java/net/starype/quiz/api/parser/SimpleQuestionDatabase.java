@@ -1,11 +1,10 @@
 package net.starype.quiz.api.parser;
 
 import net.starype.quiz.api.game.question.Question;
-import net.starype.quiz.api.util.FileUtils;
+import net.starype.quiz.api.parser.TrackedDatabase.UpdatableEntry;
 import net.starype.quiz.api.util.RandomComparator;
 import net.starype.quiz.api.util.StringUtils;
 
-import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -23,44 +22,13 @@ public class SimpleQuestionDatabase implements QuestionDatabase {
                     .registerArgument("processors")
                     .create();
 
-    public SimpleQuestionDatabase(String trackedDirectory, String databaseFile) {
-        this(trackedDirectory, databaseFile, false, true);
-    }
-
-    public SimpleQuestionDatabase(String trackedDirectory, String databaseFile, boolean standalone, boolean compressed) {
-        List<String> trackedFiles = standalone ? new ArrayList<>() :
-                FileUtils.recursiveListAllFiles(new File(trackedDirectory))
-                        .stream()
-                        .map(File::getPath)
-                        .collect(Collectors.toList());
-        setup(trackedFiles, databaseFile, standalone, compressed);
-    }
-
-    public SimpleQuestionDatabase(List<String> trackedFiles, SerializedIO serializedIO, FileParser fileParser,
-                                  boolean standalone) {
-        setup(trackedFiles, serializedIO, fileParser, standalone);
-    }
-
-    private void setup(List<String> trackedFiles, SerializedIO serializedIO, FileParser fileParser, boolean standalone) {
-        // Input & Output
-        database = new TrackedDatabase.Builder()
+    public SimpleQuestionDatabase(List<? extends UpdatableEntry> updaters, SerializedIO serializedIO, boolean standAlone) {
+        this.database = new TrackedDatabase.Builder()
                 .setTable(TABLE)
-                .setTrackedFiles(trackedFiles)
+                .setTrackedFiles(updaters)
                 .setIO(serializedIO)
-                .setParser(fileParser)
-                .setStandalone(standalone)
+                .setStandalone(standAlone)
                 .create();
-    }
-
-    private void setup(List<String> trackedFiles, String databaseFile, boolean standalone, boolean compressed) {
-        // Create the serializable object
-        SerializedIO serializer = new FileSerializedIO(databaseFile, compressed);
-
-        // Create the file parser
-        FileParser fileParser = QuestionParser.getFileParser(TABLE,
-                new SimpleFileInput(s -> trackedFiles.contains(s) ? Optional.of(s) : Optional.empty()));
-
-        setup(trackedFiles, serializer, fileParser, standalone);
     }
 
     public void sync() {
@@ -88,7 +56,6 @@ public class SimpleQuestionDatabase implements QuestionDatabase {
                         s.get("processors").orElse("")
                 ))
                 .limit(maxCount)
-                .sorted()
                 .collect(Collectors.toList());
     }
 

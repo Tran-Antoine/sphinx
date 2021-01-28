@@ -14,6 +14,7 @@ import java.util.stream.Stream;
  *
  */
 public class DBEntry extends Serializer {
+
     private final DBTable table;
     private Set<ArgumentValue<String>> indexedArguments;
     private Map<String, ByteBuffer> data;
@@ -56,7 +57,7 @@ public class DBEntry extends Serializer {
      * Get the file argument of the entry
      * @return An {@link String} that hold the file from which the entry has been loaded
      */
-    public String file() {
+    public String id() {
         return get("file").orElseThrow();
     }
 

@@ -1,22 +1,18 @@
 package net.starype.quiz.api.parser;
 
 import net.starype.quiz.api.util.CheckSum;
-import net.starype.quiz.api.util.FileUtils;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Class {@link TrackedDatabase} defines  an IndexDatabase created from a  list of files. Each files is parsed using  an
+ * Defines  an indexable database created from a list of files. Each file is parsed using a
  * {@link FileParser} and then registered in the Database. {@link SerializedIO} can then be used to save the
- * current state of  the database into a unique binary file and therefore prevent the parsing of every file every time we
- * launch the program. Each tracked file is automatically compared to the file present in the database and if any
+ * current state of the database into a unique binary file and therefore prevent the parsing of every file every time the program
+ * is launched. Each tracked file is automatically compared to the file present in the database and if any
  * difference is noticed the file is parsed again. <br>
  * <br>
  * <b>Example of usage:</b>
@@ -37,21 +33,20 @@ import java.util.stream.Collectors;
  *  For further information about the query see {@link IndexDatabase}
  */
 public class TrackedDatabase implements IndexDatabase {
+
     private final DBTable table;
-    private final FileParser parser;
     private final SerializedIO io;
-    private final List<? extends String> trackedFiles;
+    private List<? extends UpdatableEntry> updateCheckers;
     private final boolean dbStandalone;
     private Set<DBEntry> entries;
     private boolean hasBeenSync = false;
 
-    private TrackedDatabase(DBTable table, FileParser parser, SerializedIO io, List<? extends String> trackedFiles,
+    private TrackedDatabase(DBTable table, SerializedIO io, List<? extends UpdatableEntry> updateCheckers,
                             boolean dbStandalone) {
         this.table = table;
         this.io = io;
+        this.updateCheckers = updateCheckers;
         this.entries = new HashSet<>();
-        this.parser = parser;
-        this.trackedFiles = trackedFiles;
         this.dbStandalone = dbStandalone;
     }
 
@@ -66,7 +61,7 @@ public class TrackedDatabase implements IndexDatabase {
 
         // First try to read the DB
         try {
-            ByteBuffer buffer = io.read().orElseThrow();
+            ByteBuffer buffer = io.read().orElse(ByteBuffer.allocateDirect(0));
 
             // Read the number of entries presents in the DB
             int entriesCount = buffer.getInt();
@@ -91,14 +86,16 @@ public class TrackedDatabase implements IndexDatabase {
 
         // Secondly compare each file in the list with the Database
         // Retrieve a list of file to sync
-        Set<String> syncRequired = trackedFiles.stream()
-                .filter(this::doesRequireSync)
+        Set<UpdatableEntry> syncRequired = updateCheckers.stream()
+                .filter(updateChecker -> updateChecker.needsUpdate(entries))
                 .collect(Collectors.toSet());
 
-        // Discard all the file no longer tracked
+        // Discard all the files no longer tracked
         entries = entries
                 .stream()
-                .filter(entry -> trackedFiles.stream().anyMatch(trackedFile -> trackedFile.equals(entry.file())))
+                .filter(entry -> updateCheckers
+                        .stream()
+                        .anyMatch(trackedFile -> trackedFile.getId().equals(entry.id())))
                 .collect(Collectors.toSet());
 
         // Sync each file
@@ -106,19 +103,18 @@ public class TrackedDatabase implements IndexDatabase {
         syncOut();
     }
 
-    private void sync(String file) {
+    private void sync(UpdatableEntry updatable) {
         // Compute the checksum of the file
-        CheckSum checkSum = parser.computeChecksum(file).orElseThrow();
+        CheckSum checkSum = updatable.computeCheckSum();
+        String path = updatable.getId();
 
         // Update the entries (remove all the old instance of the file)
-        entries = entries.stream()
-                .filter(entry -> !entry.file().equals(file))
-                .collect(Collectors.toSet());
+        this.entries.removeIf(entry -> entry.id().equals(path));
 
-        // Adding the entries present in the file to the DB
-        Set<DBEntry> newEntries = parser.read(file);
+        // Add the entries present in the file to the DB
+        Set<DBEntry> newEntries = updatable.generateNewEntries();
         newEntries.forEach(entry -> {
-            entry.setFile(file);
+            entry.setFile(path);
             entry.setCheckSum(checkSum);
         });
         entries.addAll(newEntries);
@@ -149,14 +145,6 @@ public class TrackedDatabase implements IndexDatabase {
         catch(IOException ignored) {}
     }
 
-    private boolean doesRequireSync(String file) {
-        return entries.stream()
-                .noneMatch(entry -> entry.file().equals(file)) ||
-               entries.stream()
-                       .filter(entry -> entry.file().equals(file))
-                       .noneMatch(entry -> entry.checkSum().equals(CheckSum.fromFile(file).orElse(CheckSum.NIL)));
-    }
-
     @Override
     public List<DBEntry> query(IndexQuery query) {
         if(!hasBeenSync) {
@@ -169,19 +157,14 @@ public class TrackedDatabase implements IndexDatabase {
     }
 
     public static class Builder {
+
         private DBTable table;
-        private FileParser parser;
         private SerializedIO io;
-        private List<? extends String> trackedFiles;
+        private List<? extends UpdatableEntry> updaters;
         private boolean standalone = false;
 
         public Builder setTable(DBTable table) {
             this.table = table;
-            return this;
-        }
-
-        public Builder setParser(FileParser parser) {
-            this.parser = parser;
             return this;
         }
 
@@ -195,19 +178,21 @@ public class TrackedDatabase implements IndexDatabase {
             return this;
         }
 
-        public Builder setTrackedFiles(List<? extends String> trackedFiles) {
-            this.trackedFiles = trackedFiles;
-            return this;
-        }
-
-        public Builder setTrackedDirectory(String directory) {
-            this.trackedFiles = FileUtils.recursiveListAllFiles(new File(directory))
-                    .stream().map(File::getPath).collect(Collectors.toList());
+        public Builder setTrackedFiles(List<? extends UpdatableEntry> updaters) {
+            this.updaters = updaters;
             return this;
         }
 
         public TrackedDatabase create() {
-            return new TrackedDatabase(table, parser, io, trackedFiles, standalone);
+            return new TrackedDatabase(table, io, updaters, standalone);
         }
+    }
+
+    public interface UpdatableEntry {
+
+        boolean needsUpdate(Set<DBEntry> entries);
+        String getId();
+        CheckSum computeCheckSum();
+        Set<DBEntry> generateNewEntries();
     }
 }
