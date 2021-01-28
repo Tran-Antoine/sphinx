@@ -56,8 +56,8 @@ public class DBTable {
 
         /**
          * Register a new argument to the constructed table
-         * @param argument {@link String} that hold the new argument
-         * @return {@link DBTable.Builder} reference to itself
+         * @param argument the new argument
+         * @return itself for chaining purposes
          */
         public Builder registerArgument(String argument) {
             arguments.add(argument);
@@ -66,8 +66,8 @@ public class DBTable {
 
         /**
          * Register a new indexed argument to the constructed table
-         * @param argument @link String} that hold the new indexed arguments
-         * @return {@link DBTable.Builder} reference to itself
+         * @param argument the new indexed arguments
+         * @return itself for chaining purposes
          */
         public Builder registerIndexedArguments(String argument) {
             arguments.add(argument);
@@ -77,7 +77,7 @@ public class DBTable {
 
         /**
          * Create a new instance of {@link DBTable}
-         * @return {@link DBTable} created from the configuration given above
+         * @return the {@link DBTable} created from the configuration
          */
         public DBTable create() {
             return new DBTable(new HashSet<>(arguments), new HashSet<>(indexedArguments));
