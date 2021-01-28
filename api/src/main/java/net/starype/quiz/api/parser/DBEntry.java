@@ -102,7 +102,7 @@ public class DBEntry extends Serializer {
 
     /**
      * Load an Entry from a given {@link ByteBuffer}
-     * @param data hold an {@link ByteBuffer} that will be used to load the data
+     * @param data a {@link ByteBuffer} that will be used to load the data
      * @return An Optional that contains a map of {@link String} and {@link ByteBuffer}
      */
     @Override
@@ -117,7 +117,7 @@ public class DBEntry extends Serializer {
 
     /**
      * Load the entry from a {@link ByteBuffer}
-     * @param data {@link ByteBuffer} that hold the data from which the entry is loaded
+     * @param data a {@link ByteBuffer} containing the data from which the entry is loaded
      */
     public void load(ByteBuffer data) {
         this.data = evaluate(data).orElseThrow();
@@ -127,7 +127,7 @@ public class DBEntry extends Serializer {
 
     /**
      * Save the entry to a {@link ByteBuffer}
-     * @return {@link ByteBuffer} that contains an encoded version of the entry (that can be loaded with the load methods)
+     * @return a {@link ByteBuffer} that contains an encoded version of the entry (that can be loaded with the load methods)
      */
     public ByteBuffer save() {
         return evaluate(data).orElseThrow();
