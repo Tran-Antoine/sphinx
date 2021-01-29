@@ -3,6 +3,7 @@
 .classpath
 .project
 *.bin
+*.sphinx
 build
 out
 discord-impl/src/main/resources/token.txt
