@@ -2,8 +2,8 @@ package net.starype.quiz.api.game;
 
 
 import net.starype.quiz.api.game.answer.*;
-import net.starype.quiz.api.game.event.EventHandler;
-import net.starype.quiz.api.game.event.GameEventHandler;
+import net.starype.quiz.api.game.event.UpdatableHandler;
+import net.starype.quiz.api.game.event.GameUpdatableHandler;
 import net.starype.quiz.api.game.player.IDHolder;
 import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.question.Question;
@@ -20,7 +20,7 @@ public class RaceRoundTest {
 
     @Test
     public void round_ends_when_out_of_guesses() {
-        EventHandler eventHandler = new GameEventHandler();
+        UpdatableHandler updatableHandler = new GameUpdatableHandler();
         Set<Player<UUID>> players = new HashSet<>();
         players.add(new MockPlayer());
         players.add(new MockPlayer());
@@ -30,7 +30,7 @@ public class RaceRoundTest {
                 .withQuestion(new MockQuestion(factory.createCorrectAnswer(Answer.fromString("CORRECT"), new IdentityProcessor())))
                 .build();
 
-        round.start(null, players, eventHandler);
+        round.start(null, players, updatableHandler);
         GameRoundContext context = round.getContext();
 
         for(Player<?> player : players) {
@@ -42,7 +42,7 @@ public class RaceRoundTest {
 
     @Test
     public void round_ends_when_one_winner() {
-        EventHandler eventHandler = new GameEventHandler();
+        UpdatableHandler updatableHandler = new GameUpdatableHandler();
         MockPlayer player = new MockPlayer();
 
         GameRound round = new RaceRound.Builder()
@@ -50,7 +50,7 @@ public class RaceRoundTest {
                 .withQuestion(new MockQuestion(factory.createCorrectAnswer(Answer.fromString("CORRECT"), new IdentityProcessor())))
                 .build();
       
-        round.start(null, Collections.singletonList(player), eventHandler);
+        round.start(null, Collections.singletonList(player), updatableHandler);
         RoundEndingPredicate endingPredicate = round.getContext().getEndingCondition();
 
         Assert.assertFalse(endingPredicate.ends());
@@ -62,12 +62,12 @@ public class RaceRoundTest {
 
     @Test
     public void game_ends_when_players_give_up() {
-        EventHandler eventHandler = new GameEventHandler();
+        UpdatableHandler updatableHandler = new GameUpdatableHandler();
         Player<UUID> player = new MockPlayer();
         GameRound round = new RaceRound.Builder()
                 .withMaxGuessesPerPlayer(10)
                 .build();
-        round.start(null, Collections.singletonList(player), eventHandler);
+        round.start(null, Collections.singletonList(player), updatableHandler);
         RoundEndingPredicate endingCondition = round.getContext().getEndingCondition();
         Assert.assertFalse(endingCondition.ends());
         round.onGiveUpReceived(player);
@@ -76,7 +76,7 @@ public class RaceRoundTest {
 
     @Test
     public void score_was_awarded() {
-        EventHandler eventHandler = new GameEventHandler();
+        UpdatableHandler updatableHandler = new GameUpdatableHandler();
         double pointsToAward = 3.5;
         Player<UUID> player1 = new MockPlayer();
         Player<UUID> player2 = new MockPlayer();
@@ -87,7 +87,7 @@ public class RaceRoundTest {
                 .withPointsToAward(pointsToAward)
                 .build();
 
-        round.start(null, Arrays.asList(player1, player2), eventHandler);
+        round.start(null, Arrays.asList(player1, player2), updatableHandler);
         round.onGuessReceived(player1, "CORRECT");
         ScoreDistribution scoreDistribution = round.getContext().getScoreDistribution();
 

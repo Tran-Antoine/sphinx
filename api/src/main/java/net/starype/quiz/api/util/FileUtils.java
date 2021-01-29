@@ -1,7 +1,16 @@
 package net.starype.quiz.api.util;
 
 import java.io.File;
+<<<<<<< HEAD
 import java.util.*;
+=======
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+>>>>>>> db-improvement-merge
 import java.util.stream.Collectors;
 
 public class FileUtils {
@@ -41,5 +50,12 @@ public class FileUtils {
             fileList.addAll(recursiveListAllFiles(file));
         }
         return fileList;
+    }
+
+    public static String getRelativePath(String file, String relativeTo)  {
+        Path sourceFile = Paths.get(relativeTo);
+        Path targetFile = Paths.get(file);
+        Path relativePath = sourceFile.relativize(targetFile);
+        return relativePath.toString().replace(File.separator, "/");
     }
 }

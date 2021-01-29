@@ -21,6 +21,7 @@ public class CheckSum {
             this.checkSum = buffer;
         }
         else {
+            int startingPosition = buffer.position(); // Keep track of the starting position
             try {
                 MessageDigest digest = MessageDigest.getInstance("SHA-1");
                 digest.update(buffer);
@@ -28,6 +29,9 @@ public class CheckSum {
             } catch (NoSuchAlgorithmException e) {
                 System.out.println("Cannot use the required algorithm for digest");
                 e.printStackTrace();
+            }
+            finally {
+                buffer.position(startingPosition);
             }
         }
     }

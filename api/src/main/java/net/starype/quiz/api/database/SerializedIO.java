@@ -1,4 +1,4 @@
-package net.starype.quiz.api.parser;
+package net.starype.quiz.api.database;
 
 import java.nio.ByteBuffer;
 import java.util.Optional;

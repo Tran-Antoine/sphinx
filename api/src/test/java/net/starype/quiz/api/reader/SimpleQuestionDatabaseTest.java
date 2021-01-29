@@ -1,9 +1,10 @@
 package net.starype.quiz.api.reader;
 
+import net.starype.quiz.api.database.DatabaseEntryFactory;
 import net.starype.quiz.api.game.question.Question;
 import net.starype.quiz.api.game.question.QuestionDifficulty;
 import net.starype.quiz.api.parser.*;
-import net.starype.quiz.api.parser.TrackedDatabase.UpdatableEntry;
+import net.starype.quiz.api.database.EntryUpdater;
 import net.starype.quiz.api.util.CheckSum;
 import org.junit.Assert;
 import org.junit.Test;
@@ -49,7 +50,7 @@ public class SimpleQuestionDatabaseTest {
             }
         };
 
-        UpdatableEntry singleUpdater = new UpdatableEntry() {
+        EntryUpdater singleUpdater = new EntryUpdater() {
 
             @Override
             public boolean needsUpdate(Set<DBEntry> entries) {
@@ -57,19 +58,19 @@ public class SimpleQuestionDatabaseTest {
             }
 
             @Override
-            public String getId() {
+            public String getVirtualPath() {
                 return "test.toml";
             }
 
             @Override
             public CheckSum computeCheckSum() {
-                return filePathReader.read(getId()).map(CheckSum::fromString).get();
+                return filePathReader.read(getVirtualPath()).map(CheckSum::fromString).get();
             }
 
             @Override
-            public Set<DBEntry> generateNewEntries() {
+            public Set<DBEntry> generateNewEntries(DatabaseEntryFactory factory) {
                 fileHasBeenReadFrom.set(Boolean.TRUE);
-                return QuestionParser.getDatabaseEntries(getId(), SimpleQuestionDatabase.TABLE, filePathReader);
+                return QuestionParser.getDatabaseEntries(getVirtualPath(), filePathReader);
             }
         };
 

@@ -1,6 +1,6 @@
 package net.starype.quiz.api.parser;
 
-import com.electronwill.nightconfig.core.CommentedConfig;
+import net.starype.quiz.api.database.ReadableMap;
 import net.starype.quiz.api.game.question.QuestionDifficulty;
 
 public class DifficultyMapper implements ConfigMapper<QuestionDifficulty> {

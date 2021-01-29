@@ -3,6 +3,7 @@ package net.starype.quiz.api.parser;
 import com.electronwill.nightconfig.core.CommentedConfig;
 import com.electronwill.nightconfig.core.io.ConfigParser;
 import com.electronwill.nightconfig.toml.TomlParser;
+import net.starype.quiz.api.database.*;
 import net.starype.quiz.api.game.answer.Answer;
 import net.starype.quiz.api.game.answer.AnswerEvaluator;
 import net.starype.quiz.api.game.answer.AnswerProcessor;
@@ -83,9 +84,12 @@ public class QuestionParser {
                 .reduce(CollectionUtils::concat).orElse(new HashSet<>());
     }
 
-    public static Set<DBEntry> getDatabaseEntries(String content, DBTable table) {
+    public static Set<DatabaseEntry> getDatabaseEntries(String file, FilePathReader fileInput, DatabaseEntryFactory databaseEntryFactory) {
+        Optional<String> parsedFile = fileInput.read(file);
+        if (parsedFile.isEmpty())
+            return new HashSet<>();
 
-        CommentedConfig config = loadConfigFromString(content);
+        CommentedConfig config = loadConfigFromString(parsedFile.get());
         Set<String> inlineEntriesSet = getKeysBySubPath("", config.entrySet());
         Map<String, String> argMap = inlineEntriesSet.stream()
                 .collect(Collectors.toMap(path -> path, path -> (config.get(path) instanceof List<?>) ?
@@ -103,7 +107,8 @@ public class QuestionParser {
                 .filter(key -> key.startsWith(EVALUATOR))
                 .collect(Collectors.toMap(k -> k, argMap::get)));
         String rawDifficulty = config.get(DIFFICULTY);
-        DBEntry entry = new DBEntry(table);
+
+        DatabaseEntry entry = databaseEntryFactory.generateNewEntry();
         entry.set("text", rawText);
         entry.set("difficulty", rawDifficulty);
         entry.set("tags", inlineTags);
@@ -112,12 +117,6 @@ public class QuestionParser {
         entry.set("evaluator", inlineEvaluator);
         entry.set("processors", inlineProcessors);
         return Set.of(entry);
-    }
-    public static Set<DBEntry> getDatabaseEntries(String path, DBTable table, FilePathReader filePathReader) {
-        Optional<String> parsedFile = filePathReader.read(path);
-        if (parsedFile.isEmpty())
-            return new HashSet<>();
-        return getDatabaseEntries(parsedFile.get(), table);
     }
 
     public static Question parseTOML(String filePath) throws IOException {
@@ -131,15 +130,13 @@ public class QuestionParser {
         AnswerEvaluator evaluator = loadEvaluator(config::getOptional, processor, rawAnswers);
         QuestionDifficulty difficulty = loadDifficulty(config::getOptional);
 
-        Question question = new DefaultQuestion.Builder()
+        return new DefaultQuestion.Builder()
                 .withAnswerEvaluator(evaluator)
                 .withRawText(rawText)
                 .withRawAnswer(String.join(", ", rawAnswers))
                 .withTags(tags)
                 .withDifficulty(difficulty)
                 .build();
-
-        return question;
     }
 
     private static QuestionDifficulty loadDifficulty(ReadableMap config) {
