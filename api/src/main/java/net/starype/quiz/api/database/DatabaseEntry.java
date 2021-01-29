@@ -5,6 +5,7 @@ import net.starype.quiz.api.util.ByteBufferUtils;
 import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
@@ -13,15 +14,22 @@ import java.util.stream.IntStream;
 public class DatabaseEntry {
 
     private final DatabaseId id;
-    private final Map<String,String> argument = new TreeMap<>();
+    private final Map<String,String> argumentMap = new TreeMap<>();
     private final List<String> indexedArguments = new ArrayList<>();
     private final DatabaseTable table;
     private final Consumer<DatabaseId> onChange;
 
     public static ByteBuffer serialize(DatabaseEntry entry) {
-        ByteBuffer rawData = Serializer.serialize(entry.argument.values(), s -> ByteBuffer.wrap(s.getBytes()));
+        ByteBuffer rawData = Serializer.serialize(entry.orderedArgumentValues(), s -> ByteBuffer.wrap(s.getBytes()));
         ByteBuffer idBuffer = DatabaseId.serialize(entry.id);
         return ByteBufferUtils.concat(idBuffer, rawData);
+    }
+
+    private Collection<String> orderedArgumentValues() {
+        return argumentMap.keySet()
+                .stream()
+                .map(argumentMap::get)
+                .collect(Collectors.toList());
     }
 
     public static DatabaseEntry deserialize(ByteBuffer data, DatabaseTable table, DatabaseIdGenerator idGenerator,
@@ -49,7 +57,7 @@ public class DatabaseEntry {
         this.table = table;
         this.id = id;
         this.onChange = onChange;
-        table.getArguments().forEach(key -> argument.put(key, ""));
+        table.getArguments().forEach(key -> argumentMap.put(key, ""));
         indexedArguments.addAll(table.getIndexedArguments());
     }
 
@@ -62,13 +70,13 @@ public class DatabaseEntry {
     }
 
     public Optional<String> get(String key) {
-        return Optional.ofNullable(argument.getOrDefault(key, null));
+        return Optional.ofNullable(argumentMap.getOrDefault(key, null));
     }
 
     public void set(String key, String value) {
         if(!table.containsArgument(key))
             return;
-        argument.put(key, value);
+        argumentMap.put(key, value);
         onChange.accept(id);
     }
 
