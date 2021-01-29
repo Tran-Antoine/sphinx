@@ -20,5 +20,5 @@ public final class QuestionQueries {
         return (data) -> data.getText().contains(word);
     }
 
-    public static QuestionQuery allWithDifficulty(QuestionDifficulty difficulty) { return  (data) -> data.getDifficulty().equals(difficulty.getName()); }
+    public static QuestionQuery allWithDifficulty(QuestionDifficulty difficulty) { return  (data) -> data.getDifficulty().equals(difficulty.name()); }
 }

@@ -37,6 +37,12 @@ public class TrackedDatabase extends SimpleDatabase {
         if(hasBeenSync) return;
         hasBeenSync = true;
 
+        // Remove all entries linked to file no longer present in the database
+        entriesRemoveIf(entry -> {
+            String file = entry.get("file").orElseThrow();
+            return !file.isBlank() && trackedFiles.contains(file);
+        });
+
         // Detect all the changes with the tracked files
         List<? extends DatabaseEntry> entries = getEntries();
         Set<String> changeRequired = trackedFiles.stream().filter(file -> doesRequireSync(file, entries)).collect(Collectors.toSet());
