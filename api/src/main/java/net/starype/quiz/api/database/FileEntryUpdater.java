@@ -11,11 +11,9 @@ import java.util.function.Supplier;
 public class FileEntryUpdater implements EntryUpdater {
 
     private final String filePath;
-    private DatabaseTable table;
-    private FilePathReader input;
+    private final FilePathReader input;
 
-    public FileEntryUpdater(String filePath, DatabaseTable table, FilePathReader input) {
-        this.table = table;
+    public FileEntryUpdater(String filePath, FilePathReader input) {
         this.input = input;
         this.filePath = filePath;
     }

@@ -9,12 +9,12 @@ import java.util.stream.Collectors;
 
 public class QuestionDatabases {
 
-    public static QuestionDatabase fromLocalPath(String configPath, String dbPath, DatabaseTable table, boolean standAlone, boolean compressed) {
-        SerializedIO serializedIO = new FileSerializedIO(dbPath, compressed);
-        return fromLocalPath(configPath, serializedIO, table, standAlone);
+    public static SimpleQuestionDatabase fromLocalPath(String configPath, String dbPath, boolean standAlone, boolean compressed) {
+        SerializedIO serializedIO = (compressed) ? (new CompressedFileSerializedIO(dbPath)) : (new FileSerializedIO(dbPath));
+        return fromLocalPath(configPath, serializedIO, standAlone);
     }
 
-    public static QuestionDatabase fromLocalPath(String configPath, SerializedIO serializedIO, DatabaseTable table, boolean standAlone) {
+    public static SimpleQuestionDatabase fromLocalPath(String configPath, SerializedIO serializedIO, boolean standAlone) {
         File configAsFile = new File(configPath);
         List<String> paths = (configAsFile.isFile()
                 ? Collections.singletonList(configAsFile)
@@ -22,20 +22,21 @@ public class QuestionDatabases {
                 .stream()
                 .map(File::getPath)
                 .collect(Collectors.toList());
-        return fromLocalPath(paths, serializedIO, table, standAlone);
+        return fromLocalPath(paths, configPath, serializedIO, standAlone);
     }
 
-    public static QuestionDatabase fromLocalPath(List<String> configPaths, SerializedIO serializedIO, DBTable table, boolean standAlone) {
+    public static SimpleQuestionDatabase fromLocalPath(List<String> configPaths, String relativePath,
+                                                 SerializedIO serializedIO, boolean standAlone) {
+        FilePathReader filePathReader = new SimpleFilePathReader(configPaths, relativePath);
         List<? extends EntryUpdater> updaters = configPaths
                 .stream()
-                .map(path -> createUpdater(path, table))
+                .map(path -> createUpdater(FileUtils.getRelativePath(path, relativePath), filePathReader))
                 .collect(Collectors.toList());
 
         return new SimpleQuestionDatabase(updaters, serializedIO, standAlone);
     }
 
-    private static EntryUpdater createUpdater(String path, DBTable table) {
-        FilePathReader filePathReader = new SimpleFilePathReader(path);
-        return new FileEntryUpdater(path, table, filePathReader);
+    private static EntryUpdater createUpdater(String path, FilePathReader filePathReader) {
+        return new FileEntryUpdater(path, filePathReader);
     }
 }

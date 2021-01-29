@@ -38,7 +38,7 @@ public class TrackedDatabase extends SimpleDatabase {
             return !file.isBlank() && updaters
                     .stream()
                     .map(EntryUpdater::getVirtualPath)
-                    .anyMatch(path -> path.equals(file));
+                    .noneMatch(path -> path.equals(file));
         });
 
         // Detect all the changes with the tracked files

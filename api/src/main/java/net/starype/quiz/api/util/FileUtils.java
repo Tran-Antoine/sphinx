@@ -1,16 +1,13 @@
 package net.starype.quiz.api.util;
 
 import java.io.File;
-<<<<<<< HEAD
 import java.util.*;
-=======
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
->>>>>>> db-improvement-merge
 import java.util.stream.Collectors;
 
 public class FileUtils {
