@@ -1,11 +1,12 @@
 package net.starype.quiz.api.game.answer;
 
 /**
- * Represents the second step of the answer parsing pipeline. <br>
+ * The second step of the answer parsing pipeline. <br>
  * Once the answer is processed (which is the first step), the validity evaluator object determines
  * whether the latter is considered as 'valid' formatwise. The fact that a given answer is valid does not imply
  * that it's correct. The evaluation of the correctness of an answer is determined by the third and last step of
  * the parsing pipeline, under the condition that the answer passes the validity check
+ * @see AnswerEvaluator
  */
 public interface ValidityEvaluator {
 
