@@ -10,7 +10,7 @@ import java.util.Set;
 
 public class DiscordLogContainer implements LogContainer {
 
-    private Set<Snowflake> logs;
+    private final Set<Snowflake> logs;
     private TextChannel channel;
 
     public DiscordLogContainer(TextChannel channel) {
@@ -25,8 +25,10 @@ public class DiscordLogContainer implements LogContainer {
 
     @Override
     public void deleteLogs() {
-        logs.forEach(this::deleteLog);
-        logs.clear();
+        synchronized (this) {
+            logs.forEach(this::deleteLog);
+            logs.clear();
+        }
     }
 
     private void deleteLog(Snowflake id) {
