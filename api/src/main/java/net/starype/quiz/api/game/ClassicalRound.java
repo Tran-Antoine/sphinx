@@ -11,28 +11,32 @@ import java.util.*;
 
 public class ClassicalRound implements GameRound {
 
-    private Question pickedQuestion;
+    private final Map<IDHolder<?>, ModifiablePlayerReport> playerReports;
+    private final Question pickedQuestion;
+    private final MaxGuessCounter counter;
+    private final double maxAwarded;
     private Collection<? extends IDHolder<?>> players;
-    private MaxGuessCounter counter;
-    private double maxAwarded;
     private LeaderboardDistribution leaderboard;
 
     public ClassicalRound(Question pickedQuestion, int maxGuesses, double maxAwarded) {
         this.pickedQuestion = pickedQuestion;
         this.counter = new MaxGuessCounter(maxGuesses);
         this.maxAwarded = maxAwarded;
+        this.playerReports = new HashMap<>();
     }
 
     @Override
     public void start(QuizGame game, Collection<? extends IDHolder<?>> players, EventHandler eventHandler) {
         this.players = players;
         this.leaderboard = new LeaderboardDistribution(maxAwarded, players.size());
+        players.forEach(player -> playerReports.put(player, new ModifiablePlayerReport(player)));
         game.sendInputToServer(server -> server.onQuestionReleased(pickedQuestion));
     }
 
     @Override
     public PlayerGuessContext onGuessReceived(Player<?> source, String message) {
 
+        playerReports.get(source).registerSolution(message);
         Optional<Double> optCorrectness = pickedQuestion.evaluateAnswer(Answer.fromString(message));
         if(optCorrectness.isEmpty()) {
             return new PlayerGuessContext(source, 0, true);
@@ -42,6 +46,7 @@ public class ClassicalRound implements GameRound {
 
         counter.incrementGuess(source);
         leaderboard.scoreUpdate(source, correctness);
+        playerReports.get(source).setReward(correctness);
 
         if(Math.abs(correctness - 1) < ScoreDistribution.EPSILON) {
             counter.consumeAllGuesses(source);
@@ -53,6 +58,7 @@ public class ClassicalRound implements GameRound {
     @Override
     public void onGiveUpReceived(IDHolder<?> source) {
         counter.consumeAllGuesses(source);
+        playerReports.get(source).giveUp();
     }
 
     @Override
@@ -72,7 +78,7 @@ public class ClassicalRound implements GameRound {
 
     @Override
     public GameRoundReport initReport(List<Standing> standings) {
-        return new SimpleGameReport(standings);
+        return new SimpleGameReport(standings, pickedQuestion.getDisplayableCorrectAnswer(), playerReports.values());
     }
 
     @Override

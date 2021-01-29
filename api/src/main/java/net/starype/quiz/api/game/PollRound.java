@@ -17,28 +17,29 @@ import java.util.stream.Collectors;
  */
 public class PollRound implements GameRound {
 
-    private Question question;
+    private final Question question;
     private final int maxGuesses;
-    private Map<IDHolder<?>, Answer> definitiveAnswers;
+    private final Map<IDHolder<?>, ModifiablePlayerReport> playerReports;
     private MaxGuessCounter counter;
     private Collection<? extends IDHolder<?>> players;
 
     public PollRound(Question question, int maxGuesses) {
         this.question = question;
         this.maxGuesses = maxGuesses;
-        this.definitiveAnswers = new HashMap<>();
+        playerReports = new HashMap<>();
     }
 
     @Override
     public void start(QuizGame game, Collection<? extends IDHolder<?>> players, EventHandler eventHandler) {
         this.counter = new MaxGuessCounter(maxGuesses);
         this.players = players;
+        players.forEach(player -> playerReports.put(player, new ModifiablePlayerReport(player)));
         game.sendInputToServer((server) -> server.onQuestionReleased(question));
     }
 
     @Override
     public PlayerGuessContext onGuessReceived(Player<?> source, String message) {
-        definitiveAnswers.put(source, Answer.fromString(message));
+        playerReports.get(source).registerSolution(message);
         counter.incrementGuess(source);
         return new PlayerGuessContext(source, 0, counter.isEligible(source));
     }
@@ -46,6 +47,7 @@ public class PollRound implements GameRound {
     @Override
     public void onGiveUpReceived(IDHolder<?> source) {
         counter.consumeAllGuesses(source);
+        playerReports.get(source).giveUp();
     }
 
     @Override
@@ -65,12 +67,7 @@ public class PollRound implements GameRound {
 
     @Override
     public GameRoundReport initReport(List<Standing> standings) {
-        List<String> answers = definitiveAnswers
-                .entrySet()
-                .stream()
-                .map((entry) -> entry.getKey().getId()+": "+entry.getValue().getAnswerText())
-                .collect(Collectors.toList());
-        return new SimpleGameReport(answers, Collections.emptyList());
+        return new SimpleGameReport(Collections.emptyList(), question.getDisplayableCorrectAnswer(), playerReports.values());
     }
 
     @Override

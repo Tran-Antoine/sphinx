@@ -13,34 +13,41 @@ import java.util.stream.Collectors;
 
 public class IndividualRound implements GameRound {
 
-    private double maxToAward;
+    private final double maxToAward;
+    private final Question pickedQuestion;
+    private final Map<IDHolder<?>, ModifiablePlayerReport> playerReports;
     private OneTryDistribution scoreDistribution;
-    private Question pickedQuestion;
     private MaxGuessCounter maxGuessCounter;
     private Collection<? extends IDHolder<?>> players;
 
     public IndividualRound(Question pickedQuestion, double maxToAward) {
         this.maxToAward = maxToAward;
         this.pickedQuestion = pickedQuestion;
+        playerReports = new HashMap<>();
     }
 
     @Override
     public void start(QuizGame game, Collection<? extends IDHolder<?>> players, EventHandler eventHandler) {
         this.scoreDistribution = new OneTryDistribution(maxToAward);
         this.players = players;
+        players.forEach(player -> playerReports.put(player, new ModifiablePlayerReport(player)));
         this.maxGuessCounter = new MaxGuessCounter(1);
         game.sendInputToServer((server) -> server.onQuestionReleased(pickedQuestion));
     }
 
     @Override
     public PlayerGuessContext onGuessReceived(Player<?> source, String message) {
+        playerReports.get(source).registerSolution(message);
         Optional<Double> optAccuracy = pickedQuestion.evaluateAnswer(Answer.fromString(message));
         if(optAccuracy.isEmpty()) {
             return new PlayerGuessContext(source, 0, true);
         }
         double accuracy = optAccuracy.get();
+
+        playerReports.get(source).setReward(accuracy);
         scoreDistribution.addIfNew(source, accuracy);
         maxGuessCounter.incrementGuess(source);
+
         return new PlayerGuessContext(source, accuracy, false);
     }
 
@@ -48,6 +55,7 @@ public class IndividualRound implements GameRound {
     public void onGiveUpReceived(IDHolder<?> source) {
         scoreDistribution.addIfNew(source, 0);
         maxGuessCounter.consumeAllGuesses(source);
+        playerReports.get(source).giveUp();
     }
 
     @Override
@@ -67,7 +75,7 @@ public class IndividualRound implements GameRound {
 
     @Override
     public GameRoundReport initReport(List<Standing> standings) {
-        return new SimpleGameReport(standings);
+        return new SimpleGameReport(standings, pickedQuestion.getDisplayableCorrectAnswer(), playerReports.values());
     }
 
     @Override

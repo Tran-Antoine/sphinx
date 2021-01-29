@@ -12,18 +12,20 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class RaceRound implements GameRound {
 
-    private Question pickedQuestion;
+    private final Question pickedQuestion;
+    private final Map<IDHolder<?>, ModifiablePlayerReport> playerReports;
+    private final double pointsToAward;
     private AtomicReference<IDHolder<?>> winnerContainer;
     private Collection<? extends IDHolder<?>> players;
     private GameRoundContext context;
-    private double pointsToAward;
 
-    private MaxGuessCounter counter;
+    private final MaxGuessCounter counter;
 
     public RaceRound(int maxGuessesPerPlayer, Question pickedQuestion, double pointsToAward) {
         this.counter = new MaxGuessCounter(maxGuessesPerPlayer);
         this.pickedQuestion = pickedQuestion;
         this.pointsToAward = pointsToAward;
+        playerReports = new HashMap<>();
     }
 
     @Override
@@ -31,6 +33,7 @@ public class RaceRound implements GameRound {
         this.winnerContainer = new AtomicReference<>();
         this.players = players;
         this.context = new GameRoundContext(this);
+        players.forEach(player -> playerReports.put(player, new ModifiablePlayerReport(player)));
         if(game != null) {
             game.sendInputToServer((server) -> server.onQuestionReleased(pickedQuestion));
         }
@@ -40,11 +43,15 @@ public class RaceRound implements GameRound {
     public PlayerGuessContext onGuessReceived(Player<?> source, String message) {
 
         // eligibility checks are performed in the game class
+        playerReports.get(source).registerSolution(message);
         Optional<Double> correctness = pickedQuestion.evaluateAnswer(Answer.fromString(message));
         if(correctness.isEmpty()) {
             return new PlayerGuessContext(source, 0, true);
         }
+
         boolean binaryCorrectness = Math.abs(correctness.get() - 1) < ScoreDistribution.EPSILON;
+        playerReports.get(source).setReward(binaryCorrectness ? 1.0F : 0.0F);
+
 
         counter.incrementGuess(source);
         if(binaryCorrectness) {
@@ -58,6 +65,7 @@ public class RaceRound implements GameRound {
     @Override
     public void onGiveUpReceived(IDHolder<?> source) {
         counter.consumeAllGuesses(source);
+        playerReports.get(source).giveUp();
     }
 
     @Override
@@ -85,11 +93,12 @@ public class RaceRound implements GameRound {
     }
 
     private GameRoundReport winnerReport(List<Standing> standings) {
-        return new SimpleGameReport(standings);
+        return new SimpleGameReport(standings, pickedQuestion.getDisplayableCorrectAnswer(), playerReports.values());
     }
 
     private GameRoundReport winnerlessReport(List<Standing> standings) {
-        return new SimpleGameReport(Collections.singletonList("No winner for this round"), standings);
+        return new SimpleGameReport(Collections.singletonList("No winner for this round"), standings,
+                pickedQuestion.getDisplayableCorrectAnswer(), playerReports.values());
     }
 
     @Override
