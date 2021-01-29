@@ -27,8 +27,10 @@ public class SimpleDatabase implements Database {
         entries = new ArrayList<>();
     }
 
-    protected void entriesRemoveIf(Predicate<DatabaseEntry> predicate) {
-        entries.stream().filter(predicate).forEach(entry -> entriesById.remove(entry.getId()));
+    protected void removeEntriesIf(Predicate<DatabaseEntry> predicate) {
+        entries.stream()
+                .filter(predicate)
+                .forEach(entry -> entriesById.remove(entry.getId()));
         entries.removeIf(predicate);
     }
 

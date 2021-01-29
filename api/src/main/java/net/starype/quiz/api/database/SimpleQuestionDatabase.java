@@ -1,5 +1,6 @@
 package net.starype.quiz.api.database;
 
+import net.starype.quiz.api.database.QuestionQuery.QueryData;
 import net.starype.quiz.api.game.question.Question;
 import net.starype.quiz.api.parser.QuestionParser;
 import net.starype.quiz.api.util.FileUtils;
@@ -22,7 +23,7 @@ public class SimpleQuestionDatabase extends TrackedDatabase implements QuestionD
                     .registerArgument("processors")
                     .create();
 
-    public static SimpleQuestionDatabase createDatabaseFromFileList(Set<? extends String> trackedFiles, String relativeDirectory,
+    /*public static SimpleQuestionDatabase createDatabaseFromFileList(Set<? extends String> trackedFiles, String relativeDirectory,
                                                                     String databaseFile, boolean standalone, boolean compressed)
     {
         // Create the serializer object
@@ -37,7 +38,7 @@ public class SimpleQuestionDatabase extends TrackedDatabase implements QuestionD
                 .collect(Collectors.toMap(file -> FileUtils.getRelativePath(file, relativeDirectory), f -> f));
 
         FileParser fileParser = QuestionParser.getFileParser(TABLE,
-                new SimpleFileInput(file -> trackedFiles.contains(relativeToAbsoluteMap.getOrDefault(file, "")) ?
+                new SimpleFilePathReader(file -> trackedFiles.contains(relativeToAbsoluteMap.getOrDefault(file, "")) ?
                         Optional.of(relativeToAbsoluteMap.getOrDefault(file, "")) :
                         Optional.empty()));
 
@@ -45,27 +46,19 @@ public class SimpleQuestionDatabase extends TrackedDatabase implements QuestionD
                 serializedIO,
                 fileParser,
                 standalone);
-    }
+    }*/
 
-    public static SimpleQuestionDatabase createDatabaseFromDirectory(String directory, String databaseFile,
-                                                              boolean standalone, boolean compressed) {
-        // Create the file parser
-        Set<? extends String> trackedFiles = FileUtils.recursiveListAllFiles(new File(directory))
-                .stream()
-                .map(File::getPath)
-                .collect(Collectors.toSet());
-
-        return createDatabaseFromFileList(trackedFiles, directory, databaseFile, standalone, compressed);
-    }
-
-    private SimpleQuestionDatabase(Set<? extends String> trackedFiles, SerializedIO serializedIO, FileParser fileParser,
-                                  boolean standalone) {
-        super(TABLE, serializedIO, trackedFiles, fileParser, standalone);
+    public SimpleQuestionDatabase(Collection<? extends EntryUpdater> updaters, SerializedIO serializedIO, boolean standalone) {
+        super(updaters, serializedIO, TABLE, standalone);
     }
 
     private boolean getQuery(QuestionQuery queryMatcher, Map<String, String> map) {
-        return queryMatcher.apply(new QuestionQuery.QueryData(new HashSet<>(StringUtils.unpack(map.get("tags"))),
-                map.get("text"), map.get("difficulty"), map.get("file")));
+        return queryMatcher.apply(new QueryData(
+                new HashSet<>(StringUtils.unpack(map.get("tags"))),
+                map.get("text"),
+                map.get("difficulty"),
+                map.get("file"))
+        );
     }
 
     @Override

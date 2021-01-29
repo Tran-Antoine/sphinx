@@ -84,21 +84,7 @@ public class QuestionParser {
                 .reduce(CollectionUtils::concat).orElse(new HashSet<>());
     }
 
-    public static FileParser getFileParser(DatabaseTable table, FileInput fileInput) {
-        return new FileParser() {
-            @Override
-            public Set<DatabaseEntry> read(String file, DatabaseEntryFactory idGenerator) {
-                return getDatabaseEntries(file, table, fileInput, idGenerator);
-            }
-
-            @Override
-            public Optional<CheckSum> computeChecksum(String file) {
-                return fileInput.read(file).map(CheckSum::fromString);
-            }
-        };
-    }
-
-    public static Set<DatabaseEntry> getDatabaseEntries(String file, DatabaseTable table, FileInput fileInput, DatabaseEntryFactory databaseEntryFactory) {
+    public static Set<DatabaseEntry> getDatabaseEntries(String file, FilePathReader fileInput, DatabaseEntryFactory databaseEntryFactory) {
         Optional<String> parsedFile = fileInput.read(file);
         if (parsedFile.isEmpty())
             return new HashSet<>();
