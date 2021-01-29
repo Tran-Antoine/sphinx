@@ -6,3 +6,4 @@
 build
 out
 discord-impl/src/main/resources/token.txt
+api/src/main/resources

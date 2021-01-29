@@ -3,29 +3,29 @@ package net.starype.quiz.api.game.event;
 import java.util.Collection;
 import java.util.LinkedList;
 
-public class GameEventHandler implements EventHandler {
+public class GameUpdatableHandler implements UpdatableHandler {
 
     private long lastMillis;
-    private Collection<Event> eventsList;
+    private Collection<Updatable> eventsList;
 
-    public GameEventHandler() {
+    public GameUpdatableHandler() {
         this(new LinkedList<>());
     }
 
-    public GameEventHandler(Collection<Event> eventsList) {
+    public GameUpdatableHandler(Collection<Updatable> eventsList) {
         this.eventsList = eventsList;
     }
 
     @Override
-    public void registerEvent(Event event) {
-        if(!eventsList.contains(event)) {
-            eventsList.add(event);
+    public void registerEvent(Updatable updatable) {
+        if(!eventsList.contains(updatable)) {
+            eventsList.add(updatable);
         }
     }
 
     @Override
-    public void unregisterEvent(Event event) {
-        eventsList.remove(event);
+    public void unregisterEvent(Updatable updatable) {
+        eventsList.remove(updatable);
     }
 
     @Override
@@ -35,6 +35,6 @@ public class GameEventHandler implements EventHandler {
                 ? 0
                 : currentTime - lastMillis;
         this.lastMillis = currentTime;
-        eventsList.forEach((event -> event.update(deltaMillis)));
+        eventsList.forEach((updatable -> updatable.update(deltaMillis)));
     }
 }

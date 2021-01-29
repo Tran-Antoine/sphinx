@@ -20,7 +20,7 @@ public class DBEntry extends Serializer {
 
     /**
      * Constructor of the {@link DBEntry}
-     * @param table the table used to create the argument & value hold by the entry
+     * @param table the table used to create the argument and value contained in the entry
      */
     public DBEntry(DBTable table) {
         super(Stream.concat(table.getArguments()
@@ -69,8 +69,8 @@ public class DBEntry extends Serializer {
     }
 
     /**
-     * Retrieve a list of all the argument hold by the current entry (see {@link ArgumentValue<String>})
-     * @return A sets of {@link ArgumentValue<String>}
+     * Retrieve a list of all the argument hold by the current entry (see {@link ArgumentValue})
+     * @return A set of argument values
      */
     public Set<ArgumentValue<String>> getIndexedArguments() {
         return indexedArguments;
