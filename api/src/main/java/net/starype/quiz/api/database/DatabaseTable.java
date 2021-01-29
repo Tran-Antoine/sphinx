@@ -59,8 +59,13 @@ public class DatabaseTable {
 
         /**
          * Register a new argument to the constructed table
+<<<<<<< HEAD:api/src/main/java/net/starype/quiz/api/database/DatabaseTable.java
          * @param argument {@link String} that hold the new argument
          * @return {@link DatabaseTable.Builder} reference to itself
+=======
+         * @param argument the new argument
+         * @return itself for chaining purposes
+>>>>>>> origin/db-improvement-merge:api/src/main/java/net/starype/quiz/api/parser/DBTable.java
          */
         public Builder registerArgument(String argument) {
             arguments.add(argument);
@@ -69,8 +74,13 @@ public class DatabaseTable {
 
         /**
          * Register a new indexed argument to the constructed table
+<<<<<<< HEAD:api/src/main/java/net/starype/quiz/api/database/DatabaseTable.java
          * @param argument @link String} that hold the new indexed arguments
          * @return {@link DatabaseTable.Builder} reference to itself
+=======
+         * @param argument the new indexed arguments
+         * @return itself for chaining purposes
+>>>>>>> origin/db-improvement-merge:api/src/main/java/net/starype/quiz/api/parser/DBTable.java
          */
         public Builder registerIndexedArguments(String argument) {
             arguments.add(argument);

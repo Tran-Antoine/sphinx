@@ -2,14 +2,12 @@ package net.starype.quiz.api.game;
 
 import net.starype.quiz.api.game.ScoreDistribution.Standing;
 import net.starype.quiz.api.game.answer.Answer;
-import net.starype.quiz.api.game.event.EventHandler;
+import net.starype.quiz.api.game.event.UpdatableHandler;
 import net.starype.quiz.api.game.player.IDHolder;
 import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.question.Question;
 
 import java.util.*;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 public class IndividualRound implements GameRound {
 
@@ -25,7 +23,7 @@ public class IndividualRound implements GameRound {
     }
 
     @Override
-    public void start(QuizGame game, Collection<? extends IDHolder<?>> players, EventHandler eventHandler) {
+    public void start(QuizGame game, Collection<? extends IDHolder<?>> players, UpdatableHandler updatableHandler) {
         this.scoreDistribution = new OneTryDistribution(maxToAward);
         this.players = players;
         this.maxGuessCounter = new MaxGuessCounter(1);

@@ -1,4 +1,4 @@
-package net.starype.quiz.api;
+package net.starype.quiz.api.game;
 
 import net.starype.quiz.api.game.GameRound;
 import net.starype.quiz.api.game.SimpleGame;
