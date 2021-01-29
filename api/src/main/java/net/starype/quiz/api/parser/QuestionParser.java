@@ -3,6 +3,7 @@ package net.starype.quiz.api.parser;
 import com.electronwill.nightconfig.core.CommentedConfig;
 import com.electronwill.nightconfig.core.io.ConfigParser;
 import com.electronwill.nightconfig.toml.TomlParser;
+import net.starype.quiz.api.database.*;
 import net.starype.quiz.api.game.answer.Answer;
 import net.starype.quiz.api.game.answer.AnswerEvaluator;
 import net.starype.quiz.api.game.answer.AnswerProcessor;
@@ -20,9 +21,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Util class that allows toml configuration file to {@link Question} conversions
@@ -85,11 +84,11 @@ public class QuestionParser {
                 .reduce(CollectionUtils::concat).orElse(new HashSet<>());
     }
 
-    public static FileParser getFileParser(DBTable table, FileInput fileInput) {
+    public static FileParser getFileParser(DatabaseTable table, FileInput fileInput) {
         return new FileParser() {
             @Override
-            public Set<DBEntry> read(String file) {
-                return getDatabaseEntries(file, table, fileInput);
+            public Set<DatabaseEntry> read(String file, DatabaseEntryFactory idGenerator) {
+                return getDatabaseEntries(file, table, fileInput, idGenerator);
             }
 
             @Override
@@ -99,7 +98,7 @@ public class QuestionParser {
         };
     }
 
-    public static Set<DBEntry> getDatabaseEntries(String file, DBTable table, FileInput fileInput) {
+    public static Set<DatabaseEntry> getDatabaseEntries(String file, DatabaseTable table, FileInput fileInput, DatabaseEntryFactory databaseEntryFactory) {
         Optional<String> parsedFile = fileInput.read(file);
         if (parsedFile.isEmpty())
             return new HashSet<>();
@@ -122,7 +121,8 @@ public class QuestionParser {
                 .filter(key -> key.startsWith(EVALUATOR))
                 .collect(Collectors.toMap(k -> k, argMap::get)));
         String rawDifficulty = config.get(DIFFICULTY);
-        DBEntry entry = new DBEntry(table);
+
+        DatabaseEntry entry = databaseEntryFactory.generateNewEntry();
         entry.set("text", rawText);
         entry.set("difficulty", rawDifficulty);
         entry.set("tags", inlineTags);
@@ -144,15 +144,13 @@ public class QuestionParser {
         AnswerEvaluator evaluator = loadEvaluator(config::getOptional, processor, rawAnswers);
         QuestionDifficulty difficulty = loadDifficulty(config::getOptional);
 
-        Question question = new DefaultQuestion.Builder()
+        return new DefaultQuestion.Builder()
                 .withAnswerEvaluator(evaluator)
                 .withRawText(rawText)
                 .withRawAnswer(String.join(", ", rawAnswers))
                 .withTags(tags)
                 .withDifficulty(difficulty)
                 .build();
-
-        return question;
     }
 
     private static QuestionDifficulty loadDifficulty(ReadableMap config) {

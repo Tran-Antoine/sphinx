@@ -1,6 +1,9 @@
 package net.starype.quiz.api.util;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,5 +29,12 @@ public class FileUtils {
             }
         }
         return fileList;
+    }
+
+    public static String getRelativePath(String file, String relativeTo)  {
+        Path sourceFile = Paths.get(relativeTo);
+        Path targetFile = Paths.get(file);
+        Path relativePath = sourceFile.relativize(targetFile);
+        return relativePath.toString().replace(File.separator, "/");
     }
 }
