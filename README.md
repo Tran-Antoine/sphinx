@@ -10,4 +10,4 @@ No release yet. Project will soon be available through jitpack
 ## Documentation
 
 * [Wiki of Sphinx](https://github.com/Tran-Antoine/sphinx/wiki/Table-of-Contents)
-* [javadocs]()
+* [javadocs](https://tran-antoine.github.io/sphinx-docs/)

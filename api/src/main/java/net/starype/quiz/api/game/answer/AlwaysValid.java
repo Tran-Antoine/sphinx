@@ -1,5 +1,8 @@
 package net.starype.quiz.api.game.answer;
 
+/**
+ * An evaluator that never fails.
+ */
 public class AlwaysValid implements ValidityEvaluator {
 
     @Override

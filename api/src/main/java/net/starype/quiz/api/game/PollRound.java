@@ -2,7 +2,7 @@ package net.starype.quiz.api.game;
 
 import net.starype.quiz.api.game.ScoreDistribution.Standing;
 import net.starype.quiz.api.game.answer.Answer;
-import net.starype.quiz.api.game.event.EventHandler;
+import net.starype.quiz.api.game.event.UpdatableHandler;
 import net.starype.quiz.api.game.player.IDHolder;
 import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.question.Question;
@@ -30,7 +30,7 @@ public class PollRound implements GameRound {
     }
 
     @Override
-    public void start(QuizGame game, Collection<? extends IDHolder<?>> players, EventHandler eventHandler) {
+    public void start(QuizGame game, Collection<? extends IDHolder<?>> players, UpdatableHandler updatableHandler) {
         this.counter = new MaxGuessCounter(maxGuesses);
         this.players = players;
         game.sendInputToServer((server) -> server.onQuestionReleased(question));

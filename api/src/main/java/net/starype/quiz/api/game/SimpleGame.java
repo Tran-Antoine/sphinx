@@ -1,9 +1,8 @@
 package net.starype.quiz.api.game;
 
-import net.starype.quiz.api.DefaultSimpleGame;
 import net.starype.quiz.api.game.ScoreDistribution.Standing;
-import net.starype.quiz.api.game.event.EventHandler;
-import net.starype.quiz.api.game.event.GameEventHandler;
+import net.starype.quiz.api.game.event.UpdatableHandler;
+import net.starype.quiz.api.game.event.GameUpdatableHandler;
 import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.server.GameServer;
 import net.starype.quiz.api.server.ServerGate;
@@ -31,7 +30,7 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
     private Collection<? extends Player<?>> players;
     private final AtomicBoolean paused;
     private boolean waitingForNextRound;
-    private EventHandler eventHandler = new GameEventHandler();
+    private UpdatableHandler updatableHandler = new GameUpdatableHandler();
 
     public SimpleGame(Queue<? extends GameRound> rounds, Collection<? extends Player<?>> players) {
         this(rounds, players, null);
@@ -94,7 +93,7 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
 
     private void startHead() {
         GameRound round = rounds.element();
-        round.start(this, players, eventHandler);
+        round.start(this, players, updatableHandler);
     }
 
     @Override
@@ -122,12 +121,12 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
     }
 
     @Override
-    public void checkEndOfRound(GameRound round) {
+    public void checkEndOfRound(GameRound current) {
         synchronized (paused) {
             if(paused.get()) {
                 return;
             }
-            GameRoundContext context = round.getContext();
+            GameRoundContext context = current.getContext();
             if (!context.getEndingCondition().ends()) {
                 return;
             }
@@ -136,7 +135,7 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
             waitingForNextRound = true;
 
             List<Standing> standings = updateScores(context);
-            round.onRoundStopped();
+            current.onRoundStopped();
             gate.gameCallback((server, game) -> server.onRoundEnded(context.getReportCreator(standings), game));
         }
     }
@@ -192,7 +191,7 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
         if(paused.get()) {
             return;
         }
-        eventHandler.runAllEvents();
+        updatableHandler.runAllEvents();
     }
 
     @Override
