@@ -5,7 +5,7 @@ import net.starype.quiz.api.game.player.IDHolder;
 
 import java.util.Collection;
 
-public class ResetAllGuessCounters extends ConditionalConsumer<RoundState> {
+public class ConsumeAllPlayersGuess extends ConditionalConsumer<RoundState> {
     @Override
     public void execute(RoundState roundState) {
         MaxGuessCounter counter = roundState.getCounter();

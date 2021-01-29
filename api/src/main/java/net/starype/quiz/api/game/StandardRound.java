@@ -2,16 +2,19 @@ package net.starype.quiz.api.game;
 
 import net.starype.quiz.api.game.answer.Answer;
 import net.starype.quiz.api.game.event.EventHandler;
+import net.starype.quiz.api.game.guessprocess.GuessReceivedHead;
+import net.starype.quiz.api.game.guessprocess.RoundState;
 import net.starype.quiz.api.game.player.IDHolder;
 import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.question.Question;
-import net.starype.quiz.api.game.guessprocess.RoundState;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 
-public abstract class StandardRound implements GameRound, SettableRound {
+public class StandardRound implements GameRound {
 
     private Collection<? extends IDHolder<?>> players;
     private Question pickedQuestion;
@@ -20,8 +23,15 @@ public abstract class StandardRound implements GameRound, SettableRound {
     private List<EntityEligibility> playerEligibility;
     private RoundState roundState;
 
-    public StandardRound(Question pickedQuestion) {
+    private GuessReceivedHead guessReceivedHead;
+    private Consumer<RoundState> guessReceivedConsumer;
+
+    public StandardRound(Question pickedQuestion, GuessReceivedHead guessReceivedHead,
+                         Consumer<RoundState> guessReceivedConsumer, List<ScoreDistribution> scoreDistributions) {
         this.pickedQuestion = pickedQuestion;
+        this.guessReceivedHead = guessReceivedHead;
+        this.guessReceivedConsumer = guessReceivedConsumer;
+        this.scoreDistributions = scoreDistributions;
     }
 
     @Override
@@ -31,26 +41,77 @@ public abstract class StandardRound implements GameRound, SettableRound {
     }
 
     @Override
-    public void addScoreDistribution(ScoreDistribution scoreDistribution) {
-        scoreDistributions.add(scoreDistribution);
-    }
-
-    @Override
-    public void withEndingCondition(RoundEndingPredicate roundEndingPredicate) {
-        endingCondition = roundEndingPredicate;
-    }
-
-    @Override
-    public void addPlayerEligibility(EntityEligibility entityEligibility) {
-        playerEligibility.add(entityEligibility);
-    }
-
-    @Override
     public PlayerGuessContext onGuessReceived(Player<?> source, String message) {
         Double correctness = pickedQuestion.evaluateAnswer(Answer.fromString(message)).orElse(null);
 
-        //TODO : Return statement
+        guessReceivedHead.accept(source, message, correctness, roundState);
+        guessReceivedConsumer.accept(roundState);
 
+        return roundState.getPlayerGuessContext();
+    }
+
+    @Override
+    public void onGiveUpReceived(IDHolder<?> source) {
+
+    }
+
+    @Override
+    public EntityEligibility initPlayerEligibility() {
         return null;
     }
+
+    @Override
+    public RoundEndingPredicate initEndingCondition() {
+        return null;
+    }
+
+    @Override
+    public List<ScoreDistribution> initScoreDistribution() {
+        return null;
+    }
+
+    @Override
+    public GameRoundReport initReport(Map<Player<?>, Double> standings) {
+        return null;
+    }
+
+
+
+    @Override
+    public GameRoundContext getContext() {
+        return null;
+    }
+
+    public static class Builder {
+        private GuessReceivedHead guessReceivedHead;
+        private Consumer<RoundState> guessReceivedConsumer;
+        private List<ScoreDistribution> scoreDistributions = new ArrayList<>();
+        private Question question;
+
+        public Builder withGuessReceivedConsumer(Consumer<RoundState> guessReceivedConsumer) {
+            this.guessReceivedConsumer = guessReceivedConsumer;
+            return this;
+        }
+
+        public Builder withGuessReceivedHead(GuessReceivedHead guessReceivedHead) {
+            this.guessReceivedHead = guessReceivedHead;
+            return this;
+        }
+
+        public Builder withQuestion(Question question) {
+            this.question = question;
+            return this;
+        }
+
+        public Builder addScoreDistribution(ScoreDistribution scoreDistribution) {
+            scoreDistributions.add(scoreDistribution);
+            return this;
+        }
+
+        public StandardRound build() {
+            return new StandardRound(question, guessReceivedHead, guessReceivedConsumer,
+                    scoreDistributions);
+        }
+    }
+
 }

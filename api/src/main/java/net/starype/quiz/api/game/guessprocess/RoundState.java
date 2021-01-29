@@ -2,6 +2,7 @@ package net.starype.quiz.api.game.guessprocess;
 
 import net.starype.quiz.api.game.MaxGuessCounter;
 import net.starype.quiz.api.game.PlayerGuessContext;
+import net.starype.quiz.api.game.answer.Answer;
 import net.starype.quiz.api.game.player.IDHolder;
 import net.starype.quiz.api.game.player.Player;
 
@@ -11,7 +12,6 @@ import java.util.Map;
 
 public class RoundState {
 
-    //TODO : Maybe change the Player type into an IDHolder ?
     /**
      * HashMap that maps every player to its current correctness for this round
      */
@@ -27,6 +27,8 @@ public class RoundState {
      */
     private PlayerGuessContext playerGuessContext;
 
+    private Map<Player<?>, Answer> answers = new HashMap<>();
+
 
     public RoundState(Collection<? extends Player<?>> players, MaxGuessCounter counter) {
         for (Player<?> player : players) {
@@ -39,20 +41,6 @@ public class RoundState {
         roundCorrectness = initialStandings;
         this.counter = counter;
     }
-
-//    public void incrementCurrentPlayerGuess() {
-//        counter.incrementGuess(playerGuessContext.getPlayer());
-//    }
-//
-//    public void consumeAllGuesses() {
-//        for(IDHolder<?> player : roundCorrectness.keySet()) {
-//            counter.consumeAllGuesses(player);
-//        }
-//    }
-//
-//    public void updateCurrentPlayerCorrectness() {
-//        roundCorrectness.replace(playerGuessContext.getPlayer(), playerGuessContext.getCorrectness());
-//    }
 
     public void setPlayerGuessContext(PlayerGuessContext playerGuessContext) {
         this.playerGuessContext = playerGuessContext;
@@ -70,11 +58,29 @@ public class RoundState {
         return roundCorrectness;
     }
 
-    public void setLeaderboard(Player<?> player, double correctness) {
+    public void updateLeaderboard(Player<?> player, double correctness) {
         if(roundCorrectness.containsKey(player)) {
             roundCorrectness.replace(player, correctness);
         } else {
             roundCorrectness.put(player, correctness);
         }
     }
+
+    public void addCorrectnessIfNew(Player<?> player, double correctness) {
+        roundCorrectness.putIfAbsent(player, correctness);
+    }
+
+    public void updateRoundAnswers(Player<?> player, Answer answer) {
+        if(roundCorrectness.containsKey(player)) {
+            answers.replace(player, answer);
+        } else {
+            answers.put(player, answer);
+        }
+    }
+
+    public void addAnswerIfNew(Player<?> player, Answer answer) {
+        answers.putIfAbsent(player, answer);
+    }
+
+
 }
