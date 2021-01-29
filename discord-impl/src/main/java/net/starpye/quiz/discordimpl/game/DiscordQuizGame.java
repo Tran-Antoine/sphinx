@@ -15,10 +15,18 @@ public class DiscordQuizGame extends SimpleGame<DiscordQuizGame> {
 
     private Set<Snowflake> votesForNext;
     private Snowflake authorId;
+    private LogContainer container;
 
-    public DiscordQuizGame(Queue<? extends GameRound> rounds, Collection<? extends Player<?>> players, ServerGate<DiscordQuizGame> gate, Snowflake authorId) {
+    public DiscordQuizGame(
+            Queue<? extends GameRound> rounds,
+            Collection<? extends Player<?>> players,
+            ServerGate<DiscordQuizGame> gate,
+            Snowflake authorId,
+            LogContainer container) {
+
         super(rounds, players);
         this.authorId = authorId;
+        this.container = container;
         this.votesForNext = new HashSet<>();
         this.setGate(gate.withGame(this));
     }
@@ -36,5 +44,13 @@ public class DiscordQuizGame extends SimpleGame<DiscordQuizGame> {
 
     public boolean isAuthor(Snowflake playerId) {
         return playerId.equals(authorId);
+    }
+
+    public void deleteLogs() {
+        container.deleteLogs();
+    }
+
+    public void addLog(Snowflake id) {
+        container.addLog(id);
     }
 }

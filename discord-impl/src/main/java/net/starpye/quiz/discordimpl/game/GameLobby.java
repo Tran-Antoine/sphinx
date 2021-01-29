@@ -22,7 +22,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public class GameLobby {
+public class GameLobby extends DiscordLogContainer {
 
     private String name;
     private TextChannel channel;
@@ -33,6 +33,7 @@ public class GameLobby {
     private Snowflake lobbyMessageId;
 
     public GameLobby(TextChannel channel, String name) {
+        super(channel);
         this.channel = channel;
         this.name = name;
         this.playersId = new HashSet<>();
@@ -85,8 +86,8 @@ public class GameLobby {
     }
 
     public void start(GameList gameList) {
+        deleteLogs();
         gameList.startNewGame(playersId, rounds, channel, authorId);
-        performAction(message -> message.delete().subscribe());
     }
 
     public boolean isAuthor(Snowflake playerId) {
@@ -107,6 +108,7 @@ public class GameLobby {
         }
 
         Message message = optMessage.get();
+        addLog(message.getId());
         this.lobbyMessageId = message.getId();
 
         setUpReaction(

@@ -25,18 +25,28 @@ public class GameList {
     }
 
     public void startNewGame(Collection<? extends Snowflake> playersId, Queue<? extends GameRound> rounds, TextChannel channel, Snowflake authorId) {
-        Set<DiscordPlayer> gamePlayers = playersId
+        Collection<DiscordPlayer> gamePlayers = playersId
                 .stream()
                 .map(id -> asPlayer(channel.getGuild().block(), id))
                 .collect(Collectors.toSet());
-        GameServer<DiscordQuizGame> server = new DiscordGameServer(channel, this::stopGame);
+        DiscordGameServer server = new DiscordGameServer(channel, this::stopGame);
         ServerGate<DiscordQuizGame> gate = server.createGate();
-        DiscordQuizGame game = new DiscordQuizGame(rounds, gamePlayers, gate, authorId);
+        DiscordQuizGame game = new DiscordQuizGame(rounds, gamePlayers, gate, authorId, server);
         ScheduledExecutorService task = Executors.newScheduledThreadPool(1);
         ScheduledFuture<?> future = task.scheduleAtFixedRate(game::update, 0, 250, TimeUnit.MILLISECONDS);
         game.start();
         ongoingGames.put(game, future);
     }
+
+    /*private Collection<DiscordPlayer> asGamePlayers(Collection<? extends Snowflake> playersId, TextChannel channel) {
+        return channel
+                .getGuild()
+                .flatMapMany(Guild::getMembers)
+                .filter(member -> playersId.contains(member.getId()))
+                .map(this::asPlayer)
+                .collectList()
+                .block();
+    }*/
 
     public boolean isPlaying(Snowflake playerId) {
         return ongoingGames
@@ -67,4 +77,12 @@ public class GameList {
         String nickName = player.getDisplayName();
         return new DiscordPlayer(id, userName, nickName);
     }
+
+    /*
+    private DiscordPlayer asPlayer(Member member) {
+        String userName = member.getUsername();
+        String nickName = member.getDisplayName();
+        Snowflake id = member.getId();
+        return new DiscordPlayer(id, userName, nickName);
+    }*/
 }

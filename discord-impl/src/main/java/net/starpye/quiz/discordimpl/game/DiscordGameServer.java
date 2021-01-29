@@ -1,6 +1,7 @@
 package net.starpye.quiz.discordimpl.game;
 
 import discord4j.core.object.entity.Guild;
+import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.TextChannel;
 import net.starpye.quiz.discordimpl.util.ImageUtils;
 import net.starype.quiz.api.game.GameRoundReport;
@@ -16,12 +17,13 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class DiscordGameServer implements GameServer<DiscordQuizGame> {
+public class DiscordGameServer extends DiscordLogContainer implements GameServer<DiscordQuizGame> {
 
     private TextChannel channel;
     private Consumer<DiscordQuizGame> endAction;
 
     public DiscordGameServer(TextChannel channel, Consumer<DiscordQuizGame> endAction) {
+        super(channel);
         this.channel = channel;
         this.endAction = endAction;
     }
@@ -32,7 +34,9 @@ public class DiscordGameServer implements GameServer<DiscordQuizGame> {
                 .getGuild()
                 .block();
         InputStream image = ImageUtils.generateLeaderboard(report.orderedStandings(), guild);
-        channel.createMessage(spec -> spec.addFile("standings.png", image)).subscribe();
+        channel.createMessage(spec -> spec.addFile("standings.png", image))
+                .map(Message::getId)
+                .subscribe(this::addLog);
     }
 
     @Override
@@ -69,29 +73,17 @@ public class DiscordGameServer implements GameServer<DiscordQuizGame> {
     private void sendAsLatexFile(String message) {
         TeXFormula teXFormula = new TeXFormula(message);
         Image image = teXFormula.createBufferedImage(TeXFormula.SERIF, 200, Color.BLACK, Color.WHITE);
-        BufferedImage bufferedImage = toBufferedImage(image);
+        BufferedImage bufferedImage = ImageUtils.toBufferedImage(image);
         InputStream inputStream = ImageUtils.toInputStream(bufferedImage);
-        channel.createMessage(spec -> spec.addFile("image.png", inputStream)).block();
+        channel
+                .createMessage(spec -> spec.addFile("image.png", inputStream))
+                .map(Message::getId)
+                .subscribe(this::addLog);
     }
 
     private void sendAsText(String message) {
-        channel.createMessage(message).block();
-    }
-
-    // https://stackoverflow.com/questions/13605248/java-converting-image-to-bufferedimage
-    private BufferedImage toBufferedImage(Image image) {
-        // Create a buffered image with transparency
-        BufferedImage bufferedImage = new BufferedImage(
-                image.getWidth(null),
-                image.getHeight(null),
-                BufferedImage.TYPE_INT_ARGB);
-
-        // Draw the image on to the buffered image
-        Graphics2D bGr = bufferedImage.createGraphics();
-        bGr.drawImage(image, 0, 0, null);
-        bGr.dispose();
-
-        // Return the buffered image
-        return bufferedImage;
+        channel.createMessage(message)
+                .map(Message::getId)
+                .subscribe(this::addLog);
     }
 }

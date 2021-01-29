@@ -26,8 +26,10 @@ public class StartGameCommand implements QuizCommand {
             context.getChannel().createMessage(nickName +", you are not the admin of any lobby").block();
             return;
         }
-        GameLobby gameLobby = optGame.get();
-        lobbyList.unregisterLobby(gameLobby);
-        gameLobby.start(context.getGameList());
+        GameLobby lobby = optGame.get();
+        lobby.addLog(context.getMessage().getId());
+
+        lobbyList.unregisterLobby(lobby);
+        lobby.start(context.getGameList());
     }
 }
