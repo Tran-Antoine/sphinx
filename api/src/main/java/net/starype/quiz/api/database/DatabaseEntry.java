@@ -3,10 +3,7 @@ package net.starype.quiz.api.database;
 import net.starype.quiz.api.util.ByteBufferUtils;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
@@ -14,8 +11,9 @@ import java.util.stream.IntStream;
  * Stores an entry for each corresponding argument defined in the {@link DatabaseTable}
  */
 public class DatabaseEntry {
+
     private final DatabaseId id;
-    private final Map<String,String> argument = new SortedMap();
+    private final Map<String,String> argument = new TreeMap<>();
     private final List<String> indexedArguments = new ArrayList<>();
     private final DatabaseTable table;
     private final Consumer<DatabaseId> onChange;

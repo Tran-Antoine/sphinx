@@ -10,8 +10,7 @@ import java.util.function.Function;
 
 public class Serializer {
 
-    private static <T> ByteBuffer serializeObject(T object, Function<T, ByteBuffer> serializer) {
-        ByteBuffer rawData = serializer.apply(object);
+    private static ByteBuffer serializeObject(ByteBuffer rawData) {
         ByteBuffer output = ByteBuffer.allocate(rawData.array().length + 4);
         output.putInt(rawData.array().length);
         output.put(rawData.array());
@@ -38,7 +37,7 @@ public class Serializer {
             for (T t : data) {
                 // Can use forEach here due to the exception throw by the write function
                 // (must be catch in the lambda for practical reason)
-                byteArrayOutputStream.write(serializeObject(t, serializer).array());
+                byteArrayOutputStream.write(serializeObject(serializer.apply(t)).array());
             }
             return ByteBuffer.wrap(byteArrayOutputStream.toByteArray());
         } catch (IOException e) {

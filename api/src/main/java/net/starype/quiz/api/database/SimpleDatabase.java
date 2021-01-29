@@ -11,6 +11,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class SimpleDatabase implements Database {
+
     private final DatabaseIdGenerator idGenerator;
     private final DatabaseTable table;
     private final List<DatabaseEntry> entries;
@@ -60,7 +61,9 @@ public class SimpleDatabase implements Database {
     public DatabaseEntry generateNewEntry() {
         DatabaseEntry entry = new DatabaseEntry(table, idGenerator, this::onChange);
         addEntry(entry);
-        if(autoSync && internalAutoSyncLock) write();
+        if(autoSync && internalAutoSyncLock) {
+            write();
+        }
         return entry;
     }
 

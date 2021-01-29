@@ -9,12 +9,12 @@ import java.util.stream.Collectors;
 
 public class QuestionDatabases {
 
-    public static SimpleQuestionDatabase fromLocalPath(String configPath, String dbPath, boolean standAlone, boolean compressed) {
+    public static QuestionDatabase fromLocalPath(String configPath, String dbPath, boolean standAlone, boolean compressed) {
         SerializedIO serializedIO = (compressed) ? (new CompressedFileSerializedIO(dbPath)) : (new FileSerializedIO(dbPath));
         return fromLocalPath(configPath, serializedIO, standAlone);
     }
 
-    public static SimpleQuestionDatabase fromLocalPath(String configPath, SerializedIO serializedIO, boolean standAlone) {
+    public static QuestionDatabase fromLocalPath(String configPath, SerializedIO serializedIO, boolean standAlone) {
         File configAsFile = new File(configPath);
         List<String> paths = (configAsFile.isFile()
                 ? Collections.singletonList(configAsFile)
@@ -25,7 +25,7 @@ public class QuestionDatabases {
         return fromLocalPath(paths, configPath, serializedIO, standAlone);
     }
 
-    public static SimpleQuestionDatabase fromLocalPath(List<String> configPaths, String relativePath,
+    public static QuestionDatabase fromLocalPath(List<String> configPaths, String relativePath,
                                                  SerializedIO serializedIO, boolean standAlone) {
         FilePathReader filePathReader = new SimpleFilePathReader(configPaths, relativePath);
         List<? extends EntryUpdater> updaters = configPaths
@@ -33,7 +33,9 @@ public class QuestionDatabases {
                 .map(path -> createUpdater(FileUtils.getRelativePath(path, relativePath), filePathReader))
                 .collect(Collectors.toList());
 
-        return new SimpleQuestionDatabase(updaters, serializedIO, standAlone);
+        QuestionDatabase db = new QuestionDatabase(updaters, serializedIO, standAlone);
+        db.sync();
+        return db;
     }
 
     private static EntryUpdater createUpdater(String path, FilePathReader filePathReader) {

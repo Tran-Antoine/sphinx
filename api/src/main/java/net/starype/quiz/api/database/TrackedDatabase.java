@@ -74,6 +74,7 @@ public class TrackedDatabase extends SimpleDatabase {
     }
 
     public static class Builder {
+
         private DatabaseTable table;
         private SerializedIO serializedIO;
         private Set<? extends EntryUpdater> entries;
@@ -83,7 +84,6 @@ public class TrackedDatabase extends SimpleDatabase {
             this.table = table;
             return this;
         }
-
 
         public Builder setStandalone(boolean standalone) {
             this.standalone = standalone;
