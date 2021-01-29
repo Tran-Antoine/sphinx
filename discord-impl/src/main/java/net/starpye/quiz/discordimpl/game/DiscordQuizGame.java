@@ -31,6 +31,12 @@ public class DiscordQuizGame extends SimpleGame<DiscordQuizGame> {
         this.setGate(gate.withGame(this));
     }
 
+    @Override
+    public boolean nextRound() {
+        deleteLogs();
+        return super.nextRound();
+    }
+
     public boolean addVote(Snowflake playerId, Runnable ifReady) {
         votesForNext.add(playerId);
         if(votesForNext.size() >= getPlayers().size()) {

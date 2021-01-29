@@ -6,7 +6,6 @@ import discord4j.core.object.entity.channel.TextChannel;
 import discord4j.core.object.reaction.ReactionEmoji;
 import net.starpye.quiz.discordimpl.game.DiscordQuizGame;
 import net.starpye.quiz.discordimpl.game.GameList;
-import net.starpye.quiz.discordimpl.game.LogContainer;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -22,7 +21,8 @@ public class NextRoundCommand implements QuizCommand {
         TextChannel channel = context.getChannel();
         Message message = context.getMessage();
 
-        if(StopConditions.shouldStop(createStopConditions(gameList, playerId), channel)) {
+        Map<Supplier<Boolean>, String> conditions = createStopConditions(gameList, playerId);
+        if(StopConditions.shouldStop(conditions, channel, message)) {
             return;
         }
 
@@ -32,12 +32,13 @@ public class NextRoundCommand implements QuizCommand {
         message.addReaction(ReactionEmoji.unicode("\uD83D\uDC4D")).subscribe();
         game.addVote(
                 playerId,
-                () -> onSufficientVotes(game, channel));
+                () -> onSufficientVotes(channel, game));
     }
 
-    private void onSufficientVotes(DiscordQuizGame game, TextChannel channel) {
-        game.deleteLogs();
-        channel.createMessage("All players seem ready. Moving on to the next round!").subscribe();
+    private void onSufficientVotes(TextChannel channel, DiscordQuizGame game) {
+        channel.createMessage("All players seem ready. Moving on to the next round!")
+                .map(Message::getId)
+                .subscribe(game::addLog);
     }
 
     public static Map<Supplier<Boolean>, String> createStopConditions(GameList gameList, Snowflake playerId) {

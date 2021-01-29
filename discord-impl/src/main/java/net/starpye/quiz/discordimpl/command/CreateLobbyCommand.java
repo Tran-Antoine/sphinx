@@ -2,6 +2,7 @@ package net.starpye.quiz.discordimpl.command;
 
 import discord4j.common.util.Snowflake;
 import discord4j.core.object.entity.Member;
+import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.TextChannel;
 import net.starpye.quiz.discordimpl.game.GameList;
 import net.starpye.quiz.discordimpl.game.GameLobby;
@@ -9,6 +10,7 @@ import net.starpye.quiz.discordimpl.game.LobbyList;
 import net.starpye.quiz.discordimpl.game.LogContainer;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -27,18 +29,21 @@ public class CreateLobbyCommand implements QuizCommand {
                 playerId,
                 author.getDisplayName());
 
-        if(StopConditions.shouldStop(stopConditions, channel)) {
+        Message message = context.getMessage();
+
+        if(StopConditions.shouldStop(stopConditions, channel, message)) {
             return;
         }
 
         LobbyList lobbies = context.getLobbyList();
         GameLobby lobby = lobbies.registerLobby(channel, author);
-        lobby.addLog(context.getMessage().getId());
+        lobby.addLog(message.getId());
     }
 
     private Map<Supplier<Boolean>, String> createStopConditions(
             GameList gameList, LobbyList lobbyList, Snowflake authorId, String nickName) {
-        Map<Supplier<Boolean>, String> conditions = new HashMap<>();
+
+        Map<Supplier<Boolean>, String> conditions = new LinkedHashMap<>();
         conditions.put(
                 () -> lobbyList.findByPlayer(authorId).isPresent(),
                 nickName + ", you are already in a lobby");
