@@ -1,13 +1,14 @@
 package net.starype.quiz.api.game.guessprocess;
 
 import net.starype.quiz.api.game.MaxGuessCounter;
+import net.starype.quiz.api.game.SettablePlayerGuessContext;
 import net.starype.quiz.api.game.player.IDHolder;
 
 import java.util.Collection;
 
-public class ConsumeAllPlayersGuess extends ConditionalConsumer<RoundState> {
+public class ConsumeAllPlayersGuess extends ConditionalConsumer<RoundState, SettablePlayerGuessContext> {
     @Override
-    public void execute(RoundState roundState) {
+    public void execute(RoundState roundState, SettablePlayerGuessContext playerGuessContext) {
         MaxGuessCounter counter = roundState.getCounter();
         Collection<? extends IDHolder<?>> players = roundState.getLeaderboard().keySet();
         for(IDHolder<?> player : players) {

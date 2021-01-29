@@ -1,7 +1,6 @@
 package net.starype.quiz.api.game.guessprocess;
 
 import net.starype.quiz.api.game.MaxGuessCounter;
-import net.starype.quiz.api.game.PlayerGuessContext;
 import net.starype.quiz.api.game.answer.Answer;
 import net.starype.quiz.api.game.player.IDHolder;
 import net.starype.quiz.api.game.player.Player;
@@ -22,11 +21,6 @@ public class RoundState {
      */
     private MaxGuessCounter counter;
 
-    /**
-     * Context of the current player who is guessing
-     */
-    private PlayerGuessContext playerGuessContext;
-
     private Map<Player<?>, Answer> answers = new HashMap<>();
 
 
@@ -42,17 +36,10 @@ public class RoundState {
         this.counter = counter;
     }
 
-    public void setPlayerGuessContext(PlayerGuessContext playerGuessContext) {
-        this.playerGuessContext = playerGuessContext;
-    }
-
     public MaxGuessCounter getCounter() {
         return counter;
     }
 
-    public PlayerGuessContext getPlayerGuessContext() {
-        return playerGuessContext;
-    }
 
     public Map<? extends IDHolder<?>, Double> getLeaderboard() {
         return roundCorrectness;

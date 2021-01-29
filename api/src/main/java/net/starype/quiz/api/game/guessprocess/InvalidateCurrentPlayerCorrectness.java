@@ -1,19 +1,16 @@
 package net.starype.quiz.api.game.guessprocess;
 
-import net.starype.quiz.api.game.PlayerGuessContext;
-import net.starype.quiz.api.game.player.Player;
+import net.starype.quiz.api.game.SettablePlayerGuessContext;
 
-public class InvalidateCurrentPlayerCorrectness extends ConditionalConsumer<RoundState> {
+public class InvalidateCurrentPlayerCorrectness extends ConditionalConsumer<RoundState, SettablePlayerGuessContext> {
     @Override
-    public void execute(RoundState roundState) {
-        Player<?> player = roundState.getPlayerGuessContext().getPlayer();
-        boolean eligible = roundState.getPlayerGuessContext().isEligible();
-        roundState.setPlayerGuessContext(new PlayerGuessContext(player, 0.0, eligible));
+    public void execute(RoundState roundState, SettablePlayerGuessContext playerGuessContext) {
+        playerGuessContext.setCorrectness(0.0);
     }
 
 //    @Override
 //    public void accept(Player<?> player, String message, Double correctness, RoundState roundState) {
-//        roundState.setPlayerGuessContext(new PlayerGuessContext(player,
+//        roundState.setPlayerGuessContext(new SettablePlayerGuessContext(player,
 //                Objects.requireNonNullElse(correctness, 0.0), true));
 //    }
 

@@ -39,10 +39,10 @@ public class PollRound implements GameRound {
     }
 
     @Override
-    public PlayerGuessContext onGuessReceived(Player<?> source, String message) {
+    public SettablePlayerGuessContext onGuessReceived(Player<?> source, String message) {
         definitiveAnswers.put(source, Answer.fromString(message));
         counter.incrementGuess(source);
-        return new PlayerGuessContext(source, 0, counter.isEligible(source));
+        return new SettablePlayerGuessContext(source, 0, counter.isEligible(source));
     }
 
     @Override

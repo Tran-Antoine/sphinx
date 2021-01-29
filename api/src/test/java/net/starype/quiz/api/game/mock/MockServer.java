@@ -1,7 +1,7 @@
 package net.starype.quiz.api.game.mock;
 
 import net.starype.quiz.api.game.GameRoundReport;
-import net.starype.quiz.api.game.PlayerGuessContext;
+import net.starype.quiz.api.game.SettablePlayerGuessContext;
 import net.starype.quiz.api.game.QuizGame;
 import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.question.Question;
@@ -28,7 +28,7 @@ public class MockServer implements GameServer<QuizGame> {
     }
 
     @Override
-    public void onPlayerGuessed(PlayerGuessContext context) {
+    public void onPlayerGuessed(SettablePlayerGuessContext context) {
         System.out.println("Player with ID " + context.getPlayer().getId() + " sent a guess");
         double pointsAwarded = context.getCorrectness();
         System.out.println("Score Accuracy: " + pointsAwarded);

@@ -1,45 +1,46 @@
 package net.starype.quiz.api.game.guessprocess;
 
-import java.util.function.Consumer;
-import java.util.function.Predicate;
+import java.util.function.BiConsumer;
+import java.util.function.BiPredicate;
 
-public abstract class ConditionalConsumer<T> implements Consumer<T>, PredicateController<T>, PredicateBounded<T> {
-    Predicate<T> boundedCondition = t -> true;
-    Predicate<T> isExecuted = t -> false;
+public abstract class ConditionalConsumer<T, U> implements BiConsumer<T, U>,
+        BiPredicateController<T, U>, BiPredicateBounded<T, U> {
+    BiPredicate<T, U> boundedCondition = (t, u) -> true;
+    BiPredicate<T, U> isExecuted = (t, u) -> false;
 
     @Override
-    public void accept(T t) {
-        if(boundedCondition.test(t)) {
-            execute(t);
-            isExecuted = v -> true;
+    public void accept(T t, U u) {
+        if(boundedCondition.test(t, u)) {
+            execute(t, u);
+            isExecuted = (v, w) -> true;
         }
     }
 
-    public Predicate<T> getIsExecuted() {
+    public BiPredicate<T, U> getIsExecuted() {
         return isExecuted;
     }
 
-    public abstract void execute(T t);
+    public abstract void execute(T t, U u);
 
     @Override
-    public ConditionalConsumer<T> linkTo(Predicate<T> predicate) {
+    public ConditionalConsumer<T, U> linkTo(BiPredicate<T, U> predicate) {
         boundedCondition = predicate;
         return this;
     }
 
     @Override
-    public ConditionalConsumer<T> control(Predicate<T> predicate) {
+    public ConditionalConsumer<T, U> control(BiPredicate<T, U> predicate) {
         isExecuted = predicate;
         return this;
     }
 
     @Override
     public void setToTrue() {
-        isExecuted = t -> true;
+        isExecuted = (t, u) -> true;
     }
 
     @Override
     public void setToFalse() {
-        isExecuted = t -> false;
+        isExecuted = (t, u) -> false;
     }
 }

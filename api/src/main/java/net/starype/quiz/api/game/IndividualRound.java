@@ -32,15 +32,15 @@ public class IndividualRound implements GameRound {
     }
 
     @Override
-    public PlayerGuessContext onGuessReceived(Player<?> source, String message) {
+    public SettablePlayerGuessContext onGuessReceived(Player<?> source, String message) {
         Optional<Double> optAccuracy = pickedQuestion.evaluateAnswer(Answer.fromString(message));
         if(optAccuracy.isEmpty()) {
-            return new PlayerGuessContext(source, 0, true);
+            return new SettablePlayerGuessContext(source, 0, true);
         }
         double accuracy = optAccuracy.get();
         scoreDistribution.addIfNew(source, accuracy);
         maxGuessCounter.incrementGuess(source);
-        return new PlayerGuessContext(source, accuracy, false);
+        return new SettablePlayerGuessContext(source, accuracy, false);
     }
 
     @Override

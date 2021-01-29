@@ -33,11 +33,11 @@ public class ClassicalRound implements GameRound {
     }
 
     @Override
-    public PlayerGuessContext onGuessReceived(Player<?> source, String message) {
+    public SettablePlayerGuessContext onGuessReceived(Player<?> source, String message) {
 
         Optional<Double> optCorrectness = pickedQuestion.evaluateAnswer(Answer.fromString(message));
         if(optCorrectness.isEmpty()) {
-            return new PlayerGuessContext(source, 0, true);
+            return new SettablePlayerGuessContext(source, 0, true);
         }
 
         double correctness = optCorrectness.get();
@@ -49,7 +49,7 @@ public class ClassicalRound implements GameRound {
             counter.consumeAllGuesses(source);
         }
 
-        return new PlayerGuessContext(source, correctness, counter.isEligible(source));
+        return new SettablePlayerGuessContext(source, correctness, counter.isEligible(source));
     }
 
     @Override

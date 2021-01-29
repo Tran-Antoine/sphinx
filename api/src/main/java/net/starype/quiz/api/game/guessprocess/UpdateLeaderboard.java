@@ -1,10 +1,12 @@
 package net.starype.quiz.api.game.guessprocess;
 
-public class UpdateLeaderboard extends ConditionalConsumer<RoundState> {
+import net.starype.quiz.api.game.SettablePlayerGuessContext;
+
+public class UpdateLeaderboard extends ConditionalConsumer<RoundState, SettablePlayerGuessContext> {
 
     @Override
-    public void execute(RoundState roundState) {
-        roundState.updateLeaderboard(roundState.getPlayerGuessContext().getPlayer(),
-                roundState.getPlayerGuessContext().getCorrectness());
+    public void execute(RoundState roundState, SettablePlayerGuessContext playerGuessContext) {
+        roundState.updateLeaderboard(playerGuessContext.getPlayer(),
+                playerGuessContext.getCorrectness());
     }
 }

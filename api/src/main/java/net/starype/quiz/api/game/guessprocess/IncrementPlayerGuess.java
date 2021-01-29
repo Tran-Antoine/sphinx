@@ -1,14 +1,15 @@
 package net.starype.quiz.api.game.guessprocess;
 
 import net.starype.quiz.api.game.MaxGuessCounter;
+import net.starype.quiz.api.game.SettablePlayerGuessContext;
 import net.starype.quiz.api.game.player.Player;
 
-public class IncrementPlayerGuess extends ConditionalConsumer<RoundState> {
+public class IncrementPlayerGuess extends ConditionalConsumer<RoundState, SettablePlayerGuessContext> {
 
     @Override
-    public void execute(RoundState roundState) {
+    public void execute(RoundState roundState, SettablePlayerGuessContext playerGuessContext) {
         MaxGuessCounter counter = roundState.getCounter();
-        Player<?> player = roundState.getPlayerGuessContext().getPlayer();
+        Player<?> player = playerGuessContext.getPlayer();
         counter.incrementGuess(player);
     }
 }

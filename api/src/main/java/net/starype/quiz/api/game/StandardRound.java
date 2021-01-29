@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 public class StandardRound implements GameRound {
 
@@ -24,10 +24,11 @@ public class StandardRound implements GameRound {
     private RoundState roundState;
 
     private GuessReceivedHead guessReceivedHead;
-    private Consumer<RoundState> guessReceivedConsumer;
+    private BiConsumer<RoundState, SettablePlayerGuessContext> guessReceivedConsumer;
 
     public StandardRound(Question pickedQuestion, GuessReceivedHead guessReceivedHead,
-                         Consumer<RoundState> guessReceivedConsumer, List<ScoreDistribution> scoreDistributions) {
+                         BiConsumer<RoundState, SettablePlayerGuessContext> guessReceivedConsumer,
+                         List<ScoreDistribution> scoreDistributions) {
         this.pickedQuestion = pickedQuestion;
         this.guessReceivedHead = guessReceivedHead;
         this.guessReceivedConsumer = guessReceivedConsumer;
@@ -43,11 +44,12 @@ public class StandardRound implements GameRound {
     @Override
     public PlayerGuessContext onGuessReceived(Player<?> source, String message) {
         Double correctness = pickedQuestion.evaluateAnswer(Answer.fromString(message)).orElse(null);
+        SettablePlayerGuessContext playerGuessContext = new SettablePlayerGuessContext(source, correctness, false);
 
-        guessReceivedHead.accept(source, message, correctness, roundState);
-        guessReceivedConsumer.accept(roundState);
+        guessReceivedHead.accept(source, message, correctness, roundState, playerGuessContext);
+        guessReceivedConsumer.accept(roundState, playerGuessContext);
 
-        return roundState.getPlayerGuessContext();
+        return playerGuessContext;
     }
 
     @Override
@@ -84,11 +86,11 @@ public class StandardRound implements GameRound {
 
     public static class Builder {
         private GuessReceivedHead guessReceivedHead;
-        private Consumer<RoundState> guessReceivedConsumer;
+        private BiConsumer<RoundState, SettablePlayerGuessContext> guessReceivedConsumer;
         private List<ScoreDistribution> scoreDistributions = new ArrayList<>();
         private Question question;
 
-        public Builder withGuessReceivedConsumer(Consumer<RoundState> guessReceivedConsumer) {
+        public Builder withGuessReceivedConsumer(BiConsumer<RoundState, SettablePlayerGuessContext> guessReceivedConsumer) {
             this.guessReceivedConsumer = guessReceivedConsumer;
             return this;
         }

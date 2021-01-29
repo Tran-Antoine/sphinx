@@ -1,30 +1,33 @@
 package net.starype.quiz.api.game.guessprocess;
 
+import net.starype.quiz.api.game.SettablePlayerGuessContext;
 import net.starype.quiz.api.game.player.Player;
 
-import java.util.function.Predicate;
+import java.util.function.BiPredicate;
 
-public abstract class GuessReceivedHead implements PredicateController<RoundState>,
-        QuadriConsumer<Player<?>, String, Double, RoundState> {
-    Predicate<RoundState> isExecuted;
+public abstract class GuessReceivedHead implements BiPredicateController<RoundState, SettablePlayerGuessContext>,
+        PentaConsumer<Player<?>, String, Double, RoundState, SettablePlayerGuessContext> {
 
-    public abstract void accept(Player<?> player, String message, Double correctness, RoundState roundState);
+    BiPredicate<RoundState, SettablePlayerGuessContext> isExecuted;
+
+    public abstract void accept(Player<?> player, String message, Double correctness,
+                                RoundState roundState, SettablePlayerGuessContext playerGuessContext);
 
     @Override
-    public GuessReceivedHead control(Predicate<RoundState> predicate) {
+    public GuessReceivedHead control(BiPredicate<RoundState, SettablePlayerGuessContext> predicate) {
         isExecuted = predicate;
-        isExecuted = t -> false;
+        isExecuted = (t, u) -> false;
         return this;
     }
 
     @Override
     public void setToTrue() {
-        isExecuted = t -> true;
+        isExecuted = (t, u) -> true;
     }
 
     @Override
     public void setToFalse() {
-        isExecuted = t -> false;
+        isExecuted = (t, u) -> false;
     }
 
 }

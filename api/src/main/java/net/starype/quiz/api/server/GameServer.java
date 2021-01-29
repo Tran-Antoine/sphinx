@@ -1,7 +1,7 @@
 package net.starype.quiz.api.server;
 
 import net.starype.quiz.api.game.GameRoundReport;
-import net.starype.quiz.api.game.PlayerGuessContext;
+import net.starype.quiz.api.game.SettablePlayerGuessContext;
 import net.starype.quiz.api.game.QuizGame;
 import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.question.Question;
@@ -51,14 +51,14 @@ public interface GameServer<T extends QuizGame> {
     /**
      * Perform appropriate actions when a game object notifies the server that an eligible player sent a guess.
      * <p>
-     * Is provided a {@link PlayerGuessContext} object that contains useful information about who the player is,
+     * Is provided a {@link SettablePlayerGuessContext} object that contains useful information about who the player is,
      * the accuracy of their answer (from {@code 0.0} to {@code 1.0}) and whether after sending this guess they
      * will be eligible for future guesses in this round. Typically, if the accuracy is {@code 100%}, the eligible
      * should, in most cases, be {@code false} since there is usually no point in accepting further answers from
      * a player that already guessed the correct one.
      * @param context the context containing useful information about the guess
      */
-    void onPlayerGuessed(PlayerGuessContext context);
+    void onPlayerGuessed(SettablePlayerGuessContext context);
 
     /**
      * Perform appropriate actions when a game object notifies the server that a non eligible player tried

@@ -5,16 +5,16 @@ import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.question.Question;
 
 import java.util.Collection;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
+import java.util.function.BiConsumer;
+import java.util.function.BiPredicate;
 
 public class ClassicalRoundFactory {
 
     public StandardRound create(Question question, double maxAwarded, Collection<Player<?>> players) {
-        Predicate<RoundState> isGuessEmpty = t -> false;
+        BiPredicate<RoundState, SettablePlayerGuessContext> isGuessEmpty = (t, u) -> false;
         GuessReceivedHead headConsumer = new IsGuessEmpty().control(isGuessEmpty);
 
-        Consumer<RoundState> consumer =
+        BiConsumer<RoundState, SettablePlayerGuessContext> consumer =
                 new InvalidateCurrentPlayerCorrectness().linkTo(isGuessEmpty)
                 .andThen(new IncrementPlayerGuess().linkTo(isGuessEmpty.negate()))
                 .andThen(new UpdateLeaderboard().linkTo(isGuessEmpty.negate())

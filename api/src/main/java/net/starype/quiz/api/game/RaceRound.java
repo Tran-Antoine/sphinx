@@ -36,7 +36,7 @@ public class RaceRound implements GameRound {
     }
 
     @Override
-    public PlayerGuessContext onGuessReceived(Player<?> source, String message) {
+    public SettablePlayerGuessContext onGuessReceived(Player<?> source, String message) {
 
         // eligibility checks are performed in the game class
         Optional<Double> correctness = pickedQuestion.evaluateAnswer(Answer.fromString(message));
@@ -48,7 +48,7 @@ public class RaceRound implements GameRound {
             winnerContainer.set(source);
         }
 
-        return new PlayerGuessContext(source, binaryCorrectness ? 1.0 : 0.0, counter.isEligible(source));
+        return new SettablePlayerGuessContext(source, binaryCorrectness ? 1.0 : 0.0, counter.isEligible(source));
     }
 
     @Override
