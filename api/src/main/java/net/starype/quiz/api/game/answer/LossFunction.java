@@ -2,9 +2,9 @@ package net.starype.quiz.api.game.answer;
 
 public interface LossFunction {
 
-    double evaluate(double x);
+    double evaluate(double error);
 
-    default double evaluate(double x, double from, double to) {
-        return evaluate((x - from) / (to - from));
+    default double evaluate(double error, double from, double to) {
+        return evaluate((error - from) / (to - from));
     }
 }

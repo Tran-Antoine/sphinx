@@ -1,5 +1,8 @@
 package net.starype.quiz.api.game.answer;
 
+/**
+ * Processor that removes trailing spaces and duplicated spaces.
+ */
 public class CleanStringProcessor implements AnswerProcessor {
     @Override
     public Answer process(Answer answer) {
