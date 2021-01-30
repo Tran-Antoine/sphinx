@@ -12,10 +12,10 @@ public interface GameRound {
 
     void start(QuizGame game, Collection<? extends IDHolder<?>> players, EventHandler eventHandler);
     PlayerGuessContext onGuessReceived(Player<?> source, String message);
-    void onGiveUpReceived(IDHolder<?> source);
+    void onGiveUpReceived(Player<?> source);
     default void onRoundStopped(){}
 
-    EntityEligibility initPlayerEligibility();
+    List<EntityEligibility> initPlayerEligibility();
     RoundEndingPredicate initEndingCondition();
     List<ScoreDistribution> initScoreDistribution();
     GameRoundReport initReport(Map<Player<?>, Double> standings);

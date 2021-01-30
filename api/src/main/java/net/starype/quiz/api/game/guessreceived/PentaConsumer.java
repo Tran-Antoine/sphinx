@@ -1,5 +1,6 @@
-package net.starype.quiz.api.game.guessprocess;
+package net.starype.quiz.api.game.guessreceived;
 
+@FunctionalInterface
 public interface PentaConsumer<A, B, C, D, E> {
 
     void accept(A a, B b, C c, D d, E e);

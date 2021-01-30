@@ -53,7 +53,7 @@ public class ClassicalRound implements GameRound {
     }
 
     @Override
-    public void onGiveUpReceived(IDHolder<?> source) {
+    public void onGiveUpReceived(Player<?> source) {
         counter.consumeAllGuesses(source);
     }
 

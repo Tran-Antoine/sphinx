@@ -44,7 +44,7 @@ public class IndividualRound implements GameRound {
     }
 
     @Override
-    public void onGiveUpReceived(IDHolder<?> source) {
+    public void onGiveUpReceived(Player<?> source) {
         scoreDistribution.addIfNew(source, 0);
     }
 
