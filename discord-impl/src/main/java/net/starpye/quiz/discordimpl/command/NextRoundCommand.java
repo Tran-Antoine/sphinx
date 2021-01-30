@@ -36,9 +36,11 @@ public class NextRoundCommand implements QuizCommand {
     }
 
     private void onSufficientVotes(TextChannel channel, DiscordQuizGame game) {
-        channel.createMessage("All players seem ready. Moving on to the next round!")
+        Snowflake id = channel
+                .createMessage("All players seem ready. Moving on to the next round!")
                 .map(Message::getId)
-                .subscribe(game::addLog);
+                .block();
+        game.addLog(id);
     }
 
     public static Map<Supplier<Boolean>, String> createStopConditions(GameList gameList, Snowflake playerId) {
