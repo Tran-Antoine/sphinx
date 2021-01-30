@@ -1,10 +1,10 @@
-package net.starype.quiz.api.parser;
+package net.starype.quiz.api.database;
 
 import java.nio.ByteBuffer;
 import java.util.Optional;
 
 /**
- * Interface {@link SerializedIO} is a simple interface for simple Input/Output. It defines
+ * A simple interface for Input/Output. It defines
  * an object that can be read from and write to (such as a File)
  */
 public interface SerializedIO {
