@@ -1,4 +1,4 @@
-package net.starype.quiz.api.game.guessprocess;
+package net.starype.quiz.api.game.guessreceived;
 
 import net.starype.quiz.api.game.MaxGuessCounter;
 import net.starype.quiz.api.game.answer.Answer;
@@ -21,6 +21,9 @@ public class RoundState {
      */
     private MaxGuessCounter counter;
 
+    /**
+     * Answers of all players of this round
+     */
     private Map<Player<?>, Answer> answers = new HashMap<>();
 
 
@@ -46,7 +49,7 @@ public class RoundState {
     }
 
     public void updateLeaderboard(Player<?> player, double correctness) {
-        if(roundCorrectness.containsKey(player)) {
+        if (roundCorrectness.containsKey(player)) {
             roundCorrectness.replace(player, correctness);
         } else {
             roundCorrectness.put(player, correctness);
@@ -58,7 +61,7 @@ public class RoundState {
     }
 
     public void updateRoundAnswers(Player<?> player, Answer answer) {
-        if(roundCorrectness.containsKey(player)) {
+        if (roundCorrectness.containsKey(player)) {
             answers.replace(player, answer);
         } else {
             answers.put(player, answer);

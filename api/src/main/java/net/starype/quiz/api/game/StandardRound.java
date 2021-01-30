@@ -2,8 +2,8 @@ package net.starype.quiz.api.game;
 
 import net.starype.quiz.api.game.answer.Answer;
 import net.starype.quiz.api.game.event.EventHandler;
-import net.starype.quiz.api.game.guessprocess.GuessReceivedHead;
-import net.starype.quiz.api.game.guessprocess.RoundState;
+import net.starype.quiz.api.game.guessreceived.GuessReceivedHead;
+import net.starype.quiz.api.game.guessreceived.RoundState;
 import net.starype.quiz.api.game.player.IDHolder;
 import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.question.Question;
@@ -54,7 +54,6 @@ public class StandardRound implements GameRound {
 
     @Override
     public void onGiveUpReceived(IDHolder<?> source) {
-
     }
 
     @Override
@@ -76,7 +75,6 @@ public class StandardRound implements GameRound {
     public GameRoundReport initReport(Map<Player<?>, Double> standings) {
         return null;
     }
-
 
 
     @Override

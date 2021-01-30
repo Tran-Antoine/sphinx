@@ -1,6 +1,6 @@
 package net.starype.quiz.api.game;
 
-import net.starype.quiz.api.game.guessprocess.*;
+import net.starype.quiz.api.game.guessreceived.*;
 import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.question.Question;
 
@@ -16,9 +16,9 @@ public class ClassicalRoundFactory {
 
         BiConsumer<RoundState, SettablePlayerGuessContext> consumer =
                 new InvalidateCurrentPlayerCorrectness().linkTo(isGuessEmpty)
-                .andThen(new IncrementPlayerGuess().linkTo(isGuessEmpty.negate()))
-                .andThen(new UpdateLeaderboard().linkTo(isGuessEmpty.negate())
-                .andThen(new ConsumePlayerGuess().linkTo(isGuessEmpty.negate().and(new IsAnswerCorrect()))));
+                        .andThen(new IncrementPlayerGuess().linkTo(isGuessEmpty.negate()))
+                        .andThen(new UpdateLeaderboard().linkTo(isGuessEmpty.negate())
+                        .andThen(new ConsumePlayerGuess().linkTo(isGuessEmpty.negate().and(new IsAnswerCorrect()))));
 
 
         return new StandardRound.Builder()

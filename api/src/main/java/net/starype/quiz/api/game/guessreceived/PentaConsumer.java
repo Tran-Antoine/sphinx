@@ -1,4 +1,4 @@
-package net.starype.quiz.api.game.guessprocess;
+package net.starype.quiz.api.game.guessreceived;
 
 public interface PentaConsumer<A, B, C, D, E> {
 
