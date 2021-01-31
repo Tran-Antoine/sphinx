@@ -64,7 +64,7 @@ public class DiscordGameServer extends DiscordLogContainer implements GameServer
         InputStream image = ImageUtils.generateLeaderboard(standings, guild);
         channel.createMessage(spec -> spec.addFile("standings.png", image))
                 .map(Message::getId)
-                .subscribe(this::addLog);
+                .subscribe(this::trackMessage);
     }
 
     @Override
@@ -100,12 +100,12 @@ public class DiscordGameServer extends DiscordLogContainer implements GameServer
         channel
                 .createMessage(spec -> spec.addFile("image.png", inputStream))
                 .map(Message::getId)
-                .subscribe(this::addLog);
+                .subscribe(this::trackMessage);
     }
 
     private void sendAsText(String message) {
         channel.createMessage(message)
                 .map(Message::getId)
-                .subscribe(this::addLog);
+                .subscribe(this::trackMessage);
     }
 }

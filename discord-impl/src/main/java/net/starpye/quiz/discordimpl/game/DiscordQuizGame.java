@@ -55,10 +55,10 @@ public class DiscordQuizGame extends SimpleGame<DiscordQuizGame> {
     }
 
     public void deleteLogs() {
-        container.deleteLogs();
+        container.deleteMessages();
     }
 
     public void addLog(Snowflake id) {
-        container.addLog(id);
+        container.trackMessage(id);
     }
 }

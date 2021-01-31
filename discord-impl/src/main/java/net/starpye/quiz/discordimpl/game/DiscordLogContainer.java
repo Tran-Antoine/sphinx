@@ -19,12 +19,12 @@ public class DiscordLogContainer implements LogContainer {
     }
 
     @Override
-    public void addLog(Snowflake id) {
+    public void trackMessage(Snowflake id) {
         logs.add(id);
     }
 
     @Override
-    public void deleteLogs() {
+    public void deleteMessages() {
         synchronized (this) {
             logs.forEach(this::deleteLog);
             logs.clear();

@@ -7,9 +7,7 @@ import discord4j.core.object.entity.channel.TextChannel;
 import net.starpye.quiz.discordimpl.game.GameList;
 import net.starpye.quiz.discordimpl.game.GameLobby;
 import net.starpye.quiz.discordimpl.game.LobbyList;
-import net.starpye.quiz.discordimpl.game.LogContainer;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -37,7 +35,7 @@ public class CreateLobbyCommand implements QuizCommand {
 
         LobbyList lobbies = context.getLobbyList();
         GameLobby lobby = lobbies.registerLobby(channel, author);
-        lobby.addLog(message.getId());
+        lobby.trackMessage(message.getId());
     }
 
     private Map<Supplier<Boolean>, String> createStopConditions(

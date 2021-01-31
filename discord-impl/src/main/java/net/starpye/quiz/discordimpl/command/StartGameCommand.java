@@ -5,10 +5,8 @@ import discord4j.core.object.entity.Member;
 import net.starpye.quiz.discordimpl.game.GameLobby;
 import net.starpye.quiz.discordimpl.game.LobbyList;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 public class StartGameCommand implements QuizCommand {
@@ -36,7 +34,7 @@ public class StartGameCommand implements QuizCommand {
         }
 
         GameLobby lobby = lobbyList.findByAuthor(authorId).get();
-        lobby.addLog(context.getMessage().getId());
+        lobby.trackMessage(context.getMessage().getId());
         lobbyList.unregisterLobby(lobby);
         lobby.start(context.getGameList());
     }

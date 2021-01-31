@@ -11,7 +11,6 @@ import net.starpye.quiz.discordimpl.util.ImageUtils;
 import net.starype.quiz.api.game.GameRound;
 
 import javax.imageio.ImageIO;
-import javax.print.DocFlavor.READER;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -86,7 +85,7 @@ public class GameLobby extends DiscordLogContainer {
     }
 
     public void start(GameList gameList) {
-        deleteLogs();
+        deleteMessages();
         gameList.startNewGame(playersId, rounds, channel, authorId);
     }
 
@@ -108,7 +107,7 @@ public class GameLobby extends DiscordLogContainer {
         }
 
         Message message = optMessage.get();
-        addLog(message.getId());
+        trackMessage(message.getId());
         this.lobbyMessageId = message.getId();
 
         setUpReaction(
