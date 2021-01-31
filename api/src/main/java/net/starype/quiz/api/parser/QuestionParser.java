@@ -64,8 +64,8 @@ public class QuestionParser {
         AnswerProcessor processor = loadProcessor(rawProcessors);
         AnswerEvaluator evaluator = loadEvaluator(new ReadableMap() {
             @Override
-            public <T> T get(String value) {
-                return (T) rawEvaluatorData.get(value);
+            public <T> T get(String key) {
+                return (T) rawEvaluatorData.get(key);
             }
         }, processor, rawAnswers);
         QuestionDifficulty difficulty = loadDifficulty(rawDifficulty);
