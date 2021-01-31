@@ -39,13 +39,15 @@ public class DiscordQuizGame extends SimpleGame<DiscordQuizGame> {
 
     public boolean addVote(Snowflake playerId, Runnable ifReady) {
         votesForNext.add(playerId);
-        if(votesForNext.size() >= getPlayers().size()) {
-            votesForNext.clear();
-            ifReady.run();
-            this.nextRound();
-            return true;
+        if(votesForNext.size() < getPlayers().size()) {
+            return false;
         }
-        return false;
+        votesForNext.clear();
+        if(ifReady != null) {
+            ifReady.run();
+        }
+        this.nextRound();
+        return true;
     }
 
     public boolean isAuthor(Snowflake playerId) {

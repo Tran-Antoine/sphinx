@@ -6,6 +6,7 @@ import discord4j.core.object.entity.channel.TextChannel;
 import net.starpye.quiz.discordimpl.util.ImageUtils;
 import net.starype.quiz.api.game.GameRoundReport;
 import net.starype.quiz.api.game.PlayerGuessContext;
+import net.starype.quiz.api.game.ScoreDistribution.Standing;
 import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.question.Question;
 import net.starype.quiz.api.server.GameServer;
@@ -16,6 +17,7 @@ import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class DiscordGameServer extends DiscordLogContainer implements GameServer<DiscordQuizGame> {
 
@@ -30,19 +32,39 @@ public class DiscordGameServer extends DiscordLogContainer implements GameServer
 
     @Override
     public void onRoundEnded(GameRoundReport report, DiscordQuizGame game) {
-        Guild guild = channel
-                .getGuild()
-                .block();
-        InputStream image = ImageUtils.generateLeaderboard(report.orderedStandings(), guild);
-        channel.createMessage(spec -> spec.addFile("standings.png", image))
-                .map(Message::getId)
-                .subscribe(this::addLog);
+        sendAsText("That is the end of the round! Below are the results");
+        sendLeaderboard(report.orderedStandings());
+        if(game.isOutOfRounds()) {
+            sendAsText("This was the last round. Use ?next to vote for displaying the game results");
+        }
+    }
+
+    @Override
+    public void onRoundStarting(DiscordQuizGame game, boolean firstRound) {
+        String message = firstRound
+                ? "Game successfully started! Moving on to the first round"
+                : "All players seem ready. Moving on to the next round!";
+        sendAsText(message);
     }
 
     @Override
     public void onGameOver(List<? extends Player<?>> playerStandings, DiscordQuizGame game) {
-        sendAsText("Game over!");
+        sendAsText("Thanks for playing! Here are your results");
+        sendLeaderboard(playerStandings
+                .stream()
+                .map(player -> new Standing(player, player.getScore().getPoints()))
+                .collect(Collectors.toList()));
         endAction.accept(game);
+    }
+
+    private void sendLeaderboard(List<Standing> standings) {
+        Guild guild = channel
+                .getGuild()
+                .block();
+        InputStream image = ImageUtils.generateLeaderboard(standings, guild);
+        channel.createMessage(spec -> spec.addFile("standings.png", image))
+                .map(Message::getId)
+                .subscribe(this::addLog);
     }
 
     @Override

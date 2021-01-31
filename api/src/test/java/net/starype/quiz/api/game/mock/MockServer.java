@@ -23,6 +23,11 @@ public class MockServer implements GameServer<QuizGame> {
     }
 
     @Override
+    public void onRoundStarting(QuizGame game, boolean b) {
+
+    }
+
+    @Override
     public void onGameOver(List<? extends Player<?>> standings, QuizGame game) {
         System.out.println("All rounds have been played. Game successfully stopped");
         gameOver = true;

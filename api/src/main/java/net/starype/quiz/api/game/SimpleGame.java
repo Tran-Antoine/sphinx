@@ -61,7 +61,7 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
         if(rounds.isEmpty()) {
             throw new IllegalStateException("Cannot start a game that has less than one round");
         }
-        startHead();
+        startHead(true);
     }
 
     @Override
@@ -88,12 +88,13 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
         }
 
         paused.set(false);
-        startHead();
+        startHead(false);
         return true;
     }
 
-    private void startHead() {
+    private void startHead(boolean firstRound) {
         GameRound round = rounds.element();
+        gate.gameCallback((server, game) -> server.onRoundStarting(game, firstRound));
         round.start(this, players, updatableHandler);
     }
 
@@ -240,5 +241,9 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
 
     public boolean isWaitingForNextRound() {
         return waitingForNextRound;
+    }
+
+    public boolean isOutOfRounds() {
+        return rounds.size() == 0;
     }
 }
