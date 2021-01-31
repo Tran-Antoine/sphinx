@@ -22,6 +22,9 @@ public class RoundState {
      */
     private MaxGuessCounter counter;
 
+    /**
+     * Answers of all players of this round
+     */
     private Map<Player<?>, Answer> answers = new HashMap<>();
 
     private EntityEligibility playerEligibility;
@@ -46,7 +49,7 @@ public class RoundState {
     }
 
     public void updateLeaderboard(Player<?> player, double correctness) {
-        if(roundCorrectness.containsKey(player)) {
+        if (roundCorrectness.containsKey(player)) {
             roundCorrectness.replace(player, correctness);
         } else {
             roundCorrectness.put(player, correctness);
