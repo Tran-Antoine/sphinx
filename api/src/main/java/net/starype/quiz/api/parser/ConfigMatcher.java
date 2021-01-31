@@ -61,7 +61,7 @@ public class ConfigMatcher<T> {
      * @return a potentially empty collection containing all the results successfully computed
      */
     public Collection<T> loadList(String key, ReadableMap config) {
-        return config.<List<String>>get(key)
+        return config.get(key)
                 .stream()
                 .map(name -> loadFromValue(name, config))
                 .filter(Optional::isPresent)

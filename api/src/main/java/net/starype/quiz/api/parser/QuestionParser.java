@@ -58,10 +58,10 @@ public class QuestionParser {
                                     String inlineEvaluators, String inlineProcessors) {
         List<String> rawAnswers = StringUtils.unpack(inlineAnswers);
         Map<String, String> rawEvaluators = StringUtils.unpackMap(inlineEvaluators);
-        Map<String, String> rawProcessors = StringUtils.unpackMap(inlineProcessors);
+        List<String> rawProcessors = StringUtils.unpack(inlineProcessors);
 
         Set<QuestionTag> tags = new HashSet<>(StringUtils.unpack(inlineTags, QuestionTag::new));
-        AnswerProcessor processor = loadProcessor(arg -> Optional.ofNullable(rawProcessors.get(arg)));
+        AnswerProcessor processor = null;//loadProcessor(arg -> Optional.ofNullable(rawProcessors.get(arg)));
         AnswerEvaluator evaluator = loadEvaluator(arg -> Optional.ofNullable(rawEvaluators.get(arg)),
                 processor, rawAnswers);
         QuestionDifficulty difficulty = loadDifficulty(arg -> Optional.of(rawDifficulty));
@@ -101,10 +101,7 @@ public class QuestionParser {
         String rawText = config.get("question.text");
         String inlineTags = StringUtils.pack(config.get("tags"));
         String inlineAnswers = StringUtils.pack(config.get(CORRECT));
-        String inlineProcessors = StringUtils.packMap(argMap.keySet()
-                .stream()
-                .filter(key -> key.startsWith(PROCESSORS))
-                .collect(Collectors.toMap(k -> k, argMap::get)));
+        String inlineProcessors = StringUtils.pack(config.get("processors"));
         String inlineEvaluator = StringUtils.packMap(argMap.keySet()
                 .stream()
                 .filter(key -> key.startsWith(EVALUATOR))
