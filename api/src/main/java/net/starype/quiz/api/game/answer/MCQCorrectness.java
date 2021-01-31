@@ -29,10 +29,12 @@ public class MCQCorrectness implements CorrectnessEvaluator {
 
     @Override
     public double getCorrectness(Answer answer) {
-        Set<String> stringSet = Set.of(answer.getAnswerText().split(";"));
-        long goodGuess = stringSet
+        Set<String> stringSet = Set.of(answer.getAnswerText().split(";"))
                 .stream()
                 .map(String::toLowerCase)
+                .collect(Collectors.toSet());
+        long goodGuess = stringSet
+                .stream()
                 .filter(acceptedAnswers::contains)
                 .count();
         return evaluateCorrectness(goodGuess, stringSet.size() - goodGuess);
