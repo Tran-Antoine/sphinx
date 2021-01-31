@@ -11,7 +11,7 @@ public class RulesDisplayCommand implements QuizCommand {
     @Override
     public void execute(CommandContext context) {
         String content = readFromFile();
-        context.getChannel().createMessage(content).block();
+        context.getChannel().createMessage(content).subscribe();
     }
 
     private String readFromFile() {

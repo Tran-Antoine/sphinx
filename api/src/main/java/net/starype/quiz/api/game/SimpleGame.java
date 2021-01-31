@@ -16,7 +16,9 @@ import java.util.function.Supplier;
  * Main implementation of the logic of a {@link QuizGame}.
  * <p>
  * An instance of {@code SimpleGame} holds a queue of game rounds that will be played one after the other,
- * as well as a mutable player list representing the players who participate in the game.
+ * as well as a mutable player list representing the players who participate in the game. By default, once the last
+ * round is played, the game will not automatically be over but will rather wait for the next {@code nextRound} call.
+ * This can be changed by modifying {@code checkEndOfRound} to make it call {@code checkEndOfGame}.
  * <p>
  * Since the class was designed to be extended by custom implementations, the {@link ServerGate} is not created
  * internally, it must be provided either by the implementation, or externally via constructor parameter or the method
@@ -59,7 +61,7 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
         if(rounds.isEmpty()) {
             throw new IllegalStateException("Cannot start a game that has less than one round");
         }
-        startHead();
+        startHead(true);
     }
 
     @Override
@@ -80,19 +82,19 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
             return false;
         }
 
-        rounds.poll();
         if(rounds.isEmpty()) {
             gate.gameCallback((server, game) -> server.onGameOver(sortPlayers(), game));
-            return false;
+            return true;
         }
 
         paused.set(false);
-        startHead();
+        startHead(false);
         return true;
     }
 
-    private void startHead() {
+    private void startHead(boolean firstRound) {
         GameRound round = rounds.element();
+        gate.gameCallback((server, game) -> server.onRoundStarting(game, firstRound));
         round.start(this, players, updatableHandler);
     }
 
@@ -103,7 +105,7 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
             return;
         }
         if(rounds.isEmpty()) {
-            throw new IllegalStateException("Cannot accept inputs after the game is over");
+            throw new IllegalStateException();
         }
 
         GameRound current = rounds.peek();
@@ -131,12 +133,19 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
                 return;
             }
 
+            rounds.poll();
             paused.set(true);
             waitingForNextRound = true;
 
             List<Standing> standings = updateScores(context);
             current.onRoundStopped();
             gate.gameCallback((server, game) -> server.onRoundEnded(context.getReportCreator(standings), game));
+        }
+    }
+
+    public void checkEndOfGame() {
+        if(rounds.isEmpty()) {
+            gate.gameCallback((server, game) -> server.onGameOver(sortPlayers(), game));
         }
     }
 
@@ -232,5 +241,9 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
 
     public boolean isWaitingForNextRound() {
         return waitingForNextRound;
+    }
+
+    public boolean isOutOfRounds() {
+        return rounds.size() == 0;
     }
 }

@@ -11,7 +11,6 @@ import net.starpye.quiz.discordimpl.util.ImageUtils;
 import net.starype.quiz.api.game.GameRound;
 
 import javax.imageio.ImageIO;
-import javax.print.DocFlavor.READER;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -22,7 +21,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public class GameLobby {
+public class GameLobby extends DiscordLogContainer {
 
     private String name;
     private TextChannel channel;
@@ -33,6 +32,7 @@ public class GameLobby {
     private Snowflake lobbyMessageId;
 
     public GameLobby(TextChannel channel, String name) {
+        super(channel);
         this.channel = channel;
         this.name = name;
         this.playersId = new HashSet<>();
@@ -85,8 +85,8 @@ public class GameLobby {
     }
 
     public void start(GameList gameList) {
+        deleteMessages();
         gameList.startNewGame(playersId, rounds, channel, authorId);
-        performAction(message -> message.delete().subscribe());
     }
 
     public boolean isAuthor(Snowflake playerId) {
@@ -107,6 +107,7 @@ public class GameLobby {
         }
 
         Message message = optMessage.get();
+        trackMessage(message.getId());
         this.lobbyMessageId = message.getId();
 
         setUpReaction(

@@ -125,4 +125,20 @@ public class ImageUtils {
         return new Color(Color.HSBtoRGB(random.nextFloat(), 0.85F, 0.7F));
     }
 
+    // https://stackoverflow.com/questions/13605248/java-converting-image-to-bufferedimage
+    public static BufferedImage toBufferedImage(Image image) {
+        // Create a buffered image with transparency
+        BufferedImage bufferedImage = new BufferedImage(
+                image.getWidth(null),
+                image.getHeight(null),
+                BufferedImage.TYPE_INT_ARGB);
+
+        // Draw the image on to the buffered image
+        Graphics2D bGr = bufferedImage.createGraphics();
+        bGr.drawImage(image, 0, 0, null);
+        bGr.dispose();
+
+        // Return the buffered image
+        return bufferedImage;
+    }
 }
