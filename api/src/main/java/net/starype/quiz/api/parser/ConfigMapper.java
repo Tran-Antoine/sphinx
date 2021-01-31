@@ -1,6 +1,6 @@
 package net.starype.quiz.api.parser;
 
-import net.starype.quiz.api.database.ReadableMap;
+import net.starype.quiz.api.database.ReadableRawMap;
 
 /**
  * Maps a key name with an object generating procedure. <br>
@@ -21,5 +21,5 @@ public interface ConfigMapper<R> {
      * @param config the configuration object loaded from the file
      * @return a result representing the value
      */
-    R map(ReadableMap config);
+    R map(ReadableRawMap config);
 }

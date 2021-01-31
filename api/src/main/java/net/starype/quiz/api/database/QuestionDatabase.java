@@ -39,14 +39,7 @@ public class QuestionDatabase extends TrackedDatabase implements QuizQueryable {
         return query(argumentValues -> getQuery(queryMatcher, argumentValues))
                 .stream()
                 .sorted(new RandomComparator<>())
-                .map(s -> QuestionParser.parseRaw(
-                        s.get("difficulty").orElse("NORMAL"),
-                        s.get("tags").orElse(""),
-                        s.get("text").orElse(""),
-                        s.get("answers").orElse(""),
-                        s.get("evaluator").orElse(""),
-                        s.get("processors").orElse("")
-                ))
+                .map(QuestionParser::parse)
                 .limit(maxCount)
                 .collect(Collectors.toList());
     }

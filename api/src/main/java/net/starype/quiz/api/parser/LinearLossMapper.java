@@ -1,6 +1,6 @@
 package net.starype.quiz.api.parser;
 
-import net.starype.quiz.api.database.ReadableMap;
+import net.starype.quiz.api.database.ReadableRawMap;
 import net.starype.quiz.api.game.answer.LinearLossFunction;
 import net.starype.quiz.api.game.answer.LossFunction;
 
@@ -15,7 +15,7 @@ public class LinearLossMapper implements ConfigMapper<LossFunction> {
     }
 
     @Override
-    public LossFunction map(ReadableMap config) {
+    public LossFunction map(ReadableRawMap config) {
         return new LinearLossFunction();
     }
 }

@@ -17,6 +17,7 @@ public class MCQCorrectness implements CorrectnessEvaluator {
         this.acceptedAnswers = acceptedAnswers
                 .stream()
                 .map(Answer::getAnswerText)
+                .map(String::toLowerCase)
                 .collect(Collectors.toSet());
         this.lossFunction = lossFunction;
         this.punitiveRatio = Math.max(punitiveRatio, 0.0);
@@ -31,6 +32,7 @@ public class MCQCorrectness implements CorrectnessEvaluator {
         Set<String> stringSet = Set.of(answer.getAnswerText().split(";"));
         long goodGuess = stringSet
                 .stream()
+                .map(String::toLowerCase)
                 .filter(acceptedAnswers::contains)
                 .count();
         return evaluateCorrectness(goodGuess, stringSet.size() - goodGuess);

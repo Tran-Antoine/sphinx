@@ -5,6 +5,7 @@ import discord4j.core.object.entity.Attachment;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.TextChannel;
 import io.netty.buffer.ByteBufInputStream;
+import net.starpye.quiz.discordimpl.util.InputUtils;
 import net.starype.quiz.api.database.*;
 import scala.util.control.Exception.By;
 
@@ -46,7 +47,7 @@ public class GenerateDatabaseCommand implements QuizCommand {
     }
 
     private static Optional<InputStream> generateFile(String urlName, TextChannel channel) {
-        Collection<? extends EntryUpdater> updaters = loadEntryUpdaters(urlName, channel);
+        Collection<? extends EntryUpdater> updaters = InputUtils.loadEntryUpdaters(urlName, channel);
         AtomicReference<ByteBuffer> output = new AtomicReference<>();
         SerializedIO serializedIO = new ByteSerializedIO(new byte[0], output);
         TrackedDatabase db = new QuestionDatabase(updaters, serializedIO, false);
@@ -57,35 +58,6 @@ public class GenerateDatabaseCommand implements QuizCommand {
             return Optional.empty();
         }
         return Optional.of(new ByteArrayInputStream(output.get().array()));
-    }
-
-    private static Collection<? extends EntryUpdater> loadEntryUpdaters(String urlName, TextChannel channel) {
-
-        Set<EntryUpdater> updaters = new HashSet<>();
-
-        try {
-            URL url = new URL(urlName);
-            InputStream fileStream = url.openStream();
-            ZipInputStream zipStream = new ZipInputStream(fileStream);
-
-
-            ZipEntry current;
-            while((current = zipStream.getNextEntry()) != null) {
-                long size = current.getSize();
-                if(size == 0 || size >= 10E6) {
-                    continue;
-                }
-                String virtualPath = current.getName();
-                byte[] fileData = new byte[(int) size];
-                zipStream.read(fileData);
-                updaters.add(new ByteEntryUpdater(virtualPath, fileData));
-            }
-
-        } catch (IOException ignored) {
-            channel.createMessage("Error: couldn't load the provided zip archive").subscribe();
-        }
-
-        return updaters;
     }
 
     private Map<Supplier<Boolean>, String> createStopConditions(Message message) {

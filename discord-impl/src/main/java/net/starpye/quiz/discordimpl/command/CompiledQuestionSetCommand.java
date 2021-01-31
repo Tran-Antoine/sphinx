@@ -1,6 +1,7 @@
 package net.starpye.quiz.discordimpl.command;
 
 import discord4j.common.util.Snowflake;
+import discord4j.core.object.entity.Attachment;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.TextChannel;
@@ -14,13 +15,11 @@ import net.starype.quiz.api.database.SerializedIO;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
-public class QuestionSetCommand implements QuizCommand {
+public class CompiledQuestionSetCommand implements QuizCommand {
 
     @Override
     public void execute(CommandContext context) {
@@ -29,25 +28,23 @@ public class QuestionSetCommand implements QuizCommand {
         TextChannel channel = context.getChannel();
         Message message = context.getMessage();
         Snowflake authorId = author.getId();
+        String[] args = context.getArgs();
 
         Map<Supplier<Boolean>, String> conditions = createStopConditions(
                 lobbyList,
                 message,
                 authorId,
-                context.getArgs());
+                args);
 
         if(StopConditions.shouldStop(conditions, channel)) {
             return;
         }
 
         GameLobby lobby = lobbyList.findByAuthor(authorId).get();
+        String url = findUrl(message, args);
         byte[] dbData;
         try {
-            dbData = new URL(message
-                    .getAttachments()
-                    .iterator()
-                    .next()
-                    .getUrl())
+            dbData = new URL(url)
                     .openStream()
                     .readAllBytes();
         } catch (IOException e) {
@@ -62,25 +59,37 @@ public class QuestionSetCommand implements QuizCommand {
         channel.createMessage("Successfully registered the database").subscribe();
     }
 
+    private String findUrl(Message message, String[] args) {
+        Set<Attachment> attachments = message.getAttachments();
+        if(attachments.size() == 1) {
+            return attachments
+                    .iterator()
+                    .next()
+                    .getUrl();
+        }
+        return args[1];
+    }
+
     private static Map<Supplier<Boolean>, String> createStopConditions(
             LobbyList lobbyList, Message message, Snowflake authorId, String[] args) {
-        Map<Supplier<Boolean>, String> conditions = new HashMap<>();
+        Map<Supplier<Boolean>, String> conditions = new LinkedHashMap<>();
         conditions.put(
                 () -> lobbyList.findByAuthor(authorId).isEmpty(),
                 "You are not the author of any lobby");
 
         conditions.put(() -> message.getAttachments().size() != 1 && args.length != 2,
-                "You need to attach a single .sphinx file or a link to the file");
+                "You need to attach a single .sphinx file or a link to the file as second argument");
+
         return conditions;
     }
 
     @Override
     public String getName() {
-        return "question-set";
+        return "compiled-question-set";
     }
 
     @Override
     public String getDescription() {
-        return "Set the set of questions used for the game";
+        return "Set the set of questions used for the game from a .sphinx file";
     }
 }

@@ -5,9 +5,11 @@ import java.util.Set;
 public class ExactAnswerEvaluator implements AnswerEvaluator {
 
     private Set<Answer> answers;
+    private AnswerProcessor processor;
 
-    public ExactAnswerEvaluator(Set<Answer> answers) {
+    public ExactAnswerEvaluator(Set<Answer> answers, AnswerProcessor processor) {
         this.answers = answers;
+        this.processor = processor;
     }
 
     @Override
@@ -18,5 +20,10 @@ public class ExactAnswerEvaluator implements AnswerEvaluator {
     @Override
     public ValidityEvaluator getValidityEvaluator() {
         return new AlwaysValid();
+    }
+
+    @Override
+    public AnswerProcessor getProcessor() {
+        return processor;
     }
 }

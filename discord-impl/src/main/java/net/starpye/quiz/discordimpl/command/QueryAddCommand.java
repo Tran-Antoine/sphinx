@@ -9,6 +9,7 @@ import net.starype.quiz.api.database.QuestionQuery;
 import net.starype.quiz.api.game.question.QuestionDifficulty;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -40,8 +41,8 @@ public class QueryAddCommand implements QuizCommand {
 
     private static BiConsumer<GameLobby, QuestionQuery> findQueryAction(String arg) {
         switch (arg) {
-            case "and": return GameLobby::andQuery;
-            case "or": return GameLobby::orQuery;
+            case "and-query": return GameLobby::andQuery;
+            case "or-query": return GameLobby::orQuery;
             default: return null;
         }
     }
@@ -57,8 +58,8 @@ public class QueryAddCommand implements QuizCommand {
 
     private static Map<Supplier<Boolean>, String> createStopConditions(
             LobbyList lobbyList, Snowflake authorId, String[] args) {
-        Map<Supplier<Boolean>, String> conditions = new HashMap<>();
-        String syntax = "Syntax: ?add-query [and|or] [directory|tag|difficulty] <value>";
+        Map<Supplier<Boolean>, String> conditions = new LinkedHashMap<>();
+        String syntax = "Syntax: ?add-query [and-query|or-query] [directory|tag|difficulty] <value>";
         conditions.put(
                 () -> args.length != 4 || findQueryAction(args[1]) == null || findQueryType(args[2]) == null,
                 syntax);

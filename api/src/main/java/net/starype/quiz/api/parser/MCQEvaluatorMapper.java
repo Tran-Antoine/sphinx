@@ -1,6 +1,6 @@
 package net.starype.quiz.api.parser;
 
-import net.starype.quiz.api.database.ReadableMap;
+import net.starype.quiz.api.database.ReadableRawMap;
 import net.starype.quiz.api.game.answer.MCQEvaluator;
 import net.starype.quiz.api.game.answer.MCQAnswerFactory;
 
@@ -15,7 +15,7 @@ public class MCQEvaluatorMapper implements ConfigMapper<PartialEvaluator> {
     }
 
     @Override
-    public PartialEvaluator map(ReadableMap config) {
+    public PartialEvaluator map(ReadableRawMap config) {
         MCQAnswerFactory factory = new MCQAnswerFactory();
         return factory::createCorrectAnswer;
     }

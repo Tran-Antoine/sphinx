@@ -80,6 +80,9 @@ public class GameLobby {
     }
 
     public void start(GameList gameList) {
+        if(query == null) {
+            this.query = QuestionQueries.ALL;
+        }
         Optional<Question> optQuestion = queryObject.pickQuery(query);
         if(optQuestion.isEmpty()) {
             channel.createMessage("No question found").subscribe();
@@ -169,5 +172,9 @@ public class GameLobby {
             return;
         }
         this.query = this.query.or(query);
+    }
+
+    public void resetQuery() {
+        this.query = null;
     }
 }

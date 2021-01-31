@@ -1,6 +1,6 @@
 package net.starype.quiz.api.parser;
 
-import net.starype.quiz.api.database.ReadableMap;
+import net.starype.quiz.api.database.ReadableRawMap;
 import net.starype.quiz.api.game.question.QuestionDifficulty;
 
 public class DifficultyMapper implements ConfigMapper<QuestionDifficulty> {
@@ -19,7 +19,7 @@ public class DifficultyMapper implements ConfigMapper<QuestionDifficulty> {
     }
 
     @Override
-    public QuestionDifficulty map(ReadableMap config) {
+    public QuestionDifficulty map(ReadableRawMap config) {
         return difficulty;
     }
 }

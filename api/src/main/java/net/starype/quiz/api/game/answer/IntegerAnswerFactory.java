@@ -10,7 +10,7 @@ public class IntegerAnswerFactory implements RangedAnswerFactory {
 
     @Override
     public AnswerEvaluator createCorrectAnswer(Set<Answer> answers, AnswerProcessor answerProcessor) {
-        return new IntegerAnswerEvaluator(new NumberCorrectness(processList(answers, answerProcessor), range, lossFunction));
+        return new IntegerAnswerEvaluator(new NumberCorrectness(processList(answers, answerProcessor), range, lossFunction), answerProcessor);
     }
 
     @Override

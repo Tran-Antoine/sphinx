@@ -1,8 +1,6 @@
 package net.starype.quiz.api.parser;
 
 import com.electronwill.nightconfig.core.CommentedConfig;
-import com.electronwill.nightconfig.core.io.ConfigParser;
-import com.electronwill.nightconfig.toml.TomlParser;
 import net.starype.quiz.api.database.*;
 import net.starype.quiz.api.game.answer.Answer;
 import net.starype.quiz.api.game.answer.AnswerEvaluator;
@@ -12,15 +10,11 @@ import net.starype.quiz.api.game.question.DefaultQuestion;
 import net.starype.quiz.api.game.question.Question;
 import net.starype.quiz.api.game.question.QuestionDifficulty;
 import net.starype.quiz.api.game.question.QuestionTag;
-import net.starype.quiz.api.util.CheckSum;
 import net.starype.quiz.api.util.CollectionUtils;
 import net.starype.quiz.api.util.NightConfigParserUtils;
 import net.starype.quiz.api.util.StringUtils;
 
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -55,21 +49,14 @@ public class QuestionParser {
     private static final String CORRECT = "answer.correct";
     private static final String DIFFICULTY = "difficulty";
 
-    public static Question parseRaw(String rawDifficulty, String inlineTags, String rawText, String inlineAnswers,
-                                    String inlineEvaluators, String inlineProcessors) {
-        List<String> rawAnswers = StringUtils.unpack(inlineAnswers);
-        Map<String, String> rawEvaluatorData = StringUtils.unpackMap(inlineEvaluators);
-        List<String> rawProcessors = StringUtils.unpack(inlineProcessors);
+    public static Question parse(ReadableRawMap config) {
 
-        Set<QuestionTag> tags = new HashSet<>(StringUtils.unpack(inlineTags, QuestionTag::new));
-        AnswerProcessor processor = loadProcessor(rawProcessors);
-        AnswerEvaluator evaluator = loadEvaluator(new ReadableMap() {
-            @Override
-            public <T> T get(String key) {
-                return (T) rawEvaluatorData.get(key);
-            }
-        }, processor, rawAnswers);
-        QuestionDifficulty difficulty = loadDifficulty(rawDifficulty);
+        String rawText = config.getOrEmpty("text");
+        List<String> rawAnswers = StringUtils.unpack(config.getOrEmpty("answers"));
+        AnswerProcessor processor = loadProcessor(config);
+        AnswerEvaluator evaluator = loadEvaluator(config, processor, rawAnswers);
+        Set<QuestionTag> tags = new HashSet<>(StringUtils.unpack(config.getOrEmpty("tags"), QuestionTag::new));
+        QuestionDifficulty difficulty = QuestionDifficulty.valueOf(config.getOrDefault("difficulty", "NORMAL"));
 
         return new DefaultQuestion.Builder()
                 .withAnswerEvaluator(evaluator)
@@ -82,10 +69,10 @@ public class QuestionParser {
 
     private static Set<String> getKeysBySubPath(String subPath, Set<? extends CommentedConfig.Entry> config) {
         return config.stream()
-                .map(s -> (s.getValue() instanceof CommentedConfig) ?
-                        getKeysBySubPath(StringUtils.concatWithSeparator(subPath, s.getKey(), "."),
-                                s.<CommentedConfig>getValue().entrySet()) :
-                        Set.of(StringUtils.concatWithSeparator(subPath, s.getKey(), ".")))
+                .map(s -> (s.getValue() instanceof CommentedConfig)
+                        ? getKeysBySubPath(StringUtils.concatWithSeparator(subPath, s.getKey(), "."),
+                                s.<CommentedConfig>getValue().entrySet())
+                        : Set.of(StringUtils.concatWithSeparator(subPath, s.getKey(), ".")))
                 .reduce(CollectionUtils::concat).orElse(new HashSet<>());
     }
 
@@ -106,7 +93,7 @@ public class QuestionParser {
         String rawText = config.get("question.text");
         String inlineTags = StringUtils.pack(config.get("tags"));
         String inlineAnswers = StringUtils.pack(config.get(CORRECT));
-        String inlineProcessors = StringUtils.pack(config.get("processors"));
+        String inlineProcessors = StringUtils.pack(config.get("answer.processors"));
         String inlineEvaluator = StringUtils.packMap(argMap.keySet()
                 .stream()
                 .filter(key -> key.startsWith(EVALUATOR))
@@ -149,12 +136,6 @@ public class QuestionParser {
                 .orElse(QuestionDifficulty.NORMAL);
     }
 
-    private static QuestionDifficulty loadDifficulty(String difficulty) {
-        return DIFFICULTY_MATCHER
-                .loadFromValue(difficulty, null)
-                .orElse(QuestionDifficulty.NORMAL);
-    }
-
     private static AnswerProcessor loadProcessor(CommentedConfig config) {
         return PROCESSOR_MATCHER
                 .loadList(PROCESSORS, config::get)
@@ -163,9 +144,9 @@ public class QuestionParser {
                 .orElse(IdentityProcessor.INSTANCE);
     }
 
-    private static AnswerProcessor loadProcessor(List<String> rawProcessors) {
+    private static AnswerProcessor loadProcessor(ReadableRawMap config) {
         return PROCESSOR_MATCHER
-                .map(rawProcessors, null)
+                .map(StringUtils.unpack(config.getOrDefault("processors", "")), null)
                 .stream()
                 .reduce(AnswerProcessor::combine)
                 .orElse(IdentityProcessor.INSTANCE);
@@ -177,9 +158,10 @@ public class QuestionParser {
                 .create(StringUtils.map(rawAnswers, Answer::fromString), processor);
     }
 
-    private static AnswerEvaluator loadEvaluator(ReadableMap config, AnswerProcessor processor, List<String> rawAnswers) {
+    private static AnswerEvaluator loadEvaluator(ReadableRawMap config, AnswerProcessor processor, List<String> rawAnswers) {
+        Map<String, String> rawData = StringUtils.unpackMap(config.getOrDefault("evaluator", ""));
         return EVALUATOR_MATCHER
-                .loadFromKeyOrDefault(EVALUATOR_NAME, config)
+                .loadFromValueOrDefault(rawData.get("answer.evaluator.name"), config)
                 .create(StringUtils.map(rawAnswers, Answer::fromString), processor);
     }
 }

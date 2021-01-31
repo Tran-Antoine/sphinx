@@ -11,7 +11,7 @@ import java.util.stream.IntStream;
 /**
  * Stores an entry for each corresponding argument defined in the {@link DatabaseTable}
  */
-public class DatabaseEntry {
+public class DatabaseEntry implements ReadableRawMap {
 
     private final DatabaseId id;
     private final Map<String, String> argumentMap = new LinkedHashMap<>();
@@ -69,8 +69,9 @@ public class DatabaseEntry {
         return id;
     }
 
+    @Override
     public Optional<String> get(String key) {
-        return Optional.ofNullable(argumentMap.getOrDefault(key, null));
+        return Optional.ofNullable(argumentMap.get(key));
     }
 
     public void set(String key, String value) {

@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -77,6 +78,10 @@ public class Answer {
         if (o == null || getClass() != o.getClass()) return false;
         Answer answer1 = (Answer) o;
         return answer.equals(answer1.answer);
+    }
+
+    public Answer mapText(Function<String, String> mapping) {
+        return Answer.fromString(mapping.apply(answer));
     }
 
     @Override
