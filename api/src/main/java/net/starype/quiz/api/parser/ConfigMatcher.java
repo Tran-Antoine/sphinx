@@ -36,7 +36,7 @@ public class ConfigMatcher<T> {
      * @return an optional containing the result created, if present
      */
     public Optional<T> loadFromKey(String key, ReadableMap config) {
-        return loadFromValue(config.get(key).orElse(null), config);
+        return loadFromValue(config.get(key), config);
     }
 
     /**
@@ -61,11 +61,19 @@ public class ConfigMatcher<T> {
      * @return a potentially empty collection containing all the results successfully computed
      */
     public Collection<T> loadList(String key, ReadableMap config) {
-        return config.get(key)
+        return config.<List<String>>get(key)
                 .stream()
                 .map(name -> loadFromValue(name, config))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
+                .collect(Collectors.toList());
+    }
+
+    public Collection<T> map(Collection<String> keys, ReadableMap config) {
+        return mappers
+                .stream()
+                .filter(mapper -> keys.contains(mapper.getMapperName()))
+                .map(mapper -> mapper.map(config))
                 .collect(Collectors.toList());
     }
 

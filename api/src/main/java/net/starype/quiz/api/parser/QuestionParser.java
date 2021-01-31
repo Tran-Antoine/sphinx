@@ -57,14 +57,18 @@ public class QuestionParser {
     public static Question parseRaw(String rawDifficulty, String inlineTags, String rawText, String inlineAnswers,
                                     String inlineEvaluators, String inlineProcessors) {
         List<String> rawAnswers = StringUtils.unpack(inlineAnswers);
-        Map<String, String> rawEvaluators = StringUtils.unpackMap(inlineEvaluators);
+        Map<String, String> rawEvaluatorData = StringUtils.unpackMap(inlineEvaluators);
         List<String> rawProcessors = StringUtils.unpack(inlineProcessors);
 
         Set<QuestionTag> tags = new HashSet<>(StringUtils.unpack(inlineTags, QuestionTag::new));
-        AnswerProcessor processor = null;//loadProcessor(arg -> Optional.ofNullable(rawProcessors.get(arg)));
-        AnswerEvaluator evaluator = loadEvaluator(arg -> Optional.ofNullable(rawEvaluators.get(arg)),
-                processor, rawAnswers);
-        QuestionDifficulty difficulty = loadDifficulty(arg -> Optional.of(rawDifficulty));
+        AnswerProcessor processor = loadProcessor(rawProcessors);
+        AnswerEvaluator evaluator = loadEvaluator(new ReadableMap() {
+            @Override
+            public <T> T get(String value) {
+                return (T) rawEvaluatorData.get(value);
+            }
+        }, processor, rawAnswers);
+        QuestionDifficulty difficulty = loadDifficulty(rawDifficulty);
 
         return new DefaultQuestion.Builder()
                 .withAnswerEvaluator(evaluator)
@@ -126,9 +130,9 @@ public class QuestionParser {
         String rawText = config.get("question.text");
         Set<QuestionTag> tags = StringUtils.map(config.get("tags"), QuestionTag::new);
         List<String> rawAnswers = config.get(CORRECT);
-        AnswerProcessor processor = loadProcessor(config::getOptional);
-        AnswerEvaluator evaluator = loadEvaluator(config::getOptional, processor, rawAnswers);
-        QuestionDifficulty difficulty = loadDifficulty(config::getOptional);
+        AnswerProcessor processor = loadProcessor(config);
+        AnswerEvaluator evaluator = loadEvaluator(config, processor, rawAnswers);
+        QuestionDifficulty difficulty = loadDifficulty(config);
 
         return new DefaultQuestion.Builder()
                 .withAnswerEvaluator(evaluator)
@@ -139,8 +143,16 @@ public class QuestionParser {
                 .build();
     }
 
-    private static QuestionDifficulty loadDifficulty(ReadableMap config) {
-        return DIFFICULTY_MATCHER.loadFromKeyOrDefault(DIFFICULTY, config);
+    private static QuestionDifficulty loadDifficulty(CommentedConfig config) {
+        return DIFFICULTY_MATCHER
+                .loadFromKey(DIFFICULTY, config::get)
+                .orElse(QuestionDifficulty.NORMAL);
+    }
+
+    private static QuestionDifficulty loadDifficulty(String difficulty) {
+        return DIFFICULTY_MATCHER
+                .loadFromValue(difficulty, null)
+                .orElse(QuestionDifficulty.NORMAL);
     }
 
     private static CommentedConfig loadConfigFromFile(String filePath) throws IOException {
@@ -155,11 +167,26 @@ public class QuestionParser {
         return new TomlParser().parse(str);
     }
 
-    private static AnswerProcessor loadProcessor(ReadableMap config) {
-        return PROCESSOR_MATCHER.loadList(PROCESSORS, config)
+    private static AnswerProcessor loadProcessor(CommentedConfig config) {
+        return PROCESSOR_MATCHER
+                .loadList(PROCESSORS, config::get)
                 .stream()
                 .reduce(AnswerProcessor::combine)
                 .orElse(IdentityProcessor.INSTANCE);
+    }
+
+    private static AnswerProcessor loadProcessor(List<String> rawProcessors) {
+        return PROCESSOR_MATCHER
+                .map(rawProcessors, null)
+                .stream()
+                .reduce(AnswerProcessor::combine)
+                .orElse(IdentityProcessor.INSTANCE);
+    }
+
+    private static AnswerEvaluator loadEvaluator(CommentedConfig config, AnswerProcessor processor, List<String> rawAnswers) {
+        return EVALUATOR_MATCHER
+                .loadFromKeyOrDefault(EVALUATOR_NAME, config::get)
+                .create(StringUtils.map(rawAnswers, Answer::fromString), processor);
     }
 
     private static AnswerEvaluator loadEvaluator(ReadableMap config, AnswerProcessor processor, List<String> rawAnswers) {
