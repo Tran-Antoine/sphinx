@@ -8,10 +8,10 @@ import java.util.Collection;
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 
-public class ClassicalRoundFactory {
+public class IndividualRoundFactory {
+    public StandardRound create(Question question, Collection<? extends Player<?>> players,
+                                int maxGuesses, int maxToAward) {
 
-    public StandardRound create(Question question, double maxAwarded, Collection<? extends Player<?>> players,
-                                int maxGuesses) {
         BiPredicate<RoundState, SettablePlayerGuessContext> isGuessEmpty = (t, u) -> false;
         MaxGuessCounter counter = new MaxGuessCounter(maxGuesses);
         RoundState roundState = new RoundState(players, counter, counter);
@@ -19,21 +19,19 @@ public class ClassicalRoundFactory {
         BiConsumer<RoundState, SettablePlayerGuessContext> consumer =
                 new InvalidateCurrentPlayerCorrectness().linkTo(isGuessEmpty)
                         .andThen(new MakePlayerEligible().linkTo(isGuessEmpty))
-                        .andThen(new IncrementPlayerGuess().linkTo(isGuessEmpty.negate()))
                         .andThen(new UpdateLeaderboard().linkTo(isGuessEmpty.negate()))
-                        .andThen(new ConsumePlayerGuess().linkTo(isGuessEmpty.negate().and(new IsCorrectnessZero())))
+                        .andThen(new IncrementPlayerGuess().linkTo(isGuessEmpty.negate()))
                         .andThen(new UpdatePlayerEligibility().linkTo(isGuessEmpty.negate()));
-
 
         return new StandardRound.Builder()
                 .withGuessReceivedHead(new IsGuessEmpty().control(isGuessEmpty))
                 .withGuessReceivedConsumer(consumer)
-                .withGiveUpReceivedConsumer(new ConsumePlayerGuess())
-                .withQuestion(question)
-                .addScoreDistribution(new LeaderboardDistribution(maxAwarded, players.size()))
-                .addPlayerEligibility(counter)
+                .withGiveUpReceivedConsumer(new AddCorrectnessIfNew())
                 .withRoundState(roundState)
                 .withEndingCondition(new NoGuessLeft(counter, players))
+                .withQuestion(question)
+                .addScoreDistribution(new OneTryDistribution(maxToAward))
+                .addPlayerEligibility(counter)
                 .build();
     }
 }

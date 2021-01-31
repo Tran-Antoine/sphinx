@@ -4,10 +4,11 @@ import net.starype.quiz.api.game.PlayerGuessContext;
 
 import java.util.function.BiPredicate;
 
-public class IsAnswerCorrect implements BiPredicate<RoundState, PlayerGuessContext> {
+public class IsCorrectnessZero implements BiPredicate<RoundState, PlayerGuessContext> {
 
     @Override
     public boolean test(RoundState roundState, PlayerGuessContext playerGuessContext) {
-        return Math.abs(playerGuessContext.getCorrectness()) < 0.001;
+        //TODO : Replace 0.001 by EPSILON
+        return Math.abs(playerGuessContext.getCorrectness() - 1) < 0.001;
     }
 }

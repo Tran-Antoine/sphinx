@@ -1,5 +1,6 @@
 package net.starype.quiz.api.game.guessreceived;
 
+import net.starype.quiz.api.game.EntityEligibility;
 import net.starype.quiz.api.game.MaxGuessCounter;
 import net.starype.quiz.api.game.answer.Answer;
 import net.starype.quiz.api.game.player.IDHolder;
@@ -23,17 +24,16 @@ public class RoundState {
 
     private Map<Player<?>, Answer> answers = new HashMap<>();
 
+    private EntityEligibility playerEligibility;
 
-    public RoundState(Collection<? extends Player<?>> players, MaxGuessCounter counter) {
+
+    public RoundState(Collection<? extends Player<?>> players, MaxGuessCounter counter,
+                      EntityEligibility playerEligibility) {
         for (Player<?> player : players) {
             roundCorrectness.put(player, 0.0);
         }
         this.counter = counter;
-    }
-
-    public RoundState(Map<Player<?>, Double> initialStandings, MaxGuessCounter counter) {
-        roundCorrectness = initialStandings;
-        this.counter = counter;
+        this.playerEligibility = playerEligibility;
     }
 
     public MaxGuessCounter getCounter() {
@@ -58,11 +58,15 @@ public class RoundState {
     }
 
     public void updateRoundAnswers(Player<?> player, Answer answer) {
-        if(roundCorrectness.containsKey(player)) {
+        if(answers.containsKey(player)) {
             answers.replace(player, answer);
         } else {
             answers.put(player, answer);
         }
+    }
+
+    public boolean isPlayerEligible(IDHolder<?> player) {
+        return playerEligibility.isEligible(player);
     }
 
     public void addAnswerIfNew(Player<?> player, Answer answer) {

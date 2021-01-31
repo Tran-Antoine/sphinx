@@ -68,8 +68,8 @@ public class ClassicalRound implements GameRound {
     }
 
     @Override
-    public List<ScoreDistribution> initScoreDistribution() {
-        return scoreDistributions;
+    public ScoreDistribution initScoreDistribution() {
+        return scoreDistributions.get(0);
     }
 
     @Override

@@ -2,7 +2,7 @@ package net.starpye.quiz.discordimpl.game;
 
 import discord4j.core.object.entity.channel.TextChannel;
 import net.starype.quiz.api.game.GameRoundReport;
-import net.starype.quiz.api.game.SettablePlayerGuessContext;
+import net.starype.quiz.api.game.PlayerGuessContext;
 import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.question.Question;
 import net.starype.quiz.api.server.GameServer;
@@ -48,7 +48,7 @@ public class DiscordGameServer implements GameServer<DiscordQuizGame> {
     }
 
     @Override
-    public void onPlayerGuessed(SettablePlayerGuessContext context) {
+    public void onPlayerGuessed(PlayerGuessContext context) {
         sendAsText(context.getPlayer().getNickname()+", your answer has been registered!");
     }
 

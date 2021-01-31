@@ -1,6 +1,7 @@
 package net.starype.quiz.api.server;
 
 import net.starype.quiz.api.game.GameRoundReport;
+import net.starype.quiz.api.game.PlayerGuessContext;
 import net.starype.quiz.api.game.SettablePlayerGuessContext;
 import net.starype.quiz.api.game.QuizGame;
 import net.starype.quiz.api.game.player.Player;
@@ -58,7 +59,7 @@ public interface GameServer<T extends QuizGame> {
      * a player that already guessed the correct one.
      * @param context the context containing useful information about the guess
      */
-    void onPlayerGuessed(SettablePlayerGuessContext context);
+    void onPlayerGuessed(PlayerGuessContext context);
 
     /**
      * Perform appropriate actions when a game object notifies the server that a non eligible player tried

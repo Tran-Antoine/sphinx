@@ -1,22 +1,25 @@
 package net.starype.quiz.api.game;
 
-import net.starype.quiz.api.game.guessreceived.AddAnswer;
-import net.starype.quiz.api.game.guessreceived.ConsumePlayerGuess;
-import net.starype.quiz.api.game.guessreceived.IncrementPlayerGuess;
-import net.starype.quiz.api.game.guessreceived.RoundState;
+import net.starype.quiz.api.game.guessreceived.*;
 import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.question.Question;
 
 import java.util.Collection;
+import java.util.function.BiConsumer;
 
 public class PollRoundFactory {
-    public StandardRound create(Question question, Collection<Player<?>> players, int maxGuesses) {
+    public StandardRound create(Question question, Collection<? extends Player<?>> players, int maxGuesses) {
         MaxGuessCounter counter = new MaxGuessCounter(maxGuesses);
-        RoundState roundState = new RoundState(players, counter);
+        RoundState roundState = new RoundState(players, counter, counter);
+
+        BiConsumer<RoundState, SettablePlayerGuessContext> consumer =
+                new IncrementPlayerGuess()
+                .andThen(new UpdatePlayerEligibility());
+
 
         return new StandardRound.Builder()
-                .withGuessReceivedHead(new AddAnswer())
-                .withGuessReceivedConsumer(new IncrementPlayerGuess())
+                .withGuessReceivedHead(new UpdateAnswers())
+                .withGuessReceivedConsumer(consumer)
                 .withGiveUpReceivedConsumer(new ConsumePlayerGuess())
                 .withQuestion(question)
                 .addScoreDistribution(new ZeroScoreDistribution())

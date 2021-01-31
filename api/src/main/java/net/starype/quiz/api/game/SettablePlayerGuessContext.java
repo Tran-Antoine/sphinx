@@ -29,4 +29,8 @@ public class SettablePlayerGuessContext implements PlayerGuessContext {
     public void setCorrectness(double correctness) {
         this.correctness = correctness;
     }
+
+    public void setEligibility(boolean eligibility) {
+        this.eligibility = eligibility;
+    }
 }

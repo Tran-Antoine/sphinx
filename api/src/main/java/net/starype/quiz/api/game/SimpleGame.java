@@ -134,7 +134,8 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
             paused.set(true);
             waitingForNextRound = true;
 
-            List<ScoreDistribution> scoreDistributions = context.getScoreDistribution();
+            List<ScoreDistribution> scoreDistributions = new ArrayList<>();
+            scoreDistributions.add(context.getScoreDistribution());
             Map<Player<?>, Double> standings = recursiveScoreUpdate(scoreDistributions.size()-1,
                     players, scoreDistributions);
             round.onRoundStopped();
@@ -175,7 +176,7 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
             gate.callback(server -> server.onPlayerGaveUp(player));
             return;
         }
-        SettablePlayerGuessContext context = current.onGuessReceived(player, message);
+        PlayerGuessContext context = current.onGuessReceived(player, message);
         gate.callback(server -> server.onPlayerGuessed(context));
     }
 

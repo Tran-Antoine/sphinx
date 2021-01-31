@@ -59,7 +59,7 @@ public class IndividualRound implements GameRound {
     }
 
     @Override
-    public List<ScoreDistribution> initScoreDistribution() {
+    public ScoreDistribution initScoreDistribution() {
         return scoreDistribution;
     }
 

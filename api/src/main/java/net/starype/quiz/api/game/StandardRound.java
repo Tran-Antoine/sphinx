@@ -20,7 +20,7 @@ public class StandardRound implements GameRound {
     private Question pickedQuestion;
     private List<ScoreDistribution> scoreDistributions = new ArrayList<>();
     private RoundEndingPredicate endingCondition;
-    private List<EntityEligibility> playerEligibility;
+    private List<EntityEligibility> playerEligibilities;
     private RoundState roundState;
 
     private GuessReceivedHead guessReceivedHead;
@@ -32,14 +32,14 @@ public class StandardRound implements GameRound {
                          BiConsumer<RoundState, SettablePlayerGuessContext> guessReceivedConsumer,
                          BiConsumer<RoundState, SettablePlayerGuessContext> giveUpReceivedConsumer,
                          List<ScoreDistribution> scoreDistributions, RoundEndingPredicate endingCondition,
-                         List<EntityEligibility> playerEligibility, RoundState roundState) {
+                         List<EntityEligibility> playerEligibilities, RoundState roundState) {
         this.pickedQuestion = pickedQuestion;
         this.guessReceivedHead = guessReceivedHead;
         this.guessReceivedConsumer = guessReceivedConsumer;
         this.giveUpReceivedConsumer = giveUpReceivedConsumer;
         this.scoreDistributions = scoreDistributions;
         this.endingCondition = endingCondition;
-        this.playerEligibility = playerEligibility;
+        this.playerEligibilities = playerEligibilities;
         this.roundState = roundState;
     }
 
@@ -66,8 +66,8 @@ public class StandardRound implements GameRound {
     }
 
     @Override
-    public List<EntityEligibility> initPlayerEligibility() {
-        return playerEligibility;
+    public EntityEligibility initPlayerEligibility() {
+        return playerEligibilities.get(0);
     }
 
     @Override
@@ -76,16 +76,14 @@ public class StandardRound implements GameRound {
     }
 
     @Override
-    public List<ScoreDistribution> initScoreDistribution() {
-        return scoreDistributions;
+    public ScoreDistribution initScoreDistribution() {
+        return scoreDistributions.get(0);
     }
 
     @Override
     public GameRoundReport initReport(Map<Player<?>, Double> standings) {
         return null;
     }
-
-
 
     @Override
     public GameRoundContext getContext() {
@@ -101,10 +99,6 @@ public class StandardRound implements GameRound {
         private RoundEndingPredicate endingCondition;
         private List<EntityEligibility> playerEligibility = new ArrayList<>();
         private RoundState roundState;
-
-        public Builder() {
-        }
-
 
         public Builder withGuessReceivedConsumer(BiConsumer<RoundState, SettablePlayerGuessContext> guessReceivedConsumer) {
             this.guessReceivedConsumer = guessReceivedConsumer;

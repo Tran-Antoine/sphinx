@@ -67,7 +67,7 @@ public class RaceRound implements GameRound {
     }
 
     @Override
-    public List<ScoreDistribution> initScoreDistribution() {
+    public ScoreDistribution initScoreDistribution() {
         return winnerContainer.get() == null
                 ? new ZeroScoreDistribution()
                 : new SingleWinnerDistribution(winnerContainer, pointsToAward);

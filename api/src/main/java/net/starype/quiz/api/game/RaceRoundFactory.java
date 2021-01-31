@@ -8,29 +8,26 @@ import java.util.Collection;
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 
-public class ClassicalRoundFactory {
+public class RaceRoundFactory {
+    public StandardRound create(Question question, Collection<? extends Player<?>> players,
+                                int maxGuesses, double scoreForWinner) {
 
-    public StandardRound create(Question question, double maxAwarded, Collection<? extends Player<?>> players,
-                                int maxGuesses) {
         BiPredicate<RoundState, SettablePlayerGuessContext> isGuessEmpty = (t, u) -> false;
         MaxGuessCounter counter = new MaxGuessCounter(maxGuesses);
         RoundState roundState = new RoundState(players, counter, counter);
 
         BiConsumer<RoundState, SettablePlayerGuessContext> consumer =
                 new InvalidateCurrentPlayerCorrectness().linkTo(isGuessEmpty)
-                        .andThen(new MakePlayerEligible().linkTo(isGuessEmpty))
-                        .andThen(new IncrementPlayerGuess().linkTo(isGuessEmpty.negate()))
-                        .andThen(new UpdateLeaderboard().linkTo(isGuessEmpty.negate()))
-                        .andThen(new ConsumePlayerGuess().linkTo(isGuessEmpty.negate().and(new IsCorrectnessZero())))
-                        .andThen(new UpdatePlayerEligibility().linkTo(isGuessEmpty.negate()));
-
+                        .andThen(new IncrementPlayerGuess())
+                        .andThen(new ConsumeAllPlayersGuess().linkTo(new IsCorrectnessOne()))
+                        .andThen(new UpdatePlayerEligibility());
 
         return new StandardRound.Builder()
                 .withGuessReceivedHead(new IsGuessEmpty().control(isGuessEmpty))
                 .withGuessReceivedConsumer(consumer)
                 .withGiveUpReceivedConsumer(new ConsumePlayerGuess())
                 .withQuestion(question)
-                .addScoreDistribution(new LeaderboardDistribution(maxAwarded, players.size()))
+                .addScoreDistribution(new BinaryDistribution(roundState.getLeaderboard(), scoreForWinner))
                 .addPlayerEligibility(counter)
                 .withRoundState(roundState)
                 .withEndingCondition(new NoGuessLeft(counter, players))
