@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
  * It is used to defines an generic entry for any DataBase
  */
 public class DatabaseTable {
+
     private final List<? extends String> arguments;
     private final List<? extends String> indexedArguments;
 

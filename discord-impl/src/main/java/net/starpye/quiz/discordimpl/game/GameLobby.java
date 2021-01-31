@@ -8,17 +8,19 @@ import net.starpye.quiz.discordimpl.input.ReactionInputListener;
 import net.starpye.quiz.discordimpl.input.ReactionInputListener.ReactionContext;
 import net.starpye.quiz.discordimpl.input.ReactionInputListener.TriggerCondition;
 import net.starpye.quiz.discordimpl.util.ImageUtils;
+import net.starype.quiz.api.database.QuestionQueries;
+import net.starype.quiz.api.database.QuestionQuery;
+import net.starype.quiz.api.database.QuizQueryable;
 import net.starype.quiz.api.game.GameRound;
+import net.starype.quiz.api.game.question.Question;
 
 import javax.imageio.ImageIO;
-import javax.print.DocFlavor.READER;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Optional;
-import java.util.Queue;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -28,7 +30,9 @@ public class GameLobby {
     private TextChannel channel;
     private Set<Snowflake> playersId;
     private Snowflake authorId;
-    private Queue<GameRound> rounds;
+
+    private QuizQueryable queryObject;
+    private QuestionQuery query;
 
     private Snowflake lobbyMessageId;
 
@@ -36,7 +40,6 @@ public class GameLobby {
         this.channel = channel;
         this.name = name;
         this.playersId = new HashSet<>();
-        this.rounds = GameRounds.DEFAULT_PRESET;
     }
 
     public void registerAuthor(Snowflake playerId, String userName) {
@@ -72,20 +75,17 @@ public class GameLobby {
         return "(" + countIndication + ")";
     }
 
-    public void queueRound(GameRound round) {
-        rounds.add(round);
-    }
-
-    public void unqueueRound(GameRound round) {
-        rounds.remove(round);
-    }
-
     public boolean containsPlayer(Snowflake authorId) {
         return playersId.contains(authorId);
     }
 
     public void start(GameList gameList) {
-        gameList.startNewGame(playersId, rounds, channel, authorId);
+        Optional<Question> optQuestion = queryObject.pickQuery(query);
+        if(optQuestion.isEmpty()) {
+            channel.createMessage("No question found").subscribe();
+            return;
+        }
+        gameList.startNewGame(playersId, GameRounds.defaultPreset(optQuestion.get()), channel, authorId);
         performAction(message -> message.delete().subscribe());
     }
 
@@ -149,5 +149,25 @@ public class GameLobby {
                 .getMessageById(lobbyMessageId)
                 .blockOptional()
                 .ifPresent(action);
+    }
+
+    public void setQueryObject(QuizQueryable queryObject) {
+        this.queryObject = queryObject;
+    }
+
+    public void andQuery(QuestionQuery query) {
+       if(this.query == null) {
+            this.query = query;
+            return;
+       }
+       this.query = this.query.and(query);
+    }
+
+    public void orQuery(QuestionQuery query) {
+        if(this.query == null) {
+            this.query = query;
+            return;
+        }
+        this.query = this.query.or(query);
     }
 }

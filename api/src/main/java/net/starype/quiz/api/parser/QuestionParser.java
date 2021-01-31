@@ -88,8 +88,11 @@ public class QuestionParser {
         Optional<String> parsedFile = fileInput.read(file);
         if (parsedFile.isEmpty())
             return new HashSet<>();
+        return getDatabaseEntries(parsedFile.get(), databaseEntryFactory);
+    }
 
-        CommentedConfig config = loadConfigFromString(parsedFile.get());
+    public static Set<DatabaseEntry> getDatabaseEntries(String content, DatabaseEntryFactory factory) {
+        CommentedConfig config = loadConfigFromString(content);
         Set<String> inlineEntriesSet = getKeysBySubPath("", config.entrySet());
         Map<String, String> argMap = inlineEntriesSet.stream()
                 .collect(Collectors.toMap(path -> path, path -> (config.get(path) instanceof List<?>) ?
@@ -108,7 +111,7 @@ public class QuestionParser {
                 .collect(Collectors.toMap(k -> k, argMap::get)));
         String rawDifficulty = config.get(DIFFICULTY);
 
-        DatabaseEntry entry = databaseEntryFactory.generateNewEntry();
+        DatabaseEntry entry = factory.generateNewEntry();
         entry.set("text", rawText);
         entry.set("difficulty", rawDifficulty);
         entry.set("tags", inlineTags);

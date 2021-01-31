@@ -14,7 +14,7 @@ import java.util.stream.IntStream;
 public class DatabaseEntry {
 
     private final DatabaseId id;
-    private final Map<String,String> argumentMap = new TreeMap<>();
+    private final Map<String, String> argumentMap = new LinkedHashMap<>();
     private final List<String> indexedArguments = new ArrayList<>();
     private final DatabaseTable table;
     private final Consumer<DatabaseId> onChange;

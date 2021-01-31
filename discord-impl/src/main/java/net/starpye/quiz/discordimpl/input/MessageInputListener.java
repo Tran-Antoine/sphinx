@@ -70,7 +70,10 @@ public class MessageInputListener implements Consumer<MessageCreateEvent> {
                 new LeaveCommand(),
                 new NextRoundCommand(),
                 new ForceNextRoundCommand(),
-                new RulesDisplayCommand()
+                new RulesDisplayCommand(),
+                new GenerateDatabaseCommand(),
+                new QuestionSetCommand(),
+                new QueryAddCommand()
         );
     }
 

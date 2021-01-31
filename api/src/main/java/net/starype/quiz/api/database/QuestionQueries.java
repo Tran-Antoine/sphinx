@@ -7,6 +7,7 @@ public final class QuestionQueries {
     private QuestionQueries() {}
 
     public static final QuestionQuery ALL = (data) -> true;
+    public static final QuestionQuery NONE = (data) -> false;
 
     public static QuestionQuery allFromDirectory(String path) {
         return (data) -> data.getFile().startsWith(path);

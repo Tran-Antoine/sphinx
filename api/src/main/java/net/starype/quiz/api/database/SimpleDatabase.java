@@ -15,7 +15,7 @@ public class SimpleDatabase implements Database {
     private final DatabaseIdGenerator idGenerator;
     private final DatabaseTable table;
     private final List<DatabaseEntry> entries;
-    private final Map<DatabaseId,DatabaseEntry> entriesById;
+    private final Map<DatabaseId, DatabaseEntry> entriesById;
     private final SerializedIO serializedIO;
     private boolean autoSync = false;
     private boolean internalAutoSyncLock = false;

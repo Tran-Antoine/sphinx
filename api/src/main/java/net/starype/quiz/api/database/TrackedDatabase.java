@@ -29,7 +29,10 @@ public class TrackedDatabase extends SimpleDatabase {
         read();
 
         // If standalone
-        if(hasBeenSync) return;
+        if(hasBeenSync) {
+            releaseLock();
+            return;
+        }
         hasBeenSync = true;
 
         // Remove all entries linked to file no longer present in the database

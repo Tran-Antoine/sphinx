@@ -17,8 +17,8 @@ public class TrueFalseProcessor implements AnswerProcessor {
             "fausse", "non"
     );
 
-    public static final Answer TRUE = Answer.fromString("true");
-    public static final Answer FALSE = Answer.fromString("false");
+    public static final Answer TRUE = Answer.fromString("True");
+    public static final Answer FALSE = Answer.fromString("False");
 
     @Override
     public Answer process(Answer answer) {
