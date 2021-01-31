@@ -14,6 +14,7 @@ import net.starype.quiz.api.game.question.QuestionDifficulty;
 import net.starype.quiz.api.game.question.QuestionTag;
 import net.starype.quiz.api.util.CheckSum;
 import net.starype.quiz.api.util.CollectionUtils;
+import net.starype.quiz.api.util.NightConfigParserUtils;
 import net.starype.quiz.api.util.StringUtils;
 
 import java.io.File;
@@ -96,7 +97,7 @@ public class QuestionParser {
     }
 
     public static Set<DatabaseEntry> getDatabaseEntries(String content, DatabaseEntryFactory factory) {
-        CommentedConfig config = loadConfigFromString(content);
+        CommentedConfig config = NightConfigParserUtils.loadConfigFromString(content);
         Set<String> inlineEntriesSet = getKeysBySubPath("", config.entrySet());
         Map<String, String> argMap = inlineEntriesSet.stream()
                 .collect(Collectors.toMap(path -> path, path -> (config.get(path) instanceof List<?>) ?
@@ -124,8 +125,7 @@ public class QuestionParser {
     }
 
     public static Question parseTOML(String filePath) throws IOException {
-
-        CommentedConfig config = loadConfigFromFile(filePath);
+        CommentedConfig config = NightConfigParserUtils.loadConfigFromFile(filePath);
 
         String rawText = config.get("question.text");
         Set<QuestionTag> tags = StringUtils.map(config.get("tags"), QuestionTag::new);
@@ -153,18 +153,6 @@ public class QuestionParser {
         return DIFFICULTY_MATCHER
                 .loadFromValue(difficulty, null)
                 .orElse(QuestionDifficulty.NORMAL);
-    }
-
-    private static CommentedConfig loadConfigFromFile(String filePath) throws IOException {
-        ConfigParser<CommentedConfig> parser = new TomlParser();
-        Reader reader = new FileReader(new File(filePath));
-        CommentedConfig result = parser.parse(reader);
-        reader.close();
-        return result;
-    }
-
-    private static CommentedConfig loadConfigFromString(String str) {
-        return new TomlParser().parse(str);
     }
 
     private static AnswerProcessor loadProcessor(CommentedConfig config) {
