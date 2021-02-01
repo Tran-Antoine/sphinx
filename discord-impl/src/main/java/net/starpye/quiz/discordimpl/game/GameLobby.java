@@ -24,7 +24,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public class GameLobby {
+public class GameLobby extends DiscordLogContainer {
 
     private String name;
     private TextChannel channel;
@@ -37,6 +37,7 @@ public class GameLobby {
     private Snowflake lobbyMessageId;
 
     public GameLobby(TextChannel channel, String name) {
+        super(channel);
         this.channel = channel;
         this.name = name;
         this.playersId = new HashSet<>();
@@ -88,8 +89,10 @@ public class GameLobby {
             channel.createMessage("No question found").subscribe();
             return;
         }
+        
+        deleteMessages();
+
         gameList.startNewGame(playersId, GameRounds.defaultPreset(optQuestion.get()), channel, authorId);
-        performAction(message -> message.delete().subscribe());
     }
 
     public boolean isAuthor(Snowflake playerId) {
@@ -110,6 +113,7 @@ public class GameLobby {
         }
 
         Message message = optMessage.get();
+        trackMessage(message.getId());
         this.lobbyMessageId = message.getId();
 
         setUpReaction(

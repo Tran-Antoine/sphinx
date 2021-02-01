@@ -7,6 +7,7 @@ import net.starpye.quiz.discordimpl.game.GameList;
 import net.starpye.quiz.discordimpl.game.LobbyList;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -34,7 +35,7 @@ public class JoinLobbyCommand implements QuizCommand {
                 context.getArgs()
         );
         TextChannel channel = context.getChannel();
-        if(StopConditions.shouldStop(stopConditions, channel)) {
+        if(StopConditions.shouldStop(stopConditions, channel, context.getMessage())) {
             return;
         }
         String lobbyName = context.getArgs()[1];
@@ -42,10 +43,10 @@ public class JoinLobbyCommand implements QuizCommand {
         channel.createMessage("Successfully joined lobby with ID " + lobbyName).block();
     }
 
-    private Map<Supplier<Boolean>, String> createStopConditions(
+    private static Map<Supplier<Boolean>, String> createStopConditions(
             GameList gameList, LobbyList lobbyList, Snowflake authorId, String nickName, String[] args) {
 
-        Map<Supplier<Boolean>, String> conditions = new HashMap<>();
+        Map<Supplier<Boolean>, String> conditions = new LinkedHashMap<>();
         conditions.put(
                 () -> gameList.isPlaying(authorId),
                 nickName + ", you can't join a lobby if you're already playing");

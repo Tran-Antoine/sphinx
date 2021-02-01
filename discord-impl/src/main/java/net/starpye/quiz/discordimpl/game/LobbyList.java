@@ -21,13 +21,13 @@ public class LobbyList {
         this.nextId = 0;
     }
 
-    public String registerLobby(TextChannel channel, Member author) {
+    public GameLobby registerLobby(TextChannel channel, Member author) {
         String id = "lobby" + nextId++;
         GameLobby lobby = new GameLobby(channel, id);
         lobby.sendJoinImage(reactionListener);
         lobby.registerAuthor(author.getId(), author.getDisplayName());
         lobbies.add(lobby);
-        return id;
+        return lobby;
     }
 
     public void unregisterLobby(GameLobby lobby) {
