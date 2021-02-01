@@ -16,6 +16,10 @@ public class MCQValidity implements ValidityEvaluator {
 
     @Override
     public boolean isValid(Answer answer) {
-        return answers.containsAll(answer.split(";"));
+        return answers.containsAll(answer
+                .split(";")
+                .stream()
+                .map(a -> a.mapText(String::toLowerCase))
+                .collect(Collectors.toSet()));
     }
 }
