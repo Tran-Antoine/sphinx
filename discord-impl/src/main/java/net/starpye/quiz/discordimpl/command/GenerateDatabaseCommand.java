@@ -22,11 +22,12 @@ public class GenerateDatabaseCommand implements QuizCommand {
 
     @Override
     public void execute(CommandContext context) {
-        Set<Attachment> files = context.getMessage().getAttachments();
-        Map<Supplier<Boolean>, String> conditions = createStopConditions(context.getMessage());
+        Message message = context.getMessage();
+        Set<Attachment> files = message.getAttachments();
+        Map<Supplier<Boolean>, String> conditions = createStopConditions(message);
         TextChannel channel = context.getChannel();
 
-        if(StopConditions.shouldStop(conditions, channel)) {
+        if(StopConditions.shouldStop(conditions, channel, message)) {
             return;
         }
 

@@ -36,7 +36,7 @@ public class CompiledQuestionSetCommand implements QuizCommand {
                 authorId,
                 args);
 
-        if(StopConditions.shouldStop(conditions, channel)) {
+        if(StopConditions.shouldStop(conditions, channel, message)) {
             return;
         }
 

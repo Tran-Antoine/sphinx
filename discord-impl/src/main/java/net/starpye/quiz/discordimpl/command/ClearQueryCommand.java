@@ -18,7 +18,7 @@ public class ClearQueryCommand implements QuizCommand {
         TextChannel channel = context.getChannel();
 
         Map<Supplier<Boolean>, String> conditions = createStopConditions(lobbyList, authorId);
-        if(StopConditions.shouldStop(conditions, channel)) {
+        if(StopConditions.shouldStop(conditions, channel, context.getMessage())) {
             return;
         }
 

@@ -26,7 +26,7 @@ public class QueryAddCommand implements QuizCommand {
         TextChannel channel = context.getChannel();
 
         Map<Supplier<Boolean>, String> conditions = createStopConditions(lobbyList, authorId, args);
-        if(StopConditions.shouldStop(conditions, channel)) {
+        if(StopConditions.shouldStop(conditions, channel, context.getMessage())) {
             return;
         }
 
