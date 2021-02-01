@@ -14,7 +14,6 @@ public class ClearQueryCommand implements QuizCommand {
 
         LobbyList lobbyList = context.getLobbyList();
         Snowflake authorId = context.getAuthor().getId();
-        String[] args = context.getArgs();
         TextChannel channel = context.getChannel();
 
         Map<Supplier<Boolean>, String> conditions = createStopConditions(lobbyList, authorId);
@@ -40,11 +39,11 @@ public class ClearQueryCommand implements QuizCommand {
 
     @Override
     public String getName() {
-        return null;
+        return "clear-query";
     }
 
     @Override
     public String getDescription() {
-        return null;
+        return "Clear all the previous queries added";
     }
 }
