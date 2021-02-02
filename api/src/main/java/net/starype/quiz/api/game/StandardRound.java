@@ -1,6 +1,7 @@
 package net.starype.quiz.api.game;
 
 import net.starype.quiz.api.game.answer.Answer;
+import net.starype.quiz.api.game.event.Event;
 import net.starype.quiz.api.game.event.EventHandler;
 import net.starype.quiz.api.game.guessreceived.GuessReceivedHead;
 import net.starype.quiz.api.game.guessreceived.RoundState;
@@ -18,10 +19,12 @@ public class StandardRound implements GameRound {
 
     private Collection<? extends IDHolder<?>> players;
     private Question pickedQuestion;
-    private List<ScoreDistribution> scoreDistributions = new ArrayList<>();
+    private List<ScoreDistribution> scoreDistributions;
     private RoundEndingPredicate endingCondition;
     private List<EntityEligibility> playerEligibilities;
     private RoundState roundState;
+    private List<Event> events = new ArrayList<>();
+    private EventHandler eventHandler;
 
     private GuessReceivedHead guessReceivedHead;
     private BiConsumer<RoundState, SettablePlayerGuessContext> guessReceivedConsumer;
@@ -32,7 +35,8 @@ public class StandardRound implements GameRound {
                          BiConsumer<RoundState, SettablePlayerGuessContext> guessReceivedConsumer,
                          BiConsumer<RoundState, SettablePlayerGuessContext> giveUpReceivedConsumer,
                          List<ScoreDistribution> scoreDistributions, RoundEndingPredicate endingCondition,
-                         List<EntityEligibility> playerEligibilities, RoundState roundState) {
+                         List<EntityEligibility> playerEligibilities, RoundState roundState,
+                         List<Event> events) {
         this.pickedQuestion = pickedQuestion;
         this.guessReceivedHead = guessReceivedHead;
         this.guessReceivedConsumer = guessReceivedConsumer;
@@ -87,7 +91,7 @@ public class StandardRound implements GameRound {
 
     @Override
     public GameRoundContext getContext() {
-        return null;
+        return new GameRoundContext(this);
     }
 
     public static class Builder {
@@ -99,6 +103,7 @@ public class StandardRound implements GameRound {
         private RoundEndingPredicate endingCondition;
         private List<EntityEligibility> playerEligibility = new ArrayList<>();
         private RoundState roundState;
+        private List<Event> events = new ArrayList<>();
 
         public Builder withGuessReceivedConsumer(BiConsumer<RoundState, SettablePlayerGuessContext> guessReceivedConsumer) {
             this.guessReceivedConsumer = guessReceivedConsumer;
@@ -141,10 +146,15 @@ public class StandardRound implements GameRound {
             return this;
         }
 
+        public Builder addEvent(Event event) {
+            events.add(event);
+            return this;
+        }
+
         public StandardRound build() {
             return new StandardRound(question, guessReceivedHead, guessReceivedConsumer,
-                    giveUpReceivedConsumer,
-                    scoreDistributions, endingCondition, playerEligibility, roundState);
+                    giveUpReceivedConsumer, scoreDistributions, endingCondition,
+                    playerEligibility, roundState, events);
         }
 
     }

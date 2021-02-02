@@ -15,25 +15,28 @@ public class ClassicalRoundFactory {
         BiPredicate<RoundState, SettablePlayerGuessContext> isGuessEmpty = (t, u) -> false;
         MaxGuessCounter counter = new MaxGuessCounter(maxGuesses);
         RoundState roundState = new RoundState(players, counter, counter);
+        LeaderboardDistribution distribution = new LeaderboardDistribution(maxAwarded, players.size(),
+                roundState.getLeaderboard());
 
         BiConsumer<RoundState, SettablePlayerGuessContext> consumer =
                 new InvalidateCurrentPlayerCorrectness().linkTo(isGuessEmpty)
                         .andThen(new MakePlayerEligible().linkTo(isGuessEmpty))
                         .andThen(new IncrementPlayerGuess().linkTo(isGuessEmpty.negate()))
-                        .andThen(new UpdateLeaderboard().linkTo(isGuessEmpty.negate()))
+                        .andThen(new UpdateLeaderboard().linkTo(isGuessEmpty.negate()
+                                .and(new IsCorrectnessZero().negate())))
                         .andThen(new ConsumePlayerGuess().linkTo(isGuessEmpty.negate().and(new IsCorrectnessZero())))
                         .andThen(new UpdatePlayerEligibility().linkTo(isGuessEmpty.negate()));
-
 
         return new StandardRound.Builder()
                 .withGuessReceivedHead(new IsGuessEmpty().control(isGuessEmpty))
                 .withGuessReceivedConsumer(consumer)
                 .withGiveUpReceivedConsumer(new ConsumePlayerGuess())
                 .withQuestion(question)
-                .addScoreDistribution(new LeaderboardDistribution(maxAwarded, players.size()))
+                .addScoreDistribution(distribution)
                 .addPlayerEligibility(counter)
                 .withRoundState(roundState)
-                .withEndingCondition(new NoGuessLeft(counter, players))
+                .withEndingCondition(new NoGuessLeft(counter, players)
+                        .or(new FixedLeaderboardEnding(distribution, players.size())))
                 .build();
     }
 }

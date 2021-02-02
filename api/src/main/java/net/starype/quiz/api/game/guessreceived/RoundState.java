@@ -44,7 +44,7 @@ public class RoundState {
     }
 
 
-    public Map<? extends IDHolder<?>, Double> getLeaderboard() {
+    public Map<Player<?>, Double> getLeaderboard() {
         return roundCorrectness;
     }
 

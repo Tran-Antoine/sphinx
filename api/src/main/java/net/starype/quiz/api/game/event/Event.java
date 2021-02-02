@@ -1,6 +1,7 @@
 package net.starype.quiz.api.game.event;
 
-public interface Event {
-    void update(long deltaMillis);
+import net.starype.quiz.api.game.Startable;
+
+public interface Event extends Updatable, Startable {
     default void pause(){}
 }

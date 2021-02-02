@@ -1,14 +1,13 @@
 package net.starype.quiz.api.game;
 
-import net.starype.quiz.api.game.LeaderboardDistribution;
-import net.starype.quiz.api.game.LeaderboardDistribution.LeaderboardPosition;
-import net.starype.quiz.api.game.RoundEndingPredicate;
+import net.starype.quiz.api.game.player.Player;
 
-import java.util.Collection;
+import java.util.Map;
 
 public class FixedLeaderboardEnding implements RoundEndingPredicate {
 
-    private Collection<? extends LeaderboardPosition> leaderboard;
+//    private Collection<? extends LeaderboardPosition> leaderboard;
+    private Map<? extends Player<?>, Double> leaderboard;
     private int playersCount;
 
     public FixedLeaderboardEnding(LeaderboardDistribution leaderboardDistribution, int playersCount) {
@@ -25,18 +24,18 @@ public class FixedLeaderboardEnding implements RoundEndingPredicate {
         if(playersCount - leaderboard.size() != 1) {
             return false;
         }
-        return leaderboard
+        return leaderboard.values()
                 .stream()
-                .allMatch((seat) -> Math.abs(seat.getScore() - 1) < 0.001);
+                .allMatch((aDouble -> Math.abs(aDouble) < 0.001));
     }
 
     private boolean fullAndOneBelow() {
         if(playersCount != leaderboard.size()) {
             return false;
         }
-        return leaderboard
+        return leaderboard.values()
                 .stream()
-                .filter((seat) -> Math.abs(seat.getScore() - 1) > 0.001)
+                .filter(aDouble -> Math.abs(aDouble - 1) > 0.001)
                 .count() == 1;
     }
 }

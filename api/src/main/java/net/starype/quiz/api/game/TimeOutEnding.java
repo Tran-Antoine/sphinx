@@ -5,10 +5,11 @@ import net.starype.quiz.api.game.event.EventHandler;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class TimeOutEnding implements RoundEndingPredicate, Event {
+public class TimeOutEnding implements RoundEndingPredicate, Event, Startable, Notifier {
 
     private long time;
     private TimeUnit unit;
@@ -18,6 +19,7 @@ public class TimeOutEnding implements RoundEndingPredicate, Event {
     private boolean isEnded;
     private Runnable callBack;
     private EventHandler eventHandler;
+    private List<Observer> observers = new ArrayList<>();
 
     public TimeOutEnding(long time, TimeUnit unit) {
         this.unit = unit;
@@ -44,12 +46,30 @@ public class TimeOutEnding implements RoundEndingPredicate, Event {
 
         if(Duration.between(startingInstant, currentInstant).toMillis() > unit.toMillis(time)) {
             this.isEnded = true;
-            callBack.run();
+            notifyObservers();
             shutDown();
         }
     }
 
     public void shutDown() {
         eventHandler.unregisterEvent(this);
+    }
+
+    @Override
+    public void start(EventHandler eventHandler) {
+        this.eventHandler = eventHandler;
+        eventHandler.registerEvent(this);
+        this.startingInstant = Instant.now();
+        this.currentInstant = Instant.now();
+    }
+
+    @Override
+    public void notifyObservers() {
+        observers.forEach(Observer::updateObserver);
+    }
+
+    @Override
+    public void addObserver(Observer observer) {
+        observers.add(observer);
     }
 }
