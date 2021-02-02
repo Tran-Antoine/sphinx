@@ -1,6 +1,6 @@
 package net.starype.quiz.api.parser;
 
-import net.starype.quiz.api.database.ReadableMap;
+import net.starype.quiz.api.database.ReadableRawMap;
 
 import java.util.Collection;
 import java.util.List;
@@ -17,7 +17,7 @@ public class ConfigMatcher<T> {
     private ConfigMapper<T> defaultMapper;
 
     /**
-     * Construct a ConfigMatcher with a default mapper, used in case {@link #loadFromKeyOrDefault(String, ReadableMap)} fails
+     * Construct a ConfigMatcher with a default mapper, used in case {@link #loadFromKeyOrDefault(String, ReadableRawMap)} fails
 
      * to find any mapper.
      * @param mappers the collection of mappers used for matchings
@@ -35,8 +35,12 @@ public class ConfigMatcher<T> {
      * @param config the config loaded from the TOML file
      * @return an optional containing the result created, if present
      */
-    public Optional<T> loadFromKey(String key, ReadableMap config) {
-        return loadFromValue(config.get(key).orElse(null), config);
+    public Optional<T> loadFromKey(String key, ReadableRawMap config) {
+        Optional<String> optValue = config.get(key);
+        if(optValue.isEmpty()) {
+            return Optional.empty();
+        }
+        return loadFromValue(optValue.get(), config);
     }
 
     /**
@@ -45,7 +49,7 @@ public class ConfigMatcher<T> {
      * @param config the config loaded from the TOML file
      * @return an optional containing the result created, if present
      */
-    public Optional<T> loadFromValue(String value, ReadableMap config) {
+    public Optional<T> loadFromValue(String value, ReadableRawMap config) {
         return mappers
                 .stream()
                 .filter(mapper -> mapper.getMapperName().equalsIgnoreCase(value))
@@ -53,6 +57,9 @@ public class ConfigMatcher<T> {
                 .map(mapper -> mapper.map(config));
     }
 
+    public T loadFromValueOrDefault(String value, ReadableRawMap config) {
+        return loadFromValue(value, config).orElse(defaultMapper.map(config));
+    }
     /**
      * Produce a list of results from the list of values associated to the given key. The algorithm tries to match every value
      * found to a mapper stored, and adds the result created if it succeeds to do so.
@@ -60,12 +67,20 @@ public class ConfigMatcher<T> {
      * @param config the config loaded from the TOML file
      * @return a potentially empty collection containing all the results successfully computed
      */
-    public Collection<T> loadList(String key, ReadableMap config) {
+    public Collection<T> loadList(String key, ReadableRawMap config) {
         return config.<List<String>>get(key)
                 .stream()
                 .map(name -> loadFromValue(name, config))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
+                .collect(Collectors.toList());
+    }
+
+    public Collection<T> map(Collection<String> keys, ReadableRawMap config) {
+        return mappers
+                .stream()
+                .filter(mapper -> keys.contains(mapper.getMapperName()))
+                .map(mapper -> mapper.map(config))
                 .collect(Collectors.toList());
     }
 
@@ -75,7 +90,7 @@ public class ConfigMatcher<T> {
      * @param config the config loaded from the TOML file
      * @return the result created if present, otherwise the default value defined when constructing the object
      */
-    public T loadFromKeyOrDefault(String key, ReadableMap config) {
+    public T loadFromKeyOrDefault(String key, ReadableRawMap config) {
         return loadFromKey(key, config).orElse(defaultMapper.map(config));
     }
 }

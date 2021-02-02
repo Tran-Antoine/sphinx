@@ -8,7 +8,11 @@ import net.starpye.quiz.discordimpl.input.ReactionInputListener;
 import net.starpye.quiz.discordimpl.input.ReactionInputListener.ReactionContext;
 import net.starpye.quiz.discordimpl.input.ReactionInputListener.TriggerCondition;
 import net.starpye.quiz.discordimpl.util.ImageUtils;
+import net.starype.quiz.api.database.QuestionQueries;
+import net.starype.quiz.api.database.QuestionQuery;
+import net.starype.quiz.api.database.QuizQueryable;
 import net.starype.quiz.api.game.GameRound;
+import net.starype.quiz.api.game.question.Question;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -16,8 +20,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
-import java.util.Queue;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -27,7 +31,9 @@ public class GameLobby extends DiscordLogContainer {
     private TextChannel channel;
     private Set<Snowflake> playersId;
     private Snowflake authorId;
-    private Queue<GameRound> rounds;
+
+    private QuizQueryable queryObject;
+    private QuestionQuery query;
 
     private Snowflake lobbyMessageId;
 
@@ -36,7 +42,6 @@ public class GameLobby extends DiscordLogContainer {
         this.channel = channel;
         this.name = name;
         this.playersId = new HashSet<>();
-        this.rounds = GameRounds.DEFAULT_PRESET;
     }
 
     public void registerAuthor(Snowflake playerId, String userName) {
@@ -72,21 +77,23 @@ public class GameLobby extends DiscordLogContainer {
         return "(" + countIndication + ")";
     }
 
-    public void queueRound(GameRound round) {
-        rounds.add(round);
-    }
-
-    public void unqueueRound(GameRound round) {
-        rounds.remove(round);
-    }
-
     public boolean containsPlayer(Snowflake authorId) {
         return playersId.contains(authorId);
     }
 
     public void start(GameList gameList) {
+        if(query == null) {
+            this.query = QuestionQueries.ALL;
+        }
+        List<Question> question = queryObject.listQuery(query);
+        if(question.size() < 2) {
+            channel.createMessage("Not enough questions matching the query").subscribe();
+            return;
+        }
+        
         deleteMessages();
-        gameList.startNewGame(playersId, rounds, channel, authorId);
+
+        gameList.startNewGame(playersId, GameRounds.defaultPreset(question.get(0), question.get(1)), channel, authorId);
     }
 
     public boolean isAuthor(Snowflake playerId) {
@@ -150,5 +157,29 @@ public class GameLobby extends DiscordLogContainer {
                 .getMessageById(lobbyMessageId)
                 .blockOptional()
                 .ifPresent(action);
+    }
+
+    public void setQueryObject(QuizQueryable queryObject) {
+        this.queryObject = queryObject;
+    }
+
+    public void andQuery(QuestionQuery query) {
+       if(this.query == null) {
+            this.query = query;
+            return;
+       }
+       this.query = this.query.and(query);
+    }
+
+    public void orQuery(QuestionQuery query) {
+        if(this.query == null) {
+            this.query = query;
+            return;
+        }
+        this.query = this.query.or(query);
+    }
+
+    public void resetQuery() {
+        this.query = null;
     }
 }

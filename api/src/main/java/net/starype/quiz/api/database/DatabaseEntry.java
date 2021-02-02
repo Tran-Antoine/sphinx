@@ -11,10 +11,10 @@ import java.util.stream.IntStream;
 /**
  * Stores an entry for each corresponding argument defined in the {@link DatabaseTable}
  */
-public class DatabaseEntry {
+public class DatabaseEntry implements ReadableRawMap {
 
     private final DatabaseId id;
-    private final Map<String,String> argumentMap = new TreeMap<>();
+    private final Map<String, String> argumentMap = new LinkedHashMap<>();
     private final List<String> indexedArguments = new ArrayList<>();
     private final DatabaseTable table;
     private final Consumer<DatabaseId> onChange;
@@ -69,8 +69,9 @@ public class DatabaseEntry {
         return id;
     }
 
+    @Override
     public Optional<String> get(String key) {
-        return Optional.ofNullable(argumentMap.getOrDefault(key, null));
+        return Optional.ofNullable(argumentMap.get(key));
     }
 
     public void set(String key, String value) {

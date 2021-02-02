@@ -1,6 +1,6 @@
 package net.starype.quiz.api.parser;
 
-import net.starype.quiz.api.database.ReadableMap;
+import net.starype.quiz.api.database.ReadableRawMap;
 import net.starype.quiz.api.game.answer.AnswerProcessor;
 import net.starype.quiz.api.game.answer.CleanStringProcessor;
 
@@ -15,7 +15,7 @@ public class CleanStringProcessorMapper implements ConfigMapper<AnswerProcessor>
     }
 
     @Override
-    public AnswerProcessor map(ReadableMap config) {
+    public AnswerProcessor map(ReadableRawMap config) {
         return new CleanStringProcessor();
     }
 }

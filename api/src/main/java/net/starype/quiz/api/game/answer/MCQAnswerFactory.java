@@ -10,7 +10,10 @@ public class MCQAnswerFactory implements CorrectAnswerFactory {
     @Override
     public AnswerEvaluator createCorrectAnswer(Set<Answer> answers, AnswerProcessor answerProcessor) {
         MCQCorrectness multipleChoiceCorrectness = new MCQCorrectness(answers, lossFunction, punitiveRatio);
-        return new MCQEvaluator(multipleChoiceCorrectness, new MCQValidity(answers));
+        return new MCQEvaluator(
+                multipleChoiceCorrectness,
+                new MCQValidity(),
+                answerProcessor.combine(new LowercaseProcessor()));
     }
 
     public MCQAnswerFactory withInterpolation(LossFunction lossFunction) {

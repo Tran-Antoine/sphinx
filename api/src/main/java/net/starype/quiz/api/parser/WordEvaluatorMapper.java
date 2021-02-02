@@ -1,6 +1,6 @@
 package net.starype.quiz.api.parser;
 
-import net.starype.quiz.api.database.ReadableMap;
+import net.starype.quiz.api.database.ReadableRawMap;
 import net.starype.quiz.api.game.answer.WordAnswerFactory;
 
 /**
@@ -14,7 +14,7 @@ public class WordEvaluatorMapper implements ConfigMapper<PartialEvaluator> {
     }
 
     @Override
-    public PartialEvaluator map(ReadableMap config) {
+    public PartialEvaluator map(ReadableRawMap config) {
         WordAnswerFactory factory = new WordAnswerFactory();
         return factory::createCorrectAnswer;
     }

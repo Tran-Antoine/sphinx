@@ -63,10 +63,8 @@ public interface AnswerEvaluator {
 
     /**
      * Retrieve the first step of the process, used to process a raw answer.
-     * @return the {@code AnswerProcessor} object, a {@link CleanStringProcessor} by default
+     * @return the {@code AnswerProcessor} object
      */
-    default AnswerProcessor getProcessor() {
-        return new CleanStringProcessor();
-    }
+    AnswerProcessor getProcessor();
 
 }

@@ -1,6 +1,6 @@
 package net.starype.quiz.api.parser;
 
-import net.starype.quiz.api.database.ReadableMap;
+import net.starype.quiz.api.database.ReadableRawMap;
 import net.starype.quiz.api.game.answer.ExactAnswerEvaluator;
 
 /**
@@ -13,7 +13,7 @@ public class ExactEvaluatorMapper implements ConfigMapper<PartialEvaluator> {
     }
 
     @Override
-    public PartialEvaluator map(ReadableMap config) {
-        return (answers, processor) -> new ExactAnswerEvaluator(answers);
+    public PartialEvaluator map(ReadableRawMap config) {
+        return (answers, processor) -> new ExactAnswerEvaluator(answers, processor);
     }
 }

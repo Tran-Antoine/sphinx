@@ -1,6 +1,6 @@
 package net.starype.quiz.api.parser;
 
-import net.starype.quiz.api.database.ReadableMap;
+import net.starype.quiz.api.database.ReadableRawMap;
 import net.starype.quiz.api.game.answer.*;
 import net.starype.quiz.api.util.StringUtils;
 
@@ -26,7 +26,7 @@ public class DoubleEvaluatorMapper implements ConfigMapper<PartialEvaluator> {
     }
 
     @Override
-    public PartialEvaluator map(ReadableMap config) {
+    public PartialEvaluator map(ReadableRawMap config) {
         RangedAnswerFactory factory = new DoubleAnswerFactory()
                 .withAcceptedRange(StringUtils.mapOptionalNoThrow(config.get("answer.evaluator.range"), Float::parseFloat).orElse(0.1f))
                 .withInterpolation(LOSS_FUNCTIONS_MATCHER.loadFromKey("answer.evaluator.interpolation", config).orElse(new LinearLossFunction()));

@@ -2,6 +2,7 @@ package net.starype.quiz.api.game.answer;
 
 import net.starype.quiz.api.util.MathUtils;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -17,6 +18,7 @@ public class MCQCorrectness implements CorrectnessEvaluator {
         this.acceptedAnswers = acceptedAnswers
                 .stream()
                 .map(Answer::getAnswerText)
+                .map(String::toLowerCase)
                 .collect(Collectors.toSet());
         this.lossFunction = lossFunction;
         this.punitiveRatio = Math.max(punitiveRatio, 0.0);
