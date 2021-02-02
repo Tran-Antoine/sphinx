@@ -35,8 +35,9 @@ public class StartGameCommand implements QuizCommand {
 
         GameLobby lobby = lobbyList.findByAuthor(authorId).get();
         lobby.trackMessage(context.getMessage().getId());
-        lobbyList.unregisterLobby(lobby);
-        lobby.start(context.getGameList());
+        if(lobby.start(context.getGameList())) {
+            lobbyList.unregisterLobby(lobby);
+        }
     }
 
     private static Map<Supplier<Boolean>, String> createStopConditions(LobbyList lobbyList, Snowflake playerId,

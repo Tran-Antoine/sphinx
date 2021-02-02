@@ -4,10 +4,12 @@ import discord4j.common.util.Snowflake;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.TextChannel;
 import discord4j.core.object.reaction.ReactionEmoji;
+import net.starpye.quiz.discordimpl.command.RoundAddCommand.PartialRound;
 import net.starpye.quiz.discordimpl.input.ReactionInputListener;
 import net.starpye.quiz.discordimpl.input.ReactionInputListener.ReactionContext;
 import net.starpye.quiz.discordimpl.input.ReactionInputListener.TriggerCondition;
 import net.starpye.quiz.discordimpl.util.ImageUtils;
+import net.starpye.quiz.discordimpl.util.MessageUtils;
 import net.starype.quiz.api.database.QuestionQueries;
 import net.starype.quiz.api.database.QuestionQuery;
 import net.starype.quiz.api.database.QuizQueryable;
@@ -19,11 +21,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class GameLobby extends DiscordLogContainer {
 
@@ -32,6 +32,7 @@ public class GameLobby extends DiscordLogContainer {
     private Set<Snowflake> playersId;
     private Snowflake authorId;
 
+    private Queue<PartialRound> partialRounds;
     private QuizQueryable queryObject;
     private QuestionQuery query;
 
@@ -41,6 +42,7 @@ public class GameLobby extends DiscordLogContainer {
         super(channel);
         this.channel = channel;
         this.name = name;
+        this.partialRounds = new LinkedList<>();
         this.playersId = new HashSet<>();
     }
 
@@ -81,19 +83,65 @@ public class GameLobby extends DiscordLogContainer {
         return playersId.contains(authorId);
     }
 
-    public void start(GameList gameList) {
+    public boolean start(GameList gameList) {
+
+        if(noQueryObject()) {
+            return false;
+        }
+
         if(query == null) {
             this.query = QuestionQueries.ALL;
         }
-        List<Question> question = queryObject.listQuery(query);
-        if(question.size() < 2) {
-            channel.createMessage("Not enough questions matching the query").subscribe();
-            return;
+
+        if(noRounds()) {
+            return false;
         }
+
+        Queue<Question> questions = new LinkedList<>(queryObject.listQuery(query));
+
+        if(notEnoughQuestions(questions)) {
+            return false;
+        }
+
+        Queue<GameRound> rounds = partialRounds
+                .stream()
+                .map(partial -> partial.apply(questions.poll()))
+                .collect(Collectors.toCollection(LinkedList::new));
+
         
         deleteMessages();
+        gameList.startNewGame(playersId, rounds, channel, authorId);
+        return true;
+    }
 
-        gameList.startNewGame(playersId, GameRounds.defaultPreset(question.get(0), question.get(1)), channel, authorId);
+    private boolean noQueryObject() {
+        if(queryObject == null) {
+            MessageUtils.createTemporaryMessage(
+                    "Please specify which questions you want to play with", channel
+            );
+            return true;
+        }
+        return false;
+    }
+
+    private boolean notEnoughQuestions(Queue<Question> questions) {
+        if(questions.size() < partialRounds.size()) {
+            MessageUtils.createTemporaryMessage(
+                    "Not enough questions matching the query",
+                    channel);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean noRounds() {
+        if(partialRounds.isEmpty()) {
+            MessageUtils.createTemporaryMessage(
+                    "Cannot start a game with no rounds. Use ?add-round to queue a round",
+                    channel);
+            return true;
+        }
+        return false;
     }
 
     public boolean isAuthor(Snowflake playerId) {
@@ -181,5 +229,9 @@ public class GameLobby extends DiscordLogContainer {
 
     public void resetQuery() {
         this.query = null;
+    }
+
+    public void queueRound(PartialRound round) {
+        partialRounds.add(round);
     }
 }

@@ -1,8 +1,11 @@
 package net.starpye.quiz.discordimpl.command;
 
 import discord4j.common.util.Snowflake;
+import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.TextChannel;
+import net.starpye.quiz.discordimpl.game.GameLobby;
 import net.starpye.quiz.discordimpl.game.LobbyList;
+import net.starpye.quiz.discordimpl.util.MessageUtils;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -21,12 +24,14 @@ public class ClearQueryCommand implements QuizCommand {
             return;
         }
 
-        lobbyList
-                .findByAuthor(authorId)
-                .get()
-                .resetQuery();
+        GameLobby lobby = lobbyList.findByAuthor(authorId).get();
+        lobby.resetQuery();
 
-        channel.createMessage("Successfully reset the current query").subscribe();
+        lobby.trackMessage(context.getMessage().getId());
+        MessageUtils.sendAndTrack(
+                "Successfully reset the current query",
+                channel,
+                lobby);
     }
 
     private static Map<Supplier<Boolean>, String> createStopConditions(
