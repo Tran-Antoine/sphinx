@@ -10,6 +10,7 @@ import java.util.Set;
 public class ByteEntryUpdater implements EntryUpdater {
 
     private String virtualPath;
+    private CheckSum checkSum;
     private byte[] data;
 
     public ByteEntryUpdater(String virtualPath, byte[] data) {
@@ -29,7 +30,10 @@ public class ByteEntryUpdater implements EntryUpdater {
 
     @Override
     public CheckSum computeCheckSum() {
-        return CheckSum.fromByteBuffer(ByteBuffer.wrap(data));
+        if(checkSum == null) {
+            checkSum = CheckSum.fromByteBuffer(ByteBuffer.wrap(data));
+        }
+        return checkSum;
     }
 
     @Override

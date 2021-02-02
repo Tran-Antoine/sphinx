@@ -2,6 +2,7 @@ package net.starype.quiz.api.game.answer;
 
 import net.starype.quiz.api.util.MathUtils;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -29,10 +30,7 @@ public class MCQCorrectness implements CorrectnessEvaluator {
 
     @Override
     public double getCorrectness(Answer answer) {
-        Set<String> stringSet = Set.of(answer.getAnswerText().split(";"))
-                .stream()
-                .map(String::toLowerCase)
-                .collect(Collectors.toSet());
+        Set<String> stringSet = Set.of(answer.getAnswerText().split(";"));
         long goodGuess = stringSet
                 .stream()
                 .filter(acceptedAnswers::contains)

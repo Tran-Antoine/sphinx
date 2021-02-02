@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -84,15 +85,15 @@ public class GameLobby extends DiscordLogContainer {
         if(query == null) {
             this.query = QuestionQueries.ALL;
         }
-        Optional<Question> optQuestion = queryObject.pickQuery(query);
-        if(optQuestion.isEmpty()) {
-            channel.createMessage("No question found").subscribe();
+        List<Question> question = queryObject.listQuery(query);
+        if(question.size() < 2) {
+            channel.createMessage("Not enough questions matching the query").subscribe();
             return;
         }
         
         deleteMessages();
 
-        gameList.startNewGame(playersId, GameRounds.defaultPreset(optQuestion.get()), channel, authorId);
+        gameList.startNewGame(playersId, GameRounds.defaultPreset(question.get(0), question.get(1)), channel, authorId);
     }
 
     public boolean isAuthor(Snowflake playerId) {

@@ -14,8 +14,9 @@ import java.util.function.Supplier;
 
 public class GameRounds {
 
-    public static Queue<? extends GameRound> defaultPreset(Question question) {
-        return new LinkedList<>(
-                Collections.singletonList(new ClassicalRound(question, 3, 3)));
+    public static Queue<? extends GameRound> defaultPreset(Question q1, Question q2) {
+        return new LinkedList<>(Arrays.asList(
+                new ClassicalRound(q1, 1, 3),
+                new IndividualRound(q2, 2)));
     }
 }
