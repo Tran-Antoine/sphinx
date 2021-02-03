@@ -24,8 +24,8 @@ public class TimedRaceRound extends RaceRound {
     }
 
     @Override
-    public RoundEndingPredicate initEndingCondition() {
-        return super.initEndingCondition().or(this.timeOutEnding);
+    public RoundEndingPredicate initGuessEndingCondition() {
+        return super.initGuessEndingCondition().or(this.timeOutEnding);
     }
 
     @Override

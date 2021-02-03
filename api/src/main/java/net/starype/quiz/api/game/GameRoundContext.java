@@ -7,7 +7,8 @@ import java.util.Map;
 public class GameRoundContext {
 
     private EntityEligibility playerEligibility;
-    private RoundEndingPredicate endingCondition;
+    private RoundEndingPredicate guessEndingCondition;
+    private RoundEndingPredicate timeEndingCondition;
     private ScoreDistribution scoreDistributionCreator;
     private GameRoundReport reportCreator;
 
@@ -38,11 +39,18 @@ public class GameRoundContext {
         return reportCreator;
     }
 
-    public RoundEndingPredicate getEndingCondition() {
-        if(endingCondition == null) {
-            endingCondition = round.initEndingCondition();
+    public RoundEndingPredicate getGuessEndingCondition() {
+        if(guessEndingCondition == null) {
+            guessEndingCondition = round.initGuessEndingCondition();
         }
-        return endingCondition;
+        return guessEndingCondition;
+    }
+
+    public RoundEndingPredicate getTimeEndingCondition() {
+        if(timeEndingCondition == null) {
+            timeEndingCondition = round.initTimeEndingCondition();
+        }
+        return timeEndingCondition;
     }
 
     public ScoreDistribution getScoreDistribution() {

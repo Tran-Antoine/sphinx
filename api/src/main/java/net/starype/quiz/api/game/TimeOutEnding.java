@@ -1,15 +1,13 @@
 package net.starype.quiz.api.game;
 
-import net.starype.quiz.api.game.event.Event;
 import net.starype.quiz.api.game.event.EventHandler;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class TimeOutEnding implements RoundEndingPredicate, Event, Startable, Notifier {
+public class TimeOutEnding implements RoundEndingPredicate {
 
     private long time;
     private TimeUnit unit;
@@ -21,55 +19,20 @@ public class TimeOutEnding implements RoundEndingPredicate, Event, Startable, No
     private EventHandler eventHandler;
     private List<Observer> observers = new ArrayList<>();
 
+    private Timer timer;
+
     public TimeOutEnding(long time, TimeUnit unit) {
         this.unit = unit;
         this.time = time;
     }
 
-    public void startTimer(Runnable checkEndingCallback, EventHandler eventHandler) {
-        this.eventHandler = eventHandler;
-        eventHandler.registerEvent(this);
-        this.startingInstant = Instant.now();
-        this.currentInstant = Instant.now();
-        this.callBack = checkEndingCallback;
+    public TimeOutEnding(Timer timer) {
+        this.timer = timer;
     }
 
     @Override
     public boolean ends() {
-        return isEnded;
+        return ;
     }
 
-    @Override
-    public void update(long deltaMillis) {
-
-        currentInstant = currentInstant.plusMillis(deltaMillis);
-
-        if(Duration.between(startingInstant, currentInstant).toMillis() > unit.toMillis(time)) {
-            this.isEnded = true;
-            notifyObservers();
-            shutDown();
-        }
-    }
-
-    public void shutDown() {
-        eventHandler.unregisterEvent(this);
-    }
-
-    @Override
-    public void start(EventHandler eventHandler) {
-        this.eventHandler = eventHandler;
-        eventHandler.registerEvent(this);
-        this.startingInstant = Instant.now();
-        this.currentInstant = Instant.now();
-    }
-
-    @Override
-    public void notifyObservers() {
-        observers.forEach(Observer::updateObserver);
-    }
-
-    @Override
-    public void addObserver(Observer observer) {
-        observers.add(observer);
-    }
 }

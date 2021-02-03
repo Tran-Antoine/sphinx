@@ -37,7 +37,7 @@ public class RaceRoundTest {
             round.onGuessReceived(player, "INCORRECT ANSWER");
         }
 
-        Assert.assertTrue(context.getEndingCondition().ends());
+        Assert.assertTrue(context.getGuessEndingCondition().ends());
     }
 
     @Test
@@ -51,7 +51,7 @@ public class RaceRoundTest {
                 .build();
       
         round.start(null, Collections.singletonList(player), eventHandler);
-        RoundEndingPredicate endingPredicate = round.getContext().getEndingCondition();
+        RoundEndingPredicate endingPredicate = round.getContext().getGuessEndingCondition();
 
         Assert.assertFalse(endingPredicate.ends());
         round.onGuessReceived(player, "INCORRECT ANSWER");
@@ -68,7 +68,7 @@ public class RaceRoundTest {
                 .withMaxGuessesPerPlayer(10)
                 .build();
         round.start(null, Collections.singletonList(player), eventHandler);
-        RoundEndingPredicate endingCondition = round.getContext().getEndingCondition();
+        RoundEndingPredicate endingCondition = round.getContext().getGuessEndingCondition();
         Assert.assertFalse(endingCondition.ends());
         round.onGiveUpReceived(player);
         Assert.assertTrue(endingCondition.ends());

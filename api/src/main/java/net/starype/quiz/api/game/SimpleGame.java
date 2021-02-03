@@ -67,10 +67,19 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
         if(rounds.isEmpty()) {
             return true;
         }
-        return rounds.peek()
+        boolean guessEndingCondition =
+                rounds.peek()
                 .getContext()
-                .getEndingCondition()
+                .getGuessEndingCondition()
                 .ends();
+
+        boolean timeEndingCOndition =
+                rounds.peek()
+                .getContext()
+                .getTimeEndingCondition()
+                .ends();
+
+        return guessEndingCondition || timeEndingCOndition;
     }
 
     @Override
@@ -127,7 +136,7 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
                 return;
             }
             GameRoundContext context = round.getContext();
-            if (!context.getEndingCondition().ends()) {
+            if (!context.getGuessEndingCondition().ends()) {
                 return;
             }
 

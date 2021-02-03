@@ -35,8 +35,9 @@ public class ClassicalRoundFactory {
                 .addScoreDistribution(distribution)
                 .addPlayerEligibility(counter)
                 .withRoundState(roundState)
-                .withEndingCondition(new NoGuessLeft(counter, players)
+                .withGuessEndingCondition(new NoGuessLeft(counter, players)
                         .or(new FixedLeaderboardEnding(distribution, players.size())))
+                .withTimeEndingCondition(() -> false)
                 .build();
     }
 }

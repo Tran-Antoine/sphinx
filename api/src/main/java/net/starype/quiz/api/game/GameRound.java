@@ -16,7 +16,8 @@ public interface GameRound {
 
     //TODO : Return a list of EntityEligibility, and ScoreDistribution
     EntityEligibility initPlayerEligibility();
-    RoundEndingPredicate initEndingCondition();
+    RoundEndingPredicate initGuessEndingCondition();
+    RoundEndingPredicate initTimeEndingCondition();
     ScoreDistribution initScoreDistribution();
     GameRoundReport initReport(Map<Player<?>, Double> standings);
 

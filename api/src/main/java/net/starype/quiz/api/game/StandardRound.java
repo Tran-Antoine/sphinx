@@ -20,11 +20,11 @@ public class StandardRound implements GameRound {
     private Collection<? extends IDHolder<?>> players;
     private Question pickedQuestion;
     private List<ScoreDistribution> scoreDistributions;
-    private RoundEndingPredicate endingCondition;
+    private RoundEndingPredicate guessEndingCondition;
+    private RoundEndingPredicate timeEndingCondition;
     private List<EntityEligibility> playerEligibilities;
     private RoundState roundState;
-    private List<Event> events = new ArrayList<>();
-    private EventHandler eventHandler;
+    private Collection<Event> events;
 
     private GuessReceivedHead guessReceivedHead;
     private BiConsumer<RoundState, SettablePlayerGuessContext> guessReceivedConsumer;
@@ -34,23 +34,29 @@ public class StandardRound implements GameRound {
     public StandardRound(Question pickedQuestion, GuessReceivedHead guessReceivedHead,
                          BiConsumer<RoundState, SettablePlayerGuessContext> guessReceivedConsumer,
                          BiConsumer<RoundState, SettablePlayerGuessContext> giveUpReceivedConsumer,
-                         List<ScoreDistribution> scoreDistributions, RoundEndingPredicate endingCondition,
+                         List<ScoreDistribution> scoreDistributions, RoundEndingPredicate guessEndingCondition,
+                         RoundEndingPredicate timeEndingCondition,
                          List<EntityEligibility> playerEligibilities, RoundState roundState,
-                         List<Event> events) {
+                         Collection<Event> events) {
         this.pickedQuestion = pickedQuestion;
         this.guessReceivedHead = guessReceivedHead;
         this.guessReceivedConsumer = guessReceivedConsumer;
         this.giveUpReceivedConsumer = giveUpReceivedConsumer;
         this.scoreDistributions = scoreDistributions;
-        this.endingCondition = endingCondition;
+        this.guessEndingCondition = guessEndingCondition;
+        this.timeEndingCondition = timeEndingCondition;
         this.playerEligibilities = playerEligibilities;
         this.roundState = roundState;
+        this.events = events;
     }
 
     @Override
-    public void start(QuizGame game, Collection<? extends IDHolder<?>> players, EventHandler eventHandler) {
+    public void start(QuizGame game, Collection<? extends IDHolder<?>> players,
+                      EventHandler eventHandler) {
         this.players = players;
         game.sendInputToServer(server -> server.onQuestionReleased(pickedQuestion));
+        events.forEach(eventHandler::registerEvent);
+        events.forEach(Startable::start);
     }
 
     @Override
@@ -75,8 +81,13 @@ public class StandardRound implements GameRound {
     }
 
     @Override
-    public RoundEndingPredicate initEndingCondition() {
-        return endingCondition;
+    public RoundEndingPredicate initGuessEndingCondition() {
+        return guessEndingCondition;
+    }
+
+    @Override
+    public RoundEndingPredicate initTimeEndingCondition() {
+        return timeEndingCondition;
     }
 
     @Override
@@ -100,10 +111,11 @@ public class StandardRound implements GameRound {
         private BiConsumer<RoundState, SettablePlayerGuessContext> giveUpReceivedConsumer;
         private List<ScoreDistribution> scoreDistributions = new ArrayList<>();
         private Question question;
-        private RoundEndingPredicate endingCondition;
+        private RoundEndingPredicate guessEndingCondition;
+        private RoundEndingPredicate timeEndingCondition;
         private List<EntityEligibility> playerEligibility = new ArrayList<>();
         private RoundState roundState;
-        private List<Event> events = new ArrayList<>();
+        private Collection<Event> events = new ArrayList<>();
 
         public Builder withGuessReceivedConsumer(BiConsumer<RoundState, SettablePlayerGuessContext> guessReceivedConsumer) {
             this.guessReceivedConsumer = guessReceivedConsumer;
@@ -131,8 +143,13 @@ public class StandardRound implements GameRound {
             return this;
         }
 
-        public Builder withEndingCondition(RoundEndingPredicate endingCondition) {
-            this.endingCondition = endingCondition;
+        public Builder withGuessEndingCondition(RoundEndingPredicate endingCondition) {
+            this.guessEndingCondition = endingCondition;
+            return this;
+        }
+
+        public Builder withTimeEndingCondition(RoundEndingPredicate endingCondition) {
+            this.timeEndingCondition = endingCondition;
             return this;
         }
 
@@ -153,7 +170,7 @@ public class StandardRound implements GameRound {
 
         public StandardRound build() {
             return new StandardRound(question, guessReceivedHead, guessReceivedConsumer,
-                    giveUpReceivedConsumer, scoreDistributions, endingCondition,
+                    giveUpReceivedConsumer, scoreDistributions, guessEndingCondition, timeEndingCondition,
                     playerEligibility, roundState, events);
         }
 

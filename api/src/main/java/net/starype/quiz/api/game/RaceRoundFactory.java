@@ -30,7 +30,7 @@ public class RaceRoundFactory {
                 .addScoreDistribution(new BinaryDistribution(roundState.getLeaderboard(), scoreForWinner))
                 .addPlayerEligibility(counter)
                 .withRoundState(roundState)
-                .withEndingCondition(new NoGuessLeft(counter, players))
+                .withGuessEndingCondition(new NoGuessLeft(counter, players))
                 .build();
     }
 }

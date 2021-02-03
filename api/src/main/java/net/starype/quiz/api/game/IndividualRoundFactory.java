@@ -28,7 +28,7 @@ public class IndividualRoundFactory {
                 .withGuessReceivedConsumer(consumer)
                 .withGiveUpReceivedConsumer(new AddCorrectnessIfNew())
                 .withRoundState(roundState)
-                .withEndingCondition(new NoGuessLeft(counter, players))
+                .withGuessEndingCondition(new NoGuessLeft(counter, players))
                 .withQuestion(question)
                 .addScoreDistribution(new OneTryDistribution(maxToAward))
                 .addPlayerEligibility(counter)

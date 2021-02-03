@@ -54,7 +54,7 @@ public class IndividualRound implements GameRound {
     }
 
     @Override
-    public RoundEndingPredicate initEndingCondition() {
+    public RoundEndingPredicate initGuessEndingCondition() {
         return new NoGuessLeft(maxGuessCounter, players);
     }
 

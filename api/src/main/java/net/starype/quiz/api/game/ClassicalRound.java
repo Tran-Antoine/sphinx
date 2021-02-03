@@ -63,7 +63,7 @@ public class ClassicalRound implements GameRound {
     }
 
     @Override
-    public RoundEndingPredicate initEndingCondition() {
+    public RoundEndingPredicate initGuessEndingCondition() {
         return new NoGuessLeft(counter, players).or(new FixedLeaderboardEnding(leaderboard, players.size()));
     }
 
