@@ -11,6 +11,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
+// Unused since replaced by a nicer system that only requires users to react on a message to join the game
+@Deprecated
 public class JoinLobbyCommand implements QuizCommand {
 
     @Override

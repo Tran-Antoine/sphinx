@@ -9,6 +9,7 @@ import net.starpye.quiz.discordimpl.command.CommandContext.MessageContext;
 import net.starpye.quiz.discordimpl.game.GameList;
 import net.starpye.quiz.discordimpl.game.LobbyList;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
@@ -19,7 +20,7 @@ public class MessageInputListener implements Consumer<MessageCreateEvent> {
 
     public static final String PREFIX = "?";
 
-    private Collection<? extends QuizCommand> commands;
+    private Collection<QuizCommand> commands;
     private LobbyList lobbyList;
     private GameList gameList;
 
@@ -27,6 +28,7 @@ public class MessageInputListener implements Consumer<MessageCreateEvent> {
         this.lobbyList = lobbyList;
         this.gameList = gameList;
         this.commands = initCommands();
+        this.commands.add(new HelpCommand(this.commands));
     }
 
     @Override
@@ -62,8 +64,8 @@ public class MessageInputListener implements Consumer<MessageCreateEvent> {
                 .findAny();
     }
 
-    private Collection<? extends QuizCommand> initCommands() {
-        return Arrays.asList(
+    private Collection<QuizCommand> initCommands() {
+        return new ArrayList<>(Arrays.asList(
                 new CreateLobbyCommand(),
                 new StartGameCommand(),
                 new SubmitCommand(),
@@ -76,7 +78,7 @@ public class MessageInputListener implements Consumer<MessageCreateEvent> {
                 new ZipQuestionSetCommand(),
                 new QueryAddCommand(),
                 new ClearQueryCommand()
-        );
+        ));
     }
 
     public static Predicate<MessageCreateEvent> createFilter() {

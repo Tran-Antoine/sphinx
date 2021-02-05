@@ -76,6 +76,6 @@ public class GenerateDatabaseCommand implements QuizCommand {
 
     @Override
     public String getDescription() {
-        return "Generates a DB file from a zip of questions put into TOML files";
+        return "Generate a DB file from a zip of questions put into TOML files";
     }
 }

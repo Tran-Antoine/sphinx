@@ -18,7 +18,7 @@ public class StartGameCommand implements QuizCommand {
 
     @Override
     public String getDescription() {
-        return "Starts a game. Must follow /create";
+        return "Start a game. Must follow /create";
     }
 
     @Override

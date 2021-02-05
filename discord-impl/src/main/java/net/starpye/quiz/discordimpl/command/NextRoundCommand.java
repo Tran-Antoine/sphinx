@@ -53,6 +53,6 @@ public class NextRoundCommand implements QuizCommand {
 
     @Override
     public String getDescription() {
-        return "Mentions that you are ready for the next round";
+        return "Mention that you are ready for the next round";
     }
 }

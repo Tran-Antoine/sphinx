@@ -59,6 +59,6 @@ public class CreateLobbyCommand implements QuizCommand {
 
     @Override
     public String getDescription() {
-        return "Sets up a game lobby that can be started at the author's request";
+        return "Set up a game lobby that can be started at the author's request";
     }
 }
