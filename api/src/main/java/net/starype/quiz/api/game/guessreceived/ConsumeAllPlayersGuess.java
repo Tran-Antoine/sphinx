@@ -6,7 +6,7 @@ import net.starype.quiz.api.game.player.IDHolder;
 
 import java.util.Collection;
 
-public class ConsumeAllPlayersGuess extends ConditionalBiConsumer<RoundState, SettablePlayerGuessContext> {
+public class ConsumeAllPlayersGuess extends ConditionalConsumer<RoundState, SettablePlayerGuessContext> {
     @Override
     public void execute(RoundState roundState, SettablePlayerGuessContext playerGuessContext) {
         MaxGuessCounter counter = roundState.getCounter();

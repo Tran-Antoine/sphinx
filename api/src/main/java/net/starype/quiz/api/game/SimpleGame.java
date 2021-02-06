@@ -67,19 +67,11 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
         if(rounds.isEmpty()) {
             return true;
         }
-        boolean guessEndingCondition =
-                rounds.peek()
-                .getContext()
-                .getGuessEndingCondition()
-                .ends();
 
-        boolean timeEndingCOndition =
-                rounds.peek()
-                .getContext()
-                .getTimeEndingCondition()
-                .ends();
-
-        return guessEndingCondition || timeEndingCOndition;
+        return rounds.peek()
+        .getContext()
+        .getGuessEndingCondition()
+        .ends();
     }
 
     @Override
@@ -102,7 +94,7 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
 
     private void startHead() {
         GameRound round = rounds.element();
-        round.start(this, players, eventHandler);
+        round.start(this, players, eventHandler, this::checkEndOfRound);
     }
 
     @Override
@@ -125,8 +117,6 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
             return;
         }
         transferRequestToRound(player, message, current);
-
-        checkEndOfRound(current);
     }
 
     @Override
@@ -145,31 +135,14 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
 
             List<ScoreDistribution> scoreDistributions = new ArrayList<>();
             scoreDistributions.add(context.getScoreDistribution());
-            Map<Player<?>, Double> standings = recursiveScoreUpdate(scoreDistributions.size()-1,
-                    players, scoreDistributions);
+            Map<Player<?>, Double> standings = updateScores(scoreDistributions.get(0));
             round.onRoundStopped();
             gate.gameCallback((server, game) -> server.onRoundEnded(context.getReportCreator(standings), game));
         }
     }
 
-//    private Map<Player<?>, Double> updateScores(ScoreDistribution scoreDistribution) {
-//        return scoreDistribution.applyAll(players, this::updateScore);
-//    }
-
-    private Map<Player<?>, Double> recursiveScoreUpdate(int currentDepth, Collection<? extends Player<?>> players,
-                                                        List<ScoreDistribution> scoreDistributions) {
-        ScoreDistribution scoreDistribution = scoreDistributions.get(currentDepth);
-        Map<Player<?>, Double> standing = scoreDistribution.applyAll(players, this::updateScore);
-
-        if(currentDepth == 0) {
-            return standing;
-        }
-
-        for(Player<?> player : players) {
-            recursiveScoreUpdate(currentDepth-1, player.getChildren(), scoreDistributions);
-        }
-
-        return standing;
+    private Map<Player<?>, Double> updateScores(ScoreDistribution scoreDistribution) {
+        return scoreDistribution.applyAll(players, this::updateScore);
     }
 
     private void updateScore(Player<?> player, double score) {

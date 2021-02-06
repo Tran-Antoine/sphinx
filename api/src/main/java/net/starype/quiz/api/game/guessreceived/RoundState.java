@@ -27,9 +27,17 @@ public class RoundState {
      */
     private Map<Player<?>, Answer> answers = new HashMap<>();
 
+    /**
+     * Eligibility of the player
+     */
     private EntityEligibility playerEligibility;
 
-
+    /**
+     * Constructor of RoundState
+     * @param players Players of the round (doesn't count teams)
+     * @param counter MaxGuessCounter of the round
+     * @param playerEligibility PlayerEligibility of the Round
+     */
     public RoundState(Collection<? extends Player<?>> players, MaxGuessCounter counter,
                       EntityEligibility playerEligibility) {
         for (Player<?> player : players) {
@@ -39,11 +47,16 @@ public class RoundState {
         this.playerEligibility = playerEligibility;
     }
 
+    /**
+     * @return the MaxGuessCounter
+     */
     public MaxGuessCounter getCounter() {
         return counter;
     }
 
-
+    /**
+     * @return the Map which links evey players to its current correctness
+     */
     public Map<Player<?>, Double> getLeaderboard() {
         return roundCorrectness;
     }
@@ -55,7 +68,7 @@ public class RoundState {
             roundCorrectness.put(player, correctness);
         }
     }
-
+    
     public void addCorrectnessIfNew(Player<?> player, double correctness) {
         roundCorrectness.putIfAbsent(player, correctness);
     }

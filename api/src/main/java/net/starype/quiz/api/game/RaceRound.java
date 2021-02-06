@@ -62,7 +62,7 @@ public class RaceRound implements GameRound {
     }
 
     @Override
-    public RoundEndingPredicate initGuessEndingCondition() {
+    public RoundEndingPredicate initEndingCondition() {
         return new WinnerExists(winnerContainer).or(new NoGuessLeft(counter, players));
     }
 

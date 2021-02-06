@@ -6,18 +6,20 @@ import net.starype.quiz.api.game.player.Player;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public interface GameRound {
 
-    void start(QuizGame game, Collection<? extends IDHolder<?>> players, EventHandler eventHandler);
+    void start(QuizGame game, Collection<? extends IDHolder<?>> players, EventHandler eventHandler,
+               Consumer<GameRound> checkEndOfRound);
     PlayerGuessContext onGuessReceived(Player<?> source, String message);
     void onGiveUpReceived(Player<?> source);
     default void onRoundStopped(){}
+    void checkEndOfRound();
 
     //TODO : Return a list of EntityEligibility, and ScoreDistribution
     EntityEligibility initPlayerEligibility();
-    RoundEndingPredicate initGuessEndingCondition();
-    RoundEndingPredicate initTimeEndingCondition();
+    RoundEndingPredicate initEndingCondition();
     ScoreDistribution initScoreDistribution();
     GameRoundReport initReport(Map<Player<?>, Double> standings);
 

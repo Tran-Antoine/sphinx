@@ -41,16 +41,9 @@ public class GameRoundContext {
 
     public RoundEndingPredicate getGuessEndingCondition() {
         if(guessEndingCondition == null) {
-            guessEndingCondition = round.initGuessEndingCondition();
+            guessEndingCondition = round.initEndingCondition();
         }
         return guessEndingCondition;
-    }
-
-    public RoundEndingPredicate getTimeEndingCondition() {
-        if(timeEndingCondition == null) {
-            timeEndingCondition = round.initTimeEndingCondition();
-        }
-        return timeEndingCondition;
     }
 
     public ScoreDistribution getScoreDistribution() {

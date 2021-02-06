@@ -32,7 +32,7 @@ public class TimeOutEnding implements RoundEndingPredicate {
 
     @Override
     public boolean ends() {
-        return ;
+        return false;
     }
 
 }

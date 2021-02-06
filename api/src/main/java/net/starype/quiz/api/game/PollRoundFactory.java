@@ -25,7 +25,7 @@ public class PollRoundFactory {
                 .addScoreDistribution(new ZeroScoreDistribution())
                 .addPlayerEligibility(counter)
                 .withRoundState(roundState)
-                .withGuessEndingCondition(new NoGuessLeft(counter, players))
+                .withEndingCondition(new NoGuessLeft(counter, players))
                 .build();
     }
 }

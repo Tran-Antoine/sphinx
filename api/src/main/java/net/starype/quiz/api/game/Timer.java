@@ -1,26 +1,28 @@
 package net.starype.quiz.api.game;
 
-import net.starype.quiz.api.game.event.Event;
 import net.starype.quiz.api.game.event.EventHandler;
+import net.starype.quiz.api.game.event.GameEvent;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 
-public class Timer implements Event {
+public class Timer extends GameEvent {
     private long time;
     private TimeUnit unit;
     private Instant startingInstant;
     private Instant currentInstant;
     private EventHandler eventHandler;
-    private boolean isEnded;
-    private Runnable callBack;
 
+    public Timer(TimeUnit unit, long time) {
+        this.unit = unit;
+        this.time = time;
+    }
 
     @Override
-    public void start() {
-        this.eventHandler = eventHandler;
+    public void start(EventHandler eventHandler) {
         eventHandler.registerEvent(this);
+        this.eventHandler = eventHandler;
         this.startingInstant = Instant.now();
         this.currentInstant = Instant.now();
     }
@@ -30,8 +32,7 @@ public class Timer implements Event {
         currentInstant = currentInstant.plusMillis(deltaMillis);
 
         if(Duration.between(startingInstant, currentInstant).toMillis() > unit.toMillis(time)) {
-            this.isEnded = true;
-            callBack.run();
+            notifyListeners();
             shutDown();
         }
     }

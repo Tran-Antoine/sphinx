@@ -1,5 +1,7 @@
 package net.starype.quiz.api.game.event;
 
+import net.starype.quiz.api.game.EventListener;
+
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -7,6 +9,7 @@ public class GameEventHandler implements EventHandler {
 
     private long lastMillis;
     private Collection<Event> eventsList;
+    private Collection<EventListener> eventListeners;
 
     public GameEventHandler() {
         this(new LinkedList<>());

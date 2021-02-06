@@ -10,7 +10,7 @@ public abstract class ConditionalConsumer<T, U> implements BiConsumer<T, U>,
 
     @Override
     public void accept(T t, U u) {
-        if(boundedCondition.test(t, u)) {
+        if (boundedCondition.test(t, u)) {
             execute(t, u);
         }
     }

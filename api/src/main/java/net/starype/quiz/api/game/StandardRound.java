@@ -14,17 +14,18 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class StandardRound implements GameRound {
 
     private Collection<? extends IDHolder<?>> players;
     private Question pickedQuestion;
     private List<ScoreDistribution> scoreDistributions;
-    private RoundEndingPredicate guessEndingCondition;
-    private RoundEndingPredicate timeEndingCondition;
+    private RoundEndingPredicate endingCondition;
     private List<EntityEligibility> playerEligibilities;
     private RoundState roundState;
     private Collection<Event> events;
+    private Consumer<GameRound> checkEndOfRound;
 
     private GuessReceivedHead guessReceivedHead;
     private BiConsumer<RoundState, SettablePlayerGuessContext> guessReceivedConsumer;
@@ -34,8 +35,7 @@ public class StandardRound implements GameRound {
     public StandardRound(Question pickedQuestion, GuessReceivedHead guessReceivedHead,
                          BiConsumer<RoundState, SettablePlayerGuessContext> guessReceivedConsumer,
                          BiConsumer<RoundState, SettablePlayerGuessContext> giveUpReceivedConsumer,
-                         List<ScoreDistribution> scoreDistributions, RoundEndingPredicate guessEndingCondition,
-                         RoundEndingPredicate timeEndingCondition,
+                         List<ScoreDistribution> scoreDistributions, RoundEndingPredicate endingCondition,
                          List<EntityEligibility> playerEligibilities, RoundState roundState,
                          Collection<Event> events) {
         this.pickedQuestion = pickedQuestion;
@@ -43,8 +43,7 @@ public class StandardRound implements GameRound {
         this.guessReceivedConsumer = guessReceivedConsumer;
         this.giveUpReceivedConsumer = giveUpReceivedConsumer;
         this.scoreDistributions = scoreDistributions;
-        this.guessEndingCondition = guessEndingCondition;
-        this.timeEndingCondition = timeEndingCondition;
+        this.endingCondition = endingCondition;
         this.playerEligibilities = playerEligibilities;
         this.roundState = roundState;
         this.events = events;
@@ -52,11 +51,12 @@ public class StandardRound implements GameRound {
 
     @Override
     public void start(QuizGame game, Collection<? extends IDHolder<?>> players,
-                      EventHandler eventHandler) {
+                      EventHandler eventHandler, Consumer<GameRound> checkEndOfRound) {
         this.players = players;
+        this.checkEndOfRound = checkEndOfRound;
         game.sendInputToServer(server -> server.onQuestionReleased(pickedQuestion));
         events.forEach(eventHandler::registerEvent);
-        events.forEach(Startable::start);
+        events.forEach(event -> event.start(eventHandler));
     }
 
     @Override
@@ -67,6 +67,8 @@ public class StandardRound implements GameRound {
         guessReceivedHead.accept(source, message, correctness, roundState, playerGuessContext);
         guessReceivedConsumer.accept(roundState, playerGuessContext);
 
+        checkEndOfRound();
+
         return playerGuessContext;
     }
 
@@ -76,18 +78,18 @@ public class StandardRound implements GameRound {
     }
 
     @Override
+    public void checkEndOfRound() {
+        checkEndOfRound.accept(this);
+    }
+
+    @Override
     public EntityEligibility initPlayerEligibility() {
         return playerEligibilities.get(0);
     }
 
     @Override
-    public RoundEndingPredicate initGuessEndingCondition() {
-        return guessEndingCondition;
-    }
-
-    @Override
-    public RoundEndingPredicate initTimeEndingCondition() {
-        return timeEndingCondition;
+    public RoundEndingPredicate initEndingCondition() {
+        return endingCondition;
     }
 
     @Override
@@ -101,6 +103,11 @@ public class StandardRound implements GameRound {
     }
 
     @Override
+    public void onRoundStopped() {
+        events.forEach((Event::shutDown));
+    }
+
+    @Override
     public GameRoundContext getContext() {
         return new GameRoundContext(this);
     }
@@ -111,7 +118,7 @@ public class StandardRound implements GameRound {
         private BiConsumer<RoundState, SettablePlayerGuessContext> giveUpReceivedConsumer;
         private List<ScoreDistribution> scoreDistributions = new ArrayList<>();
         private Question question;
-        private RoundEndingPredicate guessEndingCondition;
+        private RoundEndingPredicate endingPredicate;
         private RoundEndingPredicate timeEndingCondition;
         private List<EntityEligibility> playerEligibility = new ArrayList<>();
         private RoundState roundState;
@@ -143,13 +150,8 @@ public class StandardRound implements GameRound {
             return this;
         }
 
-        public Builder withGuessEndingCondition(RoundEndingPredicate endingCondition) {
-            this.guessEndingCondition = endingCondition;
-            return this;
-        }
-
-        public Builder withTimeEndingCondition(RoundEndingPredicate endingCondition) {
-            this.timeEndingCondition = endingCondition;
+        public Builder withEndingCondition(RoundEndingPredicate endingCondition) {
+            this.endingPredicate = endingCondition;
             return this;
         }
 
@@ -170,7 +172,7 @@ public class StandardRound implements GameRound {
 
         public StandardRound build() {
             return new StandardRound(question, guessReceivedHead, guessReceivedConsumer,
-                    giveUpReceivedConsumer, scoreDistributions, guessEndingCondition, timeEndingCondition,
+                    giveUpReceivedConsumer, scoreDistributions, endingPredicate,
                     playerEligibility, roundState, events);
         }
 
