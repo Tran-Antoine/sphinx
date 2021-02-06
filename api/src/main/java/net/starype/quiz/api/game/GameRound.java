@@ -17,7 +17,6 @@ public interface GameRound {
     default void onRoundStopped(){}
     void checkEndOfRound();
 
-    //TODO : Return a list of EntityEligibility, and ScoreDistribution
     EntityEligibility initPlayerEligibility();
     RoundEndingPredicate initEndingCondition();
     ScoreDistribution initScoreDistribution();

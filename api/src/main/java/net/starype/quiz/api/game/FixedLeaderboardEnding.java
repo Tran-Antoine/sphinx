@@ -6,7 +6,6 @@ import java.util.Map;
 
 public class FixedLeaderboardEnding implements RoundEndingPredicate {
 
-//    private Collection<? extends LeaderboardPosition> leaderboard;
     private Map<? extends Player<?>, Double> leaderboard;
     private int playersCount;
 
