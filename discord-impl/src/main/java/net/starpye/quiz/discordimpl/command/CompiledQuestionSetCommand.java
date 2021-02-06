@@ -8,6 +8,7 @@ import discord4j.core.object.entity.channel.TextChannel;
 import net.starpye.quiz.discordimpl.game.GameList;
 import net.starpye.quiz.discordimpl.game.GameLobby;
 import net.starpye.quiz.discordimpl.game.LobbyList;
+import net.starpye.quiz.discordimpl.util.MessageUtils;
 import net.starype.quiz.api.database.ByteSerializedIO;
 import net.starype.quiz.api.database.QuestionDatabase;
 import net.starype.quiz.api.database.QuizQueryable;
@@ -56,7 +57,13 @@ public class CompiledQuestionSetCommand implements QuizCommand {
         QuestionDatabase database = new QuestionDatabase(Collections.emptyList(), serializedIO, true);
         database.sync();
         lobby.setQueryObject(database);
-        channel.createMessage("Successfully registered the database").subscribe();
+
+        lobby.trackMessage(message.getId());
+        MessageUtils.sendAndTrack(
+                "Successfully registered the database",
+                channel,
+                lobby
+        );
     }
 
     private String findUrl(Message message, String[] args) {

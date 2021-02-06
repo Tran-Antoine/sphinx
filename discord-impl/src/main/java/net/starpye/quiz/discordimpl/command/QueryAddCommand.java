@@ -76,6 +76,6 @@ public class QueryAddCommand implements QuizCommand {
 
     @Override
     public String getDescription() {
-        return null;
+        return "Add a query filtering the questions";
     }
 }
