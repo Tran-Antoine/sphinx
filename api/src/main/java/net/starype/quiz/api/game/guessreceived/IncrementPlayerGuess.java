@@ -4,6 +4,9 @@ import net.starype.quiz.api.game.MaxGuessCounter;
 import net.starype.quiz.api.game.SettablePlayerGuessContext;
 import net.starype.quiz.api.game.player.Player;
 
+/**
+ * ConditionalConsumer that increments the number of guesses of current Player
+ */
 public class IncrementPlayerGuess extends ConditionalConsumer<RoundState, SettablePlayerGuessContext> {
 
     @Override

@@ -4,6 +4,9 @@ import net.starype.quiz.api.game.SettablePlayerGuessContext;
 
 import java.util.function.BiPredicate;
 
+/**
+ * BiPredicate that tests if the correctness of the answer is 1
+ */
 public class IsCorrectnessOne implements BiPredicate<RoundState, SettablePlayerGuessContext> {
 
     @Override
