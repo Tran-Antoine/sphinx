@@ -67,7 +67,7 @@ public class StandardRound implements GameRound {
         Double correctness = pickedQuestion.evaluateAnswer(Answer.fromString(message)).orElse(null);
         SettablePlayerGuessContext playerGuessContext = new SettablePlayerGuessContext(source, correctness, false);
 
-        guessReceivedHead.accept(source, message, correctness, roundState, playerGuessContext);
+        guessReceivedHead.accept(new GuessReceivedParameters(message, correctness, roundState, playerGuessContext));
         guessReceivedAction.accept(roundState, playerGuessContext);
 
         checkEndOfRound();

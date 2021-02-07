@@ -1,9 +1,10 @@
 package net.starype.quiz.api.game.guessreceived;
 
-import net.starype.quiz.api.game.SettablePlayerGuessContext;
+import net.starype.quiz.api.game.GuessReceivedParameters;
 import net.starype.quiz.api.game.player.Player;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 /**
  * The first function called in {@link net.starype.quiz.api.game.StandardRound#onGuessReceived(Player, String)}
@@ -11,11 +12,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * the correctness, the current {@link RoundState}, etc.
  * This function is generally called before the {@link ConditionalConsumer}.
  */
-public abstract class GuessReceivedHead extends AtomicBoolean implements
-        PentaConsumer<Player<?>, String, Double, RoundState, SettablePlayerGuessContext> {
+public abstract class GuessReceivedHead extends AtomicBoolean implements Consumer<GuessReceivedParameters> {
 
-    @Override
-    public abstract void accept(Player<?> player, String message, Double correctness,
-                                 RoundState roundState, SettablePlayerGuessContext playerGuessContext);
 
 }
