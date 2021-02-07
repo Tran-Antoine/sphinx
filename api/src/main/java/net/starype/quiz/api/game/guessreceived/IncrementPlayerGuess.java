@@ -7,7 +7,7 @@ import net.starype.quiz.api.game.player.Player;
 /**
  * ConditionalConsumer that increments the number of guesses of current Player
  */
-public class IncrementPlayerGuess extends ConditionalConsumer<RoundState, SettablePlayerGuessContext> {
+public class IncrementPlayerGuess extends ConditionalConsumer {
 
     @Override
     public void execute(RoundState roundState, SettablePlayerGuessContext playerGuessContext) {

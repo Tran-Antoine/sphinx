@@ -3,7 +3,6 @@ package net.starype.quiz.api.game;
 import net.starype.quiz.api.game.guessreceived.*;
 import net.starype.quiz.api.game.question.Question;
 
-import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 
 public class RaceRoundFactory {
@@ -16,18 +15,18 @@ public class RaceRoundFactory {
         RoundState roundState = new RoundState(counter, counter);
         NoGuessLeft noGuessLeft = new NoGuessLeft(counter);
 
-        BiConsumer<RoundState, SettablePlayerGuessContext> consumer =
+        GuessReceivedAction consumer =
                 new InvalidateCurrentPlayerCorrectness().linkTo(isGuessEmptyPredicate)
-                        .andThen(new MakePlayerEligible().linkTo(isGuessEmptyPredicate))
-                        .andThen(new IncrementPlayerGuess().linkTo(isGuessEmptyPredicate.negate()))
-                        .andThen(new ConsumeAllPlayersGuess()
+                        .followedBy(new MakePlayerEligible().linkTo(isGuessEmptyPredicate))
+                        .followedBy(new IncrementPlayerGuess().linkTo(isGuessEmptyPredicate.negate()))
+                        .followedBy(new ConsumeAllPlayersGuess()
                                 .linkTo(new IsCorrectnessOne().and(isGuessEmptyPredicate.negate())))
-                        .andThen(new UpdatePlayerEligibility().linkTo(isGuessEmptyPredicate.negate())
-                        .andThen(new UpdateLeaderboard().linkTo(isGuessEmptyPredicate.negate())));
+                        .followedBy(new UpdatePlayerEligibility().linkTo(isGuessEmptyPredicate.negate())
+                        .followedBy(new UpdateLeaderboard().linkTo(isGuessEmptyPredicate.negate())));
 
         return new StandardRound.Builder()
                 .withGuessReceivedHead(isGuessEmpty)
-                .withGuessReceivedConsumer(consumer)
+                .withGuessReceivedAction(consumer)
                 .withGiveUpReceivedConsumer(new ConsumePlayerGuess())
                 .withQuestion(question)
                 .addScoreDistribution(new BinaryDistribution(roundState.getLeaderboard(), scoreForWinner))

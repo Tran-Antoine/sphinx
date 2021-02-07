@@ -9,7 +9,7 @@ import java.util.Collection;
 /**
  * ConditionalConsumer that consumes every guesses from every players of the round
  */
-public class ConsumeAllPlayersGuess extends ConditionalConsumer<RoundState, SettablePlayerGuessContext> {
+public class ConsumeAllPlayersGuess extends ConditionalConsumer {
     @Override
     public void execute(RoundState roundState, SettablePlayerGuessContext playerGuessContext) {
         MaxGuessCounter counter = roundState.getCounter();

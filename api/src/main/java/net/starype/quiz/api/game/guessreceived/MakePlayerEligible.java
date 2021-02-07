@@ -5,7 +5,7 @@ import net.starype.quiz.api.game.SettablePlayerGuessContext;
 /**
  * ConditionalConsumer that makes the Player eligible
  */
-public class MakePlayerEligible extends ConditionalConsumer<RoundState, SettablePlayerGuessContext> {
+public class MakePlayerEligible extends ConditionalConsumer {
 
     @Override
     public void execute(RoundState roundState, SettablePlayerGuessContext playerGuessContext) {
