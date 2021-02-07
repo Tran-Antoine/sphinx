@@ -11,7 +11,7 @@ public class TimedRaceRoundFactory {
                                 double scoreForWinner, long time, TimeUnit unit) {
 
         IsGuessEmpty isGuessEmpty = new IsGuessEmpty();
-        BiPredicate<RoundState, SettablePlayerGuessContext> isGuessEmptyPredicate = (t, u) -> isGuessEmpty.value();
+        BiPredicate<RoundState, SettablePlayerGuessContext> isGuessEmptyPredicate = (t, u) -> isGuessEmpty.get();
 
         MaxGuessCounter counter = new MaxGuessCounter(maxGuesses);
         RoundState roundState = new RoundState(counter, counter);

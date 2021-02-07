@@ -10,9 +10,9 @@ public class IsPlayerEligible extends ConditionalConsumer {
     @Override
     public void execute(RoundState roundState, SettablePlayerGuessContext playerGuessContext) {
         if(roundState.isPlayerEligible(playerGuessContext.getPlayer())) {
-            setToTrue();
+            set(true);
         } else {
-            setToFalse();
+            set(false);
         }
     }
 }

@@ -12,9 +12,9 @@ public class IsGuessEmpty extends GuessReceivedHead {
     public void accept(Player<?> player, String message, Double correctness, RoundState roundState,
                         SettablePlayerGuessContext playerGuessContext) {
         if(correctness == null) {
-            setToTrue();
+            set(true);
         } else {
-            setToFalse();
+            set(false);
         }
     }
 }
