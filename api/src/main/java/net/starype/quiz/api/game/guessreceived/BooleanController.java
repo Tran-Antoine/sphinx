@@ -2,7 +2,6 @@ package net.starype.quiz.api.game.guessreceived;
 
 /**
  * Represents a functional interface that controls the value of a boolean.
- * This should usually be used with a {@link BiPredicateBounded}
  */
 public interface BooleanController {
 

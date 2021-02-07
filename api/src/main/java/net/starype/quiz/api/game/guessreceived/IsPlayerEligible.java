@@ -1,6 +1,6 @@
 package net.starype.quiz.api.game.guessreceived;
 
-import net.starype.quiz.api.game.SettablePlayerGuessContext;
+import net.starype.quiz.api.game.MutableGuessContext;
 
 /**
  * BiPredicate that tests if the current guessing player is eligible or not
@@ -8,7 +8,7 @@ import net.starype.quiz.api.game.SettablePlayerGuessContext;
 public class IsPlayerEligible extends ConditionalConsumer {
 
     @Override
-    public void execute(RoundState roundState, SettablePlayerGuessContext playerGuessContext) {
+    public void execute(RoundState roundState, MutableGuessContext playerGuessContext) {
         if(roundState.isPlayerEligible(playerGuessContext.getPlayer())) {
             setControlledBoolean(true);
         } else {

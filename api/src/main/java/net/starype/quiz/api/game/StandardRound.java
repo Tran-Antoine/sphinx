@@ -65,7 +65,7 @@ public class StandardRound implements GameRound {
     @Override
     public PlayerGuessContext onGuessReceived(Player<?> source, String message) {
         Double correctness = pickedQuestion.evaluateAnswer(Answer.fromString(message)).orElse(null);
-        SettablePlayerGuessContext playerGuessContext = new SettablePlayerGuessContext(source, correctness, false);
+        MutableGuessContext playerGuessContext = new MutableGuessContext(source, correctness, false);
 
         guessReceivedHead.accept(new GuessReceivedParameters(message, correctness, roundState, playerGuessContext));
         guessReceivedAction.accept(roundState, playerGuessContext);
@@ -77,7 +77,7 @@ public class StandardRound implements GameRound {
 
     @Override
     public void onGiveUpReceived(Player<?> source) {
-        giveUpReceivedConsumer.accept(roundState, new SettablePlayerGuessContext(source, 0.0, false));
+        giveUpReceivedConsumer.accept(roundState, new MutableGuessContext(source, 0.0, false));
     }
 
     @Override

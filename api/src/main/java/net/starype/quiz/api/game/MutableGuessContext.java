@@ -2,13 +2,13 @@ package net.starype.quiz.api.game;
 
 import net.starype.quiz.api.game.player.Player;
 
-public class SettablePlayerGuessContext implements PlayerGuessContext {
+public class MutableGuessContext implements PlayerGuessContext {
 
     private Player<?> player;
     private double correctness;
     private boolean eligibility;
 
-    public SettablePlayerGuessContext(Player<?> player, Double correctness, boolean eligibility) {
+    public MutableGuessContext(Player<?> player, Double correctness, boolean eligibility) {
         this.player = player;
         if(correctness != null) {
             this.correctness = correctness;

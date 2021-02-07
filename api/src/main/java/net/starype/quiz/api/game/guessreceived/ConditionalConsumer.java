@@ -1,6 +1,6 @@
 package net.starype.quiz.api.game.guessreceived;
 
-import net.starype.quiz.api.game.SettablePlayerGuessContext;
+import net.starype.quiz.api.game.MutableGuessContext;
 
 import java.util.function.BiPredicate;
 
@@ -9,21 +9,20 @@ import java.util.function.BiPredicate;
  * this ConditionalConsumer will execute only if the bounded BiPredicate is true. The ConditionalConsumer
  * may also control the value of a boolean to enable/disable the execution of other ConditionalConsumer.
  */
-public abstract class ConditionalConsumer implements GuessReceivedAction, BooleanController,
-        BiPredicateBounded<RoundState, SettablePlayerGuessContext> {
+public abstract class ConditionalConsumer implements GuessReceivedAction, BooleanController {
 
     /**
      * The bounded predicate of this ConditionalConsumer. This consumer will execute only if this bounded predicate
      * is true.
      */
-    private BiPredicate<RoundState, SettablePlayerGuessContext> boundedPredicate = (t, u) -> true;
+    private BiPredicate<RoundState, MutableGuessContext> boundedPredicate = (t, u) -> true;
 
     boolean controlledBoolean = false;
 
-    public abstract void execute(RoundState t, SettablePlayerGuessContext u);
+    public abstract void execute(RoundState t, MutableGuessContext u);
 
     @Override
-    public void accept(RoundState t, SettablePlayerGuessContext u) {
+    public void accept(RoundState t, MutableGuessContext u) {
         if (boundedPredicate.test(t, u)) {
             execute(t, u);
         }
@@ -34,9 +33,8 @@ public abstract class ConditionalConsumer implements GuessReceivedAction, Boolea
         return controlledBoolean;
     }
 
-    @Override
     public ConditionalConsumer linkTo(BiPredicate<RoundState,
-            SettablePlayerGuessContext> biPredicate) {
+            MutableGuessContext> biPredicate) {
         boundedPredicate = biPredicate;
         return this;
     }

@@ -1,10 +1,10 @@
 package net.starype.quiz.api.game.guessreceived;
 
-import net.starype.quiz.api.game.SettablePlayerGuessContext;
+import net.starype.quiz.api.game.MutableGuessContext;
 
 import java.util.function.BiConsumer;
 
-public interface GuessReceivedAction extends BiConsumer<RoundState, SettablePlayerGuessContext> {
+public interface GuessReceivedAction extends BiConsumer<RoundState, MutableGuessContext> {
     default GuessReceivedAction followedBy(GuessReceivedAction after) {
         return (l, r) -> {
             accept(l, r);
