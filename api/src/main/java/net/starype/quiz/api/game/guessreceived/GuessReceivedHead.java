@@ -3,7 +3,6 @@ package net.starype.quiz.api.game.guessreceived;
 import net.starype.quiz.api.game.GuessReceivedParameters;
 import net.starype.quiz.api.game.player.Player;
 
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 /**
@@ -12,7 +11,17 @@ import java.util.function.Consumer;
  * the correctness, the current {@link RoundState}, etc.
  * This function is generally called before the {@link ConditionalConsumer}.
  */
-public abstract class GuessReceivedHead extends AtomicBoolean implements Consumer<GuessReceivedParameters> {
+public abstract class GuessReceivedHead implements Consumer<GuessReceivedParameters>,
+        BooleanController {
 
+    boolean controlledBoolean = false;
 
+    public void setControlledBoolean(boolean newValue) {
+        controlledBoolean = newValue;
+    }
+
+    @Override
+    public boolean value() {
+        return controlledBoolean;
+    }
 }

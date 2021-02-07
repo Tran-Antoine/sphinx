@@ -9,7 +9,7 @@ public class IndividualRoundFactory {
     public StandardRound create(Question question, double maxToAward) {
 
         IsGuessEmpty isGuessEmpty = new IsGuessEmpty();
-        BiPredicate<RoundState, SettablePlayerGuessContext> isGuessEmptyPredicate = (t, u) -> isGuessEmpty.get();
+        BiPredicate<RoundState, SettablePlayerGuessContext> isGuessEmptyPredicate = (t, u) -> isGuessEmpty.value();
 
         MaxGuessCounter counter = new MaxGuessCounter(1);
         RoundState roundState = new RoundState(counter, counter);

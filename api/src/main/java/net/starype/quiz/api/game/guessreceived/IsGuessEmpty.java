@@ -9,6 +9,6 @@ import net.starype.quiz.api.game.GuessReceivedParameters;
 public class IsGuessEmpty extends GuessReceivedHead {
     @Override
     public void accept(GuessReceivedParameters parameters) {
-        set(parameters.getCorrectness() == null);
+        setControlledBoolean(parameters.getCorrectness() == null);
     }
 }

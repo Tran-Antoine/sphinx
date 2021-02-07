@@ -5,7 +5,7 @@ import net.starype.quiz.api.game.player.Player;
 
 import java.util.Collection;
 
-public class NoGuessLeft implements RoundEndingPredicate, PlayersSettable {
+public class NoGuessLeft implements RoundEndingPredicate, PlayerSettable {
 
     private MaxGuessCounter counter;
     private Collection<? extends IDHolder<?>> players;

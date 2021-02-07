@@ -3,7 +3,7 @@ package net.starype.quiz.api.game.guessreceived;
 import net.starype.quiz.api.game.EntityEligibility;
 import net.starype.quiz.api.game.Leaderboard;
 import net.starype.quiz.api.game.MaxGuessCounter;
-import net.starype.quiz.api.game.PlayersSettable;
+import net.starype.quiz.api.game.PlayerSettable;
 import net.starype.quiz.api.game.ScoreDistribution.Standing;
 import net.starype.quiz.api.game.answer.Answer;
 import net.starype.quiz.api.game.player.IDHolder;
@@ -13,7 +13,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RoundState implements PlayersSettable {
+public class RoundState implements PlayerSettable {
 
     /**
      * Leaderboard that maps every player to its current correctness for this round

@@ -3,9 +3,8 @@ package net.starype.quiz.api.game;
 import net.starype.quiz.api.game.player.Player;
 
 import java.util.Collection;
-import java.util.Map;
 
-public class FixedLeaderboardEnding implements RoundEndingPredicate, PlayersSettable {
+public class FixedLeaderboardEnding implements RoundEndingPredicate, PlayerSettable {
 
     private Leaderboard leaderboard;
     private int playersCount;
