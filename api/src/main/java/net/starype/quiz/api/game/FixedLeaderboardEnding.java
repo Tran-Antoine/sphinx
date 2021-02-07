@@ -2,16 +2,16 @@ package net.starype.quiz.api.game;
 
 import net.starype.quiz.api.game.player.Player;
 
+import java.util.Collection;
 import java.util.Map;
 
-public class FixedLeaderboardEnding implements RoundEndingPredicate {
+public class FixedLeaderboardEnding implements RoundEndingPredicate, PlayersSettable {
 
     private Map<? extends Player<?>, Double> leaderboard;
     private int playersCount;
 
-    public FixedLeaderboardEnding(LeaderboardDistribution leaderboardDistribution, int playersCount) {
+    public FixedLeaderboardEnding(LeaderboardDistribution leaderboardDistribution) {
         this.leaderboard = leaderboardDistribution.getLeaderboard();
-        this.playersCount = playersCount;
     }
 
     @Override
@@ -36,5 +36,10 @@ public class FixedLeaderboardEnding implements RoundEndingPredicate {
                 .stream()
                 .filter(aDouble -> Math.abs(aDouble - 1) > 0.001)
                 .count() == 1;
+    }
+
+    @Override
+    public void setPlayers(Collection<? extends Player<?>> players) {
+        this.playersCount = players.size();
     }
 }

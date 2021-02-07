@@ -5,7 +5,6 @@ import net.starype.quiz.api.game.event.Event;
 import net.starype.quiz.api.game.event.EventHandler;
 import net.starype.quiz.api.game.guessreceived.GuessReceivedHead;
 import net.starype.quiz.api.game.guessreceived.RoundState;
-import net.starype.quiz.api.game.player.IDHolder;
 import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.question.Question;
 
@@ -18,7 +17,6 @@ import java.util.function.Consumer;
 
 public class StandardRound implements GameRound {
 
-    private Collection<? extends IDHolder<?>> players;
     private Question pickedQuestion;
     private List<ScoreDistribution> scoreDistributions;
     private RoundEndingPredicate endingCondition;
@@ -26,6 +24,7 @@ public class StandardRound implements GameRound {
     private RoundState roundState;
     private Collection<Event> events;
     private Consumer<GameRound> checkEndOfRound;
+    private Collection<PlayersSettable> toPlayerSet;
 
     private GuessReceivedHead guessReceivedHead;
     private BiConsumer<RoundState, SettablePlayerGuessContext> guessReceivedConsumer;
@@ -37,7 +36,7 @@ public class StandardRound implements GameRound {
                          BiConsumer<RoundState, SettablePlayerGuessContext> giveUpReceivedConsumer,
                          List<ScoreDistribution> scoreDistributions, RoundEndingPredicate endingCondition,
                          List<EntityEligibility> playerEligibilities, RoundState roundState,
-                         Collection<Event> events) {
+                         Collection<Event> events, Collection<PlayersSettable> toPlayersSet) {
         this.pickedQuestion = pickedQuestion;
         this.guessReceivedHead = guessReceivedHead;
         this.guessReceivedConsumer = guessReceivedConsumer;
@@ -47,14 +46,17 @@ public class StandardRound implements GameRound {
         this.playerEligibilities = playerEligibilities;
         this.roundState = roundState;
         this.events = events;
+        this.toPlayerSet = toPlayersSet;
     }
 
     @Override
-    public void start(QuizGame game, Collection<? extends IDHolder<?>> players,
+    public void start(QuizGame game, Collection<? extends Player<?>> players,
                       EventHandler eventHandler, Consumer<GameRound> checkEndOfRound) {
-        this.players = players;
         this.checkEndOfRound = checkEndOfRound;
-        game.sendInputToServer(server -> server.onQuestionReleased(pickedQuestion));
+        toPlayerSet.forEach(playersSettable -> playersSettable.setPlayers(players));
+        if(game != null) {
+            game.sendInputToServer(server -> server.onQuestionReleased(pickedQuestion));
+        }
         events.forEach(eventHandler::registerEvent);
         events.forEach(event -> event.start(eventHandler));
     }
@@ -119,10 +121,10 @@ public class StandardRound implements GameRound {
         private List<ScoreDistribution> scoreDistributions = new ArrayList<>();
         private Question question;
         private RoundEndingPredicate endingPredicate;
-        private RoundEndingPredicate timeEndingCondition;
         private List<EntityEligibility> playerEligibility = new ArrayList<>();
         private RoundState roundState;
         private Collection<Event> events = new ArrayList<>();
+        private Collection<PlayersSettable> playersSettables = new ArrayList<>();
 
         public Builder withGuessReceivedConsumer(BiConsumer<RoundState, SettablePlayerGuessContext> guessReceivedConsumer) {
             this.guessReceivedConsumer = guessReceivedConsumer;
@@ -170,10 +172,15 @@ public class StandardRound implements GameRound {
             return this;
         }
 
+        public Builder addPlayerSettable(PlayersSettable playersSettable) {
+            playersSettables.add(playersSettable);
+            return this;
+        }
+
         public StandardRound build() {
             return new StandardRound(question, guessReceivedHead, guessReceivedConsumer,
                     giveUpReceivedConsumer, scoreDistributions, endingPredicate,
-                    playerEligibility, roundState, events);
+                    playerEligibility, roundState, events, playersSettables);
         }
 
     }

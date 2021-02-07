@@ -52,7 +52,6 @@ public interface QuizGame {
     boolean nextRound();
 
     void onInputReceived(Object playerId, String message);
-    void checkEndOfRound(GameRound round);
     void sendInputToServer(Consumer<GameServer<?>> action);
     void removePlayer(Object playerId);
 }

@@ -6,12 +6,12 @@ import java.util.function.BiPredicate;
 /**
  * A BiConsumer that is linked to a BiPredicate, and controls another BiPredicate. By default,
  * this ConditionalConsumer will execute only if the bounded BiPredicate is true. The ConditionalConsumer
- * may also control the value of a BiPredicate.
+ * may also control the value of a boolean to enable/disable the execution of other ConditionalConsumer.
  * @param <T> the type of the first parameter of the ConditionalConsumer
  * @param <U> the type of the second parameter of the ConditionalConsumer
  */
 public abstract class ConditionalConsumer<T, U> implements BiConsumer<T, U>,
-        BiPredicateController<T, U>, BiPredicateBounded<T, U> {
+        BooleanController, BiPredicateBounded<T, U> {
     /**
      * The bounded predicate of this ConditionalConsumer. This consumer will execute only if this bounded predicate
      * is true.
@@ -19,9 +19,10 @@ public abstract class ConditionalConsumer<T, U> implements BiConsumer<T, U>,
     BiPredicate<T, U> boundedPredicate = (t, u) -> true;
 
     /**
-     * the predicate controlled by this consumer
+     * the AtomicBoolean controlled by this consumer
      */
-    BiPredicate<T, U> controlledPredicate = (t, u) -> false;
+    boolean controlledBoolean = false;
+
 
     @Override
     public void accept(T t, U u) {
@@ -33,24 +34,23 @@ public abstract class ConditionalConsumer<T, U> implements BiConsumer<T, U>,
     public abstract void execute(T t, U u);
 
     @Override
-    public ConditionalConsumer<T, U> linkTo(BiPredicate<T, U> predicate) {
-        boundedPredicate = predicate;
+    public ConditionalConsumer<T, U> linkTo(BiPredicate<T, U> biPredicate) {
+        boundedPredicate = biPredicate;
         return this;
     }
 
     @Override
-    public ConditionalConsumer<T, U> control(BiPredicate<T, U> predicate) {
-        controlledPredicate = predicate;
-        return this;
+    public boolean value() {
+        return controlledBoolean;
     }
 
     @Override
     public void setToTrue() {
-        controlledPredicate = (t, u) -> true;
+        controlledBoolean = true;
     }
 
     @Override
     public void setToFalse() {
-        controlledPredicate = (t, u) -> false;
+        controlledBoolean = false;
     }
 }

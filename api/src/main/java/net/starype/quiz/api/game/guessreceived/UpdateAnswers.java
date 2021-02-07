@@ -12,7 +12,7 @@ public class UpdateAnswers extends GuessReceivedHead {
 
     @Override
     public void accept(Player<?> player, String message, Double correctness,
-                       RoundState roundState, SettablePlayerGuessContext playerGuessContext) {
+                        RoundState roundState, SettablePlayerGuessContext playerGuessContext) {
         roundState.updateRoundAnswers(player, Answer.fromString(message));
     }
 }

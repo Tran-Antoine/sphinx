@@ -11,8 +11,8 @@ public interface BiPredicateBounded<T, U> {
 
     /**
      * Link this functional interface to a BiPredicate
-     * @param predicate the predicate linked to this functional interface
+     * @param biPredicate the predicate linked to this functional interface
      * @return this
      */
-    BiPredicateBounded<T, U> linkTo(BiPredicate<T, U> predicate);
+    BiPredicateBounded<T, U> linkTo(BiPredicate<T, U> biPredicate);
 }

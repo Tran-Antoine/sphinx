@@ -1,8 +1,8 @@
 package net.starype.quiz.discordimpl.parsing
 
 import java.util.concurrent.TimeUnit
-
-import net.starype.quiz.api.game.{ClassicalRound, GameRound, IndividualRound, PollRound, TimedRaceRound}
+import net.starype.quiz.api.game.
+{ClassicalRoundFactory, GameRound, IndividualRoundFactory, TimedRaceRoundFactory}
 import net.starype.quiz.api.game.question.Question
 
 import scala.util.parsing.combinator.RegexParsers
@@ -28,9 +28,9 @@ class GameSettingsParser extends RegexParsers {
   def round: Parser[Question => GameRound] = {
     repsep(roundArg, ",") ^^ {
       case List(name: String, time: Option[Int], tries: Option[Int]) => name match {
-        case "Classical" => new ClassicalRound(_, tries.get, 1)
-        case "Individual" => new IndividualRound(_, 2)
-        case "TimedRace" => new TimedRaceRound(_, tries.get, 1, time.get, TimeUnit.SECONDS)
+        case "Classical" => new ClassicalRoundFactory().create(_, tries.get, 1)
+        case "Individual" => new IndividualRoundFactory().create(_, 2)
+        case "TimedRace" => new TimedRaceRoundFactory().create(_, tries.get, 1, time.get, TimeUnit.SECONDS)
         case "Poll" => new PollRound(_, tries.get)
       }
     }

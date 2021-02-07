@@ -1,16 +1,15 @@
 package net.starype.quiz.api.game;
 
 import net.starype.quiz.api.game.guessreceived.*;
-import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.question.Question;
 
-import java.util.Collection;
 import java.util.function.BiConsumer;
 
 public class PollRoundFactory {
-    public StandardRound create(Question question, Collection<? extends Player<?>> players, int maxGuesses) {
+    public StandardRound create(Question question, int maxGuesses) {
         MaxGuessCounter counter = new MaxGuessCounter(maxGuesses);
-        RoundState roundState = new RoundState(players, counter, counter);
+        RoundState roundState = new RoundState(counter, counter);
+        NoGuessLeft noGuessLeft = new NoGuessLeft(counter);
 
         BiConsumer<RoundState, SettablePlayerGuessContext> consumer =
                 new IncrementPlayerGuess()
@@ -25,7 +24,9 @@ public class PollRoundFactory {
                 .addScoreDistribution(new ZeroScoreDistribution())
                 .addPlayerEligibility(counter)
                 .withRoundState(roundState)
-                .withEndingCondition(new NoGuessLeft(counter, players))
+                .withEndingCondition(noGuessLeft)
+                .addPlayerSettable(noGuessLeft)
+                .addPlayerSettable(roundState)
                 .build();
     }
 }

@@ -2,6 +2,7 @@ package net.starype.quiz.api.game.guessreceived;
 
 import net.starype.quiz.api.game.EntityEligibility;
 import net.starype.quiz.api.game.MaxGuessCounter;
+import net.starype.quiz.api.game.PlayersSettable;
 import net.starype.quiz.api.game.answer.Answer;
 import net.starype.quiz.api.game.player.IDHolder;
 import net.starype.quiz.api.game.player.Player;
@@ -10,7 +11,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RoundState {
+public class RoundState implements PlayersSettable {
 
     /**
      * HashMap that maps every player to its current correctness for this round
@@ -34,15 +35,11 @@ public class RoundState {
 
     /**
      * Constructor of RoundState
-     * @param players Players of the round (doesn't count teams)
      * @param counter MaxGuessCounter of the round
      * @param playerEligibility PlayerEligibility of the Round
      */
-    public RoundState(Collection<? extends Player<?>> players, MaxGuessCounter counter,
+    public RoundState(MaxGuessCounter counter,
                       EntityEligibility playerEligibility) {
-        for (Player<?> player : players) {
-            roundCorrectness.put(player, 0.0);
-        }
         this.counter = counter;
         this.playerEligibility = playerEligibility;
     }
@@ -116,4 +113,10 @@ public class RoundState {
     }
 
 
+    @Override
+    public void setPlayers(Collection<? extends Player<?>> players) {
+        for (Player<?> player : players) {
+            roundCorrectness.put(player, 0.0);
+        }
+    }
 }

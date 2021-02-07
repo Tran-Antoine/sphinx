@@ -1,42 +1,46 @@
 package net.starype.quiz.api.game;
 
 import net.starype.quiz.api.game.guessreceived.*;
-import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.question.Question;
 
-import java.util.Collection;
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 
 public class ClassicalRoundFactory {
 
-    public StandardRound create(Question question, double maxAwarded, Collection<? extends Player<?>> players,
-                                int maxGuesses) {
-        BiPredicate<RoundState, SettablePlayerGuessContext> isGuessEmpty = (t, u) -> false;
+    public StandardRound create(Question question, double maxAwarded, int maxGuesses) {
+
+        IsGuessEmpty isGuessEmpty = new IsGuessEmpty();
+        BiPredicate<RoundState, SettablePlayerGuessContext> isGuessEmptyPredicate = (t, u) -> isGuessEmpty.value();
+
         MaxGuessCounter counter = new MaxGuessCounter(maxGuesses);
-        RoundState roundState = new RoundState(players, counter, counter);
-        LeaderboardDistribution distribution = new LeaderboardDistribution(maxAwarded, players.size(),
-                roundState.getLeaderboard());
+        RoundState roundState = new RoundState(counter, counter);
+        LeaderboardDistribution distribution = new LeaderboardDistribution(maxAwarded, roundState.getLeaderboard());
+        NoGuessLeft noGuessLeft = new NoGuessLeft(counter);
+        FixedLeaderboardEnding fixedLeaderboardEnding = new FixedLeaderboardEnding(distribution);
+
 
         BiConsumer<RoundState, SettablePlayerGuessContext> consumer =
-                new InvalidateCurrentPlayerCorrectness().linkTo(isGuessEmpty)
-                        .andThen(new MakePlayerEligible().linkTo(isGuessEmpty))
-                        .andThen(new IncrementPlayerGuess().linkTo(isGuessEmpty.negate()))
-                        .andThen(new UpdateLeaderboard().linkTo(isGuessEmpty.negate()
+                new InvalidateCurrentPlayerCorrectness().linkTo(isGuessEmptyPredicate)
+                        .andThen(new MakePlayerEligible().linkTo(isGuessEmptyPredicate))
+                        .andThen(new IncrementPlayerGuess().linkTo(isGuessEmptyPredicate.negate()))
+                        .andThen(new UpdateLeaderboard().linkTo(isGuessEmptyPredicate.negate()
                                 .and(new IsCorrectnessZero().negate())))
-                        .andThen(new ConsumePlayerGuess().linkTo(isGuessEmpty.negate().and(new IsCorrectnessZero())))
-                        .andThen(new UpdatePlayerEligibility().linkTo(isGuessEmpty.negate()));
+                        .andThen(new ConsumePlayerGuess().linkTo(isGuessEmptyPredicate.negate().and(new IsCorrectnessZero())))
+                        .andThen(new UpdatePlayerEligibility().linkTo(isGuessEmptyPredicate.negate()));
 
         return new StandardRound.Builder()
-                .withGuessReceivedHead(new IsGuessEmpty().control(isGuessEmpty))
+                .withGuessReceivedHead(isGuessEmpty)
                 .withGuessReceivedConsumer(consumer)
                 .withGiveUpReceivedConsumer(new ConsumePlayerGuess())
                 .withQuestion(question)
                 .addScoreDistribution(distribution)
                 .addPlayerEligibility(counter)
                 .withRoundState(roundState)
-                .withEndingCondition(new NoGuessLeft(counter, players)
-                        .or(new FixedLeaderboardEnding(distribution, players.size())))
+                .withEndingCondition(noGuessLeft.or(fixedLeaderboardEnding))
+                .addPlayerSettable(noGuessLeft)
+                .addPlayerSettable(fixedLeaderboardEnding)
+                .addPlayerSettable(roundState)
                 .build();
     }
 }

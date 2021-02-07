@@ -9,4 +9,5 @@ public interface PentaConsumer<A, B, C, D, E> {
         return (a, b, c, d, e) ->
         { accept(a, b, c, d, e); after.accept(a, b, c, d, e);};
     }
+
 }

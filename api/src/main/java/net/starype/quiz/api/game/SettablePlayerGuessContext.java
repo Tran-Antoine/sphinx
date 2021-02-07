@@ -8,9 +8,11 @@ public class SettablePlayerGuessContext implements PlayerGuessContext {
     private double correctness;
     private boolean eligibility;
 
-    public SettablePlayerGuessContext(Player<?> player, double correctness, boolean eligibility) {
+    public SettablePlayerGuessContext(Player<?> player, Double correctness, boolean eligibility) {
         this.player = player;
-        this.correctness = correctness;
+        if(correctness != null) {
+            this.correctness = correctness;
+        }
         this.eligibility = eligibility;
     }
 

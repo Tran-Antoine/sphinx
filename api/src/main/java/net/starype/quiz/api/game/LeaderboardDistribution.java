@@ -12,13 +12,10 @@ import java.util.function.BiConsumer;
 public class LeaderboardDistribution implements ScoreDistribution {
 
     private double maxAwarded;
-    private int playersCount;
     private Map<Player<?>, Double> leaderboard;
 
-    public LeaderboardDistribution(double maxAwarded, int playersCount,
-                                   Map<Player<?>, Double > leaderboard) {
+    public LeaderboardDistribution(double maxAwarded, Map<Player<?>, Double> leaderboard) {
         this.maxAwarded = maxAwarded;
-        this.playersCount = playersCount;
         this.leaderboard = leaderboard;
     }
 
@@ -27,7 +24,7 @@ public class LeaderboardDistribution implements ScoreDistribution {
                                            BiConsumer<Player<?>, Double> action) {
         Map<Player<?>, Double> scores = new HashMap<>();
         List<SortUtils.Standing> standings = SortUtils.sortByScore(leaderboard);
-        double gapPerSeat = maxAwarded / (playersCount - 1);
+        double gapPerSeat = maxAwarded / (players.size() - 1);
 
         int position = standings.size();
         for (SortUtils.Standing standing : standings) {

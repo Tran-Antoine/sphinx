@@ -8,7 +8,6 @@ public class GameRoundContext {
 
     private EntityEligibility playerEligibility;
     private RoundEndingPredicate endingCondition;
-    private RoundEndingPredicate timeEndingCondition;
     private ScoreDistribution scoreDistributionCreator;
     private GameRoundReport reportCreator;
 

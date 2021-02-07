@@ -119,8 +119,7 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
         transferRequestToRound(player, message, current);
     }
 
-    @Override
-    public void checkEndOfRound(GameRound round) {
+    private void checkEndOfRound(GameRound round) {
         synchronized (paused) {
             if(paused.get()) {
                 return;
