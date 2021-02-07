@@ -102,13 +102,6 @@ public interface QuizGame {
      */
     void onInputReceived(Object playerId, String message);
 
-//    /**
-//     * Require the game to check whether the current round is over. Even though usually called internally, the method
-//     * can also be called when an exterior factor may make the round terminate. Timers are a good example, since they
-//     * should usually be handled externally.
-//     * @param current the current round
-//     */
-//    void checkEndOfRound(GameRound current);
 
     /**
      * Main communication gate between the game object and a {@link GameServer}.

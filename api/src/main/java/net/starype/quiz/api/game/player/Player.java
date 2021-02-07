@@ -50,23 +50,6 @@ public class Player<T> implements IDHolder<T>, Comparable<Player<?>> {
         return children;
     }
 
-//    public Optional<Player<?>> getParent() {
-//        if(parent == null) {
-//            return Optional.empty();
-//        }
-//        return Optional.of(parent);
-//    }
-
-//    public static Collection<Player<?>> retrieveParents(Collection<Player<?>> players) {
-//        Collection<Player<?>> parents = new ArrayList<>();
-//        for(Player<?> player : players) {
-//            if(player.getParent().isPresent() || !parents.contains(player.getParent().get())) {
-//                parents.add(player.getParent().get());
-//            }
-//        }
-//        return parents;
-//    }
-
     @Override
     public int compareTo(Player<?> o) {
         return Double.compare(o.score.getPoints(), this.score.getPoints());

@@ -9,15 +9,6 @@ import java.util.function.BiPredicate;
  */
 public class IsCorrectnessOne implements BiPredicate<RoundState, SettablePlayerGuessContext> {
 
-//    @Override
-//    public void execute(RoundState roundState, SettablePlayerGuessContext playerGuessContext) {
-//        if(Math.abs(playerGuessContext.getCorrectness() - 1) < 0.001) {
-//            setToTrue();
-//        } else {
-//            setToFalse();
-//        }
-//    }
-
     @Override
     public boolean test(RoundState roundState, SettablePlayerGuessContext playerGuessContext) {
         return Math.abs(playerGuessContext.getCorrectness() - 1) < 0.001;

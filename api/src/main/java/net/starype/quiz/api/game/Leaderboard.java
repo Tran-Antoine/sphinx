@@ -9,16 +9,6 @@ import java.util.Optional;
 
 public class Leaderboard {
     private List<Standing> standings = new ArrayList<>();
-//
-//    public Leaderboard(List<Standing> standings) {
-//        this.standings = standings;
-//    }
-//
-//    public Leaderboard(Collection<? extends Player<?>> players) {
-//        for(Player<?> player : players) {
-//            standings.add(new Standing(player, 0));
-//        }
-//    }
 
     public void insertNewPlayer(Standing playerPosition) {
         int index = 0;

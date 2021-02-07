@@ -4,7 +4,7 @@ import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 
 /**
- * A BiConsumer that is linked to a BiPredicate, and controls another BiPredicate. By default,
+ * A BiConsumer that is linked to a BiPredicate, and controls another boolean. By default,
  * this ConditionalConsumer will execute only if the bounded BiPredicate is true. The ConditionalConsumer
  * may also control the value of a boolean to enable/disable the execution of other ConditionalConsumer.
  * @param <T> the type of the first parameter of the ConditionalConsumer
