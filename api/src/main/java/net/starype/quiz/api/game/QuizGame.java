@@ -2,6 +2,7 @@ package net.starype.quiz.api.game;
 
 
 import net.starype.quiz.api.server.GameServer;
+import net.starype.quiz.api.server.ServerGate;
 
 import java.util.function.Consumer;
 
@@ -41,17 +42,87 @@ import java.util.function.Consumer;
  */
 public interface QuizGame {
 
+    /**
+     * Start the game.
+     * No interaction with the game object should be allowed unless a unique call to `start` was previously
+     * made.
+     */
     void start();
+
+    /**
+     * Pause the game.
+     * The common behavior of this method should be to ignore all communications from players until {@link #resume()}
+     * is called.
+     */
     void pause();
+
+    /**
+     * Resume the game after it was paused.
+     * If the game wasn't paused, the method has no effect
+     */
     void resume();
+
+    /**
+     * Update the game object, allowing the latter to perform periodic actions such as even triggering, if needed.
+     * The call frequency of update is up to the game object handler
+     */
     void update();
+
+    /**
+     * Force-stop the game, shutting down all communications with players. Assuming the default game system, quiz games
+     * should naturally stop when all rounds are played
+     */
     void forceStop();
 
+    /**
+     * Determine whether the round currently in action is finished and should thus be skipped.
+     * @return whether the current round is over
+     */
     boolean isCurrentRoundFinished();
+
+    /**
+     * Retrieve whether the game contains the player with the given ID.
+     * @param id an object representing a player ID
+     * @return whether the object is present in the player list of the game
+     */
     boolean containsPlayerId(Object id);
+
+    /**
+     * Skip the current round (usually when over) and start the following one.
+     * @return whether the operation was a success
+     */
     boolean nextRound();
 
+    /**
+     * Main communication gate between the players and the game logic.
+     * The game handler should call this method when a player sends whatever input that must be transmitted to the game.
+     * Whether the player was eligible for sending a message should be decided by the game itself, not beforehand.
+     * @param playerId the ID of the player who sent a message
+     * @param message the message provided
+     */
     void onInputReceived(Object playerId, String message);
+
+//    /**
+//     * Require the game to check whether the current round is over. Even though usually called internally, the method
+//     * can also be called when an exterior factor may make the round terminate. Timers are a good example, since they
+//     * should usually be handled externally.
+//     * @param current the current round
+//     */
+//    void checkEndOfRound(GameRound current);
+
+    /**
+     * Main communication gate between the game object and a {@link GameServer}.
+     * This method is often used by the game rounds, who would like to notify the server that a particular event
+     * should be triggered. The default implementation of {@link QuizGame} uses `ServerGate`s, as an additional layer for
+     * game-server communication.
+     * @see ServerGate
+     * @param action the action to perform from a `GameServer` object
+     */
     void sendInputToServer(Consumer<GameServer<?>> action);
+
+    /**
+     * Remove a player of the player list, if present
+     * @param playerId the ID of the player that is to be removed
+     */
     void removePlayer(Object playerId);
 }

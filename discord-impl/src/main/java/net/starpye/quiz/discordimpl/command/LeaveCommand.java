@@ -1,7 +1,6 @@
 package net.starpye.quiz.discordimpl.command;
 
 import discord4j.common.util.Snowflake;
-import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.channel.TextChannel;
 import net.starpye.quiz.discordimpl.game.GameList;
 
@@ -16,14 +15,17 @@ public class LeaveCommand implements QuizCommand {
         Snowflake authorId = context.getAuthor().getId();
         GameList gameList = context.getGameList();
         TextChannel channel = context.getChannel();
-        if(StopConditions.shouldStop(createStopConditions(gameList, authorId), channel)) {
+
+        Map<Supplier<Boolean>, String> stopConditions = createStopConditions(gameList, authorId);
+
+        if(StopConditions.shouldStop(stopConditions, channel, context.getMessage())) {
             return;
         }
         gameList.getFromPlayer(authorId).get().removePlayer(authorId);
         channel.createMessage("Successfully left the game").block();
     }
 
-    private Map<Supplier<Boolean>, String> createStopConditions(GameList gameList, Snowflake authorId) {
+    private static Map<Supplier<Boolean>, String> createStopConditions(GameList gameList, Snowflake authorId) {
         Map<Supplier<Boolean>, String> conditions = new HashMap<>();
         conditions.put(
                 () -> !gameList.isPlaying(authorId),

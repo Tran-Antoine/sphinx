@@ -3,6 +3,8 @@ package net.starype.quiz.api.game.question;
 import net.starype.quiz.api.game.answer.Answer;
 import net.starype.quiz.api.game.answer.AnswerEvaluator;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -61,7 +63,11 @@ public class DefaultQuestion implements Question {
         if(!answerEvaluator.getValidityEvaluator().isValid(processed)) {
             return Optional.empty();
         }
-        return Optional.of(answerEvaluator.getCorrectnessEvaluator().getCorrectness(processed));
+        double correctness = answerEvaluator.getCorrectnessEvaluator().getCorrectness(processed);
+        double roundedCorrectness = BigDecimal.valueOf(correctness)
+                .setScale(3, RoundingMode.DOWN)
+                .doubleValue();
+        return Optional.of(roundedCorrectness);
     }
 
     @Override
@@ -102,7 +108,7 @@ public class DefaultQuestion implements Question {
             return this;
         }
 
-        public DefaultQuestion createDefaultQuestion() {
+        public DefaultQuestion build() {
             return new DefaultQuestion(rawText, rawAnswer, answerEvaluator, difficulty, tags);
         }
     }

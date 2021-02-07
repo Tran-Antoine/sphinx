@@ -7,11 +7,11 @@ import java.util.Map;
 
 public class FixedLeaderboardEnding implements RoundEndingPredicate, PlayersSettable {
 
-    private Map<? extends Player<?>, Double> leaderboard;
+    private Leaderboard leaderboard;
     private int playersCount;
 
-    public FixedLeaderboardEnding(LeaderboardDistribution leaderboardDistribution) {
-        this.leaderboard = leaderboardDistribution.getLeaderboard();
+    public FixedLeaderboardEnding(Leaderboard leaderboard) {
+        this.leaderboard = leaderboard;
     }
 
     @Override
@@ -20,21 +20,21 @@ public class FixedLeaderboardEnding implements RoundEndingPredicate, PlayersSett
     }
 
     private boolean fullAndOneNonGraded() {
-        if(playersCount - leaderboard.size() != 1) {
+        if(playersCount - leaderboard.getStandings().size() != 1) {
             return false;
         }
-        return leaderboard.values()
+        return leaderboard.getStandings()
                 .stream()
-                .allMatch((aDouble -> Math.abs(aDouble) < 0.001));
+                .allMatch((seat) -> Math.abs(seat.getScoreAcquired() - 1) < ScoreDistribution.EPSILON);
     }
 
     private boolean fullAndOneBelow() {
-        if(playersCount != leaderboard.size()) {
+        if(playersCount != leaderboard.getStandings().size()) {
             return false;
         }
-        return leaderboard.values()
+        return leaderboard.getStandings()
                 .stream()
-                .filter(aDouble -> Math.abs(aDouble - 1) > 0.001)
+                .filter((seat) -> Math.abs(seat.getScoreAcquired() - 1) > ScoreDistribution.EPSILON)
                 .count() == 1;
     }
 

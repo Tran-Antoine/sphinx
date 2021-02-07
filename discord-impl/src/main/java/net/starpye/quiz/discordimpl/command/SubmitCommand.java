@@ -1,10 +1,12 @@
 package net.starpye.quiz.discordimpl.command;
 
 import discord4j.common.util.Snowflake;
+import discord4j.core.object.entity.Message;
 import net.starpye.quiz.discordimpl.game.GameList;
 import net.starype.quiz.api.game.QuizGame;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -27,16 +29,20 @@ public class SubmitCommand implements QuizCommand {
         GameList gameList = context.getGameList();
         String[] args = context.getArgs();
 
-        if(StopConditions.shouldStop(createStopConditions(authorId, gameList, args), context.getChannel())) {
+        Map<Supplier<Boolean>, String> conditions = createStopConditions(authorId, gameList, args);
+        Message message = context.getMessage();
+
+        if(StopConditions.shouldStop(conditions, context.getChannel(), message)) {
             return;
         }
 
         QuizGame game = gameList.getFromPlayer(authorId).get();
         game.onInputReceived(authorId, args[1].substring(2, args[1].length()-2));
+        message.delete().block();
     }
 
-    private Map<Supplier<Boolean>, String> createStopConditions(Snowflake authorId, GameList gameList, String[] args) {
-        Map<Supplier<Boolean>, String> conditions = new HashMap<>();
+    private static Map<Supplier<Boolean>, String> createStopConditions(Snowflake authorId, GameList gameList, String[] args) {
+        Map<Supplier<Boolean>, String> conditions = new LinkedHashMap<>();
         conditions.put(
                 () -> !gameList.isPlaying(authorId),
                 "You can't submit an answer if you're not in a game");

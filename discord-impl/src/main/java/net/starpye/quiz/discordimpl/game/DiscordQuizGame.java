@@ -15,25 +15,50 @@ public class DiscordQuizGame extends SimpleGame<DiscordQuizGame> {
 
     private Set<Snowflake> votesForNext;
     private Snowflake authorId;
+    private LogContainer container;
 
-    public DiscordQuizGame(Queue<? extends GameRound> rounds, Collection<? extends Player<?>> players, ServerGate<DiscordQuizGame> gate, Snowflake authorId) {
+    public DiscordQuizGame(
+            Queue<? extends GameRound> rounds,
+            Collection<? extends Player<?>> players,
+            ServerGate<DiscordQuizGame> gate,
+            Snowflake authorId,
+            LogContainer container) {
+
         super(rounds, players);
         this.authorId = authorId;
+        this.container = container;
         this.votesForNext = new HashSet<>();
         this.setGate(gate.withGame(this));
     }
 
-    public boolean addVote(Snowflake playerId) {
+    @Override
+    public boolean nextRound() {
+        deleteLogs();
+        return super.nextRound();
+    }
+
+    public boolean addVote(Snowflake playerId, Runnable ifReady) {
         votesForNext.add(playerId);
-        if(votesForNext.size() >= getPlayers().size()) {
-            votesForNext.clear();
-            this.nextRound();
-            return true;
+        if(votesForNext.size() < getPlayers().size()) {
+            return false;
         }
-        return false;
+        votesForNext.clear();
+        if(ifReady != null) {
+            ifReady.run();
+        }
+        this.nextRound();
+        return true;
     }
 
     public boolean isAuthor(Snowflake playerId) {
         return playerId.equals(authorId);
+    }
+
+    public void deleteLogs() {
+        container.deleteMessages();
+    }
+
+    public void addLog(Snowflake id) {
+        container.trackMessage(id);
     }
 }

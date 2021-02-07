@@ -17,7 +17,7 @@ public class ClassicalRoundFactory {
         RoundState roundState = new RoundState(counter, counter);
         LeaderboardDistribution distribution = new LeaderboardDistribution(maxAwarded, roundState.getLeaderboard());
         NoGuessLeft noGuessLeft = new NoGuessLeft(counter);
-        FixedLeaderboardEnding fixedLeaderboardEnding = new FixedLeaderboardEnding(distribution);
+        FixedLeaderboardEnding fixedLeaderboardEnding = new FixedLeaderboardEnding(roundState.getLeaderboard());
 
 
         BiConsumer<RoundState, SettablePlayerGuessContext> consumer =

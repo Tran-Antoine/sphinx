@@ -69,6 +69,6 @@ public class Player<T> implements IDHolder<T>, Comparable<Player<?>> {
 
     @Override
     public int compareTo(Player<?> o) {
-        return Double.compare(this.score.getPoints(), o.score.getPoints());
+        return Double.compare(o.score.getPoints(), this.score.getPoints());
     }
 }

@@ -65,13 +65,18 @@ public class MessageInputListener implements Consumer<MessageCreateEvent> {
     private Collection<? extends QuizCommand> initCommands() {
         return Arrays.asList(
                 new CreateLobbyCommand(),
-                new JoinLobbyCommand(),
                 new StartGameCommand(),
                 new SubmitCommand(),
                 new LeaveCommand(),
                 new NextRoundCommand(),
                 new ForceNextRoundCommand(),
-                new RulesDisplayCommand()
+                new RulesDisplayCommand(),
+                new GenerateDatabaseCommand(),
+                new CompiledQuestionSetCommand(),
+                new ZipQuestionSetCommand(),
+                new QueryAddCommand(),
+                new ClearQueryCommand(),
+                new RoundAddCommand()
         );
     }
 

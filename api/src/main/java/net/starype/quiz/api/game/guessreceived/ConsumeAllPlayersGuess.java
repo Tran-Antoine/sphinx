@@ -13,7 +13,7 @@ public class ConsumeAllPlayersGuess extends ConditionalConsumer<RoundState, Sett
     @Override
     public void execute(RoundState roundState, SettablePlayerGuessContext playerGuessContext) {
         MaxGuessCounter counter = roundState.getCounter();
-        Collection<? extends IDHolder<?>> players = roundState.getLeaderboard().keySet();
+        Collection<? extends IDHolder<?>> players = roundState.getPlayers();
         for(IDHolder<?> player : players) {
             counter.consumeAllGuesses(player);
         }

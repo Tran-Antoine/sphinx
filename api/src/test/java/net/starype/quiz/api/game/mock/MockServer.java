@@ -16,9 +16,15 @@ public class MockServer implements GameServer<QuizGame> {
     @Override
     public void onRoundEnded(GameRoundReport report, QuizGame game) {
         System.out.println("Round ended. Results:");
-        System.out.println(report.rawMessages());
+        System.out.println(report.orderedStandings());
         System.out.println();
+
         game.nextRound();
+    }
+
+    @Override
+    public void onRoundStarting(QuizGame game, boolean b) {
+
     }
 
     @Override
@@ -43,7 +49,7 @@ public class MockServer implements GameServer<QuizGame> {
 
     @Override
     public void onPlayerGaveUp(Player<?> player) {
-        System.out.println("Player with ID " + player.getId() + " gave up on the question");
+        System.out.println("Player with ID " + player.getId() + " gave up on the round");
     }
 
     @Override
@@ -53,7 +59,7 @@ public class MockServer implements GameServer<QuizGame> {
 
     @Override
     public void onQuestionReleased(Question question) {
-
+        System.out.println(question.getRawQuestion());
     }
 
     public boolean isGameOver() {

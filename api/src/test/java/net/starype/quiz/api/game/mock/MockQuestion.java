@@ -44,12 +44,12 @@ public class MockQuestion implements Question {
 
     @Override
     public String getRawQuestion() {
-        return null;
+        return "How do you spell the word 'correct' ?";
     }
 
     @Override
     public String getDisplayableCorrectAnswer() {
-        return null;
+        return "correct";
     }
 
     @Override

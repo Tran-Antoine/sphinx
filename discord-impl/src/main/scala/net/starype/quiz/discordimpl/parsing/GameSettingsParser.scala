@@ -1,9 +1,14 @@
 package net.starype.quiz.discordimpl.parsing
 
 import java.util.concurrent.TimeUnit
+<<<<<<< HEAD
 import net.starype.quiz.api.game.
 {ClassicalRoundFactory, GameRound, IndividualRoundFactory, TimedRaceRoundFactory}
+=======
+
+>>>>>>> master
 import net.starype.quiz.api.game.question.Question
+import net.starype.quiz.api.game._
 
 import scala.util.parsing.combinator.RegexParsers
 
@@ -31,7 +36,7 @@ class GameSettingsParser extends RegexParsers {
         case "Classical" => new ClassicalRoundFactory().create(_, tries.get, 1)
         case "Individual" => new IndividualRoundFactory().create(_, 2)
         case "TimedRace" => new TimedRaceRoundFactory().create(_, tries.get, 1, time.get, TimeUnit.SECONDS)
-        case "Poll" => new PollRound(_, tries.get)
+        case "Poll" => new PollRoundFactory.create(_, tries.get)
       }
     }
   }

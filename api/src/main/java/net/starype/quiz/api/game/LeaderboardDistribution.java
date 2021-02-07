@@ -1,34 +1,29 @@
 package net.starype.quiz.api.game;
 
 import net.starype.quiz.api.game.player.Player;
-import net.starype.quiz.api.util.SortUtils;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiConsumer;
 
 public class LeaderboardDistribution implements ScoreDistribution {
 
     private double maxAwarded;
-    private Map<Player<?>, Double> leaderboard;
+    private Leaderboard leaderboard;
 
-    public LeaderboardDistribution(double maxAwarded, Map<Player<?>, Double> leaderboard) {
+    public LeaderboardDistribution(double maxAwarded, Leaderboard leaderboard) {
         this.maxAwarded = maxAwarded;
         this.leaderboard = leaderboard;
     }
 
     @Override
-    public Map<Player<?>, Double> applyAll(Collection<? extends Player<?>> players,
+    public List<Standing> applyAll(Collection<? extends Player<?>> players,
                                            BiConsumer<Player<?>, Double> action) {
-        Map<Player<?>, Double> scores = new HashMap<>();
-        List<SortUtils.Standing> standings = SortUtils.sortByScore(leaderboard);
+        List<Standing> scores = new ArrayList<>();
         double gapPerSeat = maxAwarded / (players.size() - 1);
 
-        int position = standings.size();
-        for (SortUtils.Standing standing : standings) {
-            scores.put(standing.getPlayer(), maxAwarded - (position * gapPerSeat));
+        int position = leaderboard.getStandings().size();
+        for (Standing standing : leaderboard.getStandings()) {
+            scores.add(new Standing(standing.getPlayer(), maxAwarded - (position * gapPerSeat)));
             action.accept(standing.getPlayer(), maxAwarded - (position * gapPerSeat));
             position--;
         }
@@ -41,8 +36,5 @@ public class LeaderboardDistribution implements ScoreDistribution {
         return null;
     }
 
-    public Map<? extends Player<?>, Double> getLeaderboard() {
-        return leaderboard;
-    }
 
 }

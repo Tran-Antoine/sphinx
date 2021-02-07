@@ -34,8 +34,8 @@ public class RaceRoundFactory {
                 .addPlayerEligibility(counter)
                 .withRoundState(roundState)
                 .withEndingCondition(noGuessLeft)
-                .addPlayerSettable(roundState)
                 .addPlayerSettable(noGuessLeft)
+                .addPlayerSettable(roundState)
                 .build();
     }
 }

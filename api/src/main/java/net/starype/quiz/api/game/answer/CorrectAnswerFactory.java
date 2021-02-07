@@ -19,7 +19,4 @@ public interface CorrectAnswerFactory {
         answersSet.add(answer);
         return createCorrectAnswer(answersSet, answerProcessor);
     }
-
-    ValidityEvaluator getValidityEvaluator();
-
 }

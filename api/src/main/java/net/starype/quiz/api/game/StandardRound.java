@@ -2,7 +2,7 @@ package net.starype.quiz.api.game;
 
 import net.starype.quiz.api.game.answer.Answer;
 import net.starype.quiz.api.game.event.Event;
-import net.starype.quiz.api.game.event.EventHandler;
+import net.starype.quiz.api.game.event.UpdatableHandler;
 import net.starype.quiz.api.game.guessreceived.GuessReceivedHead;
 import net.starype.quiz.api.game.guessreceived.RoundState;
 import net.starype.quiz.api.game.player.Player;
@@ -11,9 +11,10 @@ import net.starype.quiz.api.game.question.Question;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+
+import static net.starype.quiz.api.game.ScoreDistribution.Standing;
 
 public class StandardRound implements GameRound {
 
@@ -51,14 +52,14 @@ public class StandardRound implements GameRound {
 
     @Override
     public void start(QuizGame game, Collection<? extends Player<?>> players,
-                      EventHandler eventHandler, Consumer<GameRound> checkEndOfRound) {
+                      UpdatableHandler updatableHandler, Consumer<GameRound> checkEndOfRound) {
         this.checkEndOfRound = checkEndOfRound;
         toPlayerSet.forEach(playersSettable -> playersSettable.setPlayers(players));
         if(game != null) {
             game.sendInputToServer(server -> server.onQuestionReleased(pickedQuestion));
         }
-        events.forEach(eventHandler::registerEvent);
-        events.forEach(event -> event.start(eventHandler));
+        events.forEach(updatableHandler::registerEvent);
+        events.forEach(event -> event.start(updatableHandler));
     }
 
     @Override
@@ -100,8 +101,8 @@ public class StandardRound implements GameRound {
     }
 
     @Override
-    public GameRoundReport initReport(Map<Player<?>, Double> standings) {
-        return null;
+    public GameRoundReport initReport(List<Standing> standings) {
+        return new SimpleGameReport(standings);
     }
 
     @Override

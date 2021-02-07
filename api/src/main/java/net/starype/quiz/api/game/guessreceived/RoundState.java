@@ -1,8 +1,10 @@
 package net.starype.quiz.api.game.guessreceived;
 
 import net.starype.quiz.api.game.EntityEligibility;
+import net.starype.quiz.api.game.Leaderboard;
 import net.starype.quiz.api.game.MaxGuessCounter;
 import net.starype.quiz.api.game.PlayersSettable;
+import net.starype.quiz.api.game.ScoreDistribution.Standing;
 import net.starype.quiz.api.game.answer.Answer;
 import net.starype.quiz.api.game.player.IDHolder;
 import net.starype.quiz.api.game.player.Player;
@@ -14,9 +16,9 @@ import java.util.Map;
 public class RoundState implements PlayersSettable {
 
     /**
-     * HashMap that maps every player to its current correctness for this round
+     * Leaderboard that maps every player to its current correctness for this round
      */
-    private Map<Player<?>, Double> roundCorrectness = new HashMap<>();
+    private Leaderboard leaderboard = new Leaderboard();
 
     /**
      * Counter of guesses for this round
@@ -32,6 +34,8 @@ public class RoundState implements PlayersSettable {
      * Eligibility of the player
      */
     private EntityEligibility playerEligibility;
+
+    private Collection<? extends Player<?>> players;
 
     /**
      * Constructor of RoundState
@@ -52,10 +56,10 @@ public class RoundState implements PlayersSettable {
     }
 
     /**
-     * @return the Map which links evey players to its current correctness
+     * @return the Leaderboard which links evey players to its current correctness
      */
-    public Map<Player<?>, Double> getLeaderboard() {
-        return roundCorrectness;
+    public Leaderboard getLeaderboard() {
+        return leaderboard;
     }
 
     /**
@@ -65,10 +69,10 @@ public class RoundState implements PlayersSettable {
      * @param correctness the correctness of the player's answer
      */
     public void updateLeaderboard(Player<?> player, double correctness) {
-        if (roundCorrectness.containsKey(player)) {
-            roundCorrectness.replace(player, correctness);
+        if (leaderboard.contains(player)) {
+            leaderboard.set(player, correctness);
         } else {
-            roundCorrectness.put(player, correctness);
+            leaderboard.insertNewPlayer(new Standing(player, correctness));
         }
     }
 
@@ -78,7 +82,9 @@ public class RoundState implements PlayersSettable {
      * @param correctness the correctness corresponding to the current player
      */
     public void addCorrectnessIfNew(Player<?> player, double correctness) {
-        roundCorrectness.putIfAbsent(player, correctness);
+        if(!leaderboard.contains(player)) {
+            leaderboard.insertNewPlayer(new Standing(player, correctness));
+        }
     }
 
     /**
@@ -112,11 +118,12 @@ public class RoundState implements PlayersSettable {
         answers.putIfAbsent(player, answer);
     }
 
-
     @Override
     public void setPlayers(Collection<? extends Player<?>> players) {
-        for (Player<?> player : players) {
-            roundCorrectness.put(player, 0.0);
-        }
+        this.players = players;
+    }
+
+    public Collection<? extends Player<?>> getPlayers() {
+        return players;
     }
 }

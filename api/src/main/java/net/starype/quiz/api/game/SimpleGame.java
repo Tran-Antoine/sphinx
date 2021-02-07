@@ -1,8 +1,8 @@
 package net.starype.quiz.api.game;
 
-import net.starype.quiz.api.DefaultSimpleGame;
-import net.starype.quiz.api.game.event.EventHandler;
-import net.starype.quiz.api.game.event.GameEventHandler;
+import net.starype.quiz.api.game.ScoreDistribution.Standing;
+import net.starype.quiz.api.game.event.UpdatableHandler;
+import net.starype.quiz.api.game.event.GameUpdatableHandler;
 import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.server.GameServer;
 import net.starype.quiz.api.server.ServerGate;
@@ -16,7 +16,9 @@ import java.util.function.Supplier;
  * Main implementation of the logic of a {@link QuizGame}.
  * <p>
  * An instance of {@code SimpleGame} holds a queue of game rounds that will be played one after the other,
- * as well as a mutable player list representing the players who participate in the game.
+ * as well as a mutable player list representing the players who participate in the game. By default, once the last
+ * round is played, the game will not automatically be over but will rather wait for the next {@code nextRound} call.
+ * This can be changed by modifying {@code checkEndOfRound} to make it call {@code checkEndOfGame}.
  * <p>
  * Since the class was designed to be extended by custom implementations, the {@link ServerGate} is not created
  * internally, it must be provided either by the implementation, or externally via constructor parameter or the method
@@ -30,7 +32,7 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
     private Collection<? extends Player<?>> players;
     private final AtomicBoolean paused;
     private boolean waitingForNextRound;
-    private EventHandler eventHandler = new GameEventHandler();
+    private UpdatableHandler updatableHandler = new GameUpdatableHandler();
 
     public SimpleGame(Queue<? extends GameRound> rounds, Collection<? extends Player<?>> players) {
         this(rounds, players, null);
@@ -59,7 +61,7 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
         if(rounds.isEmpty()) {
             throw new IllegalStateException("Cannot start a game that has less than one round");
         }
-        startHead();
+        startHead(true);
     }
 
     @Override
@@ -81,20 +83,20 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
             return false;
         }
 
-        rounds.poll();
         if(rounds.isEmpty()) {
             gate.gameCallback((server, game) -> server.onGameOver(sortPlayers(), game));
-            return false;
+            return true;
         }
 
         paused.set(false);
-        startHead();
+        startHead(false);
         return true;
     }
 
-    private void startHead() {
+    private void startHead(boolean firstRound) {
         GameRound round = rounds.element();
-        round.start(this, players, eventHandler, this::checkEndOfRound);
+        gate.gameCallback((server, game) -> server.onRoundStarting(game, firstRound));
+        round.start(this, players, updatableHandler, this::checkEndOfRound);
     }
 
     @Override
@@ -104,7 +106,7 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
             return;
         }
         if(rounds.isEmpty()) {
-            throw new IllegalStateException("Cannot accept inputs after the game is over");
+            throw new IllegalStateException();
         }
 
         GameRound current = rounds.peek();
@@ -119,28 +121,37 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
         transferRequestToRound(player, message, current);
     }
 
-    private void checkEndOfRound(GameRound round) {
+    private void checkEndOfRound(GameRound current) {
         synchronized (paused) {
             if(paused.get()) {
                 return;
             }
-            GameRoundContext context = round.getContext();
+            GameRoundContext context = current.getContext();
             if (!context.getEndingCondition().ends()) {
                 return;
             }
 
+            rounds.poll();
             paused.set(true);
             waitingForNextRound = true;
 
             List<ScoreDistribution> scoreDistributions = new ArrayList<>();
             scoreDistributions.add(context.getScoreDistribution());
-            Map<Player<?>, Double> standings = updateScores(scoreDistributions.get(0));
-            round.onRoundStopped();
+
+            List<Standing> standings = updateScores(scoreDistributions.get(0));
+            current.onRoundStopped();
+
             gate.gameCallback((server, game) -> server.onRoundEnded(context.getReportCreator(standings), game));
         }
     }
 
-    private Map<Player<?>, Double> updateScores(ScoreDistribution scoreDistribution) {
+    public void checkEndOfGame() {
+        if(rounds.isEmpty()) {
+            gate.gameCallback((server, game) -> server.onGameOver(sortPlayers(), game));
+        }
+    }
+
+    private List<Standing> updateScores(ScoreDistribution scoreDistribution) {
         return scoreDistribution.applyAll(players, this::updateScore);
     }
 
@@ -190,7 +201,7 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
         if(paused.get()) {
             return;
         }
-        eventHandler.runAllEvents();
+        updatableHandler.runAllEvents();
     }
 
     @Override
@@ -231,5 +242,9 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
 
     public boolean isWaitingForNextRound() {
         return waitingForNextRound;
+    }
+
+    public boolean isOutOfRounds() {
+        return rounds.size() == 0;
     }
 }

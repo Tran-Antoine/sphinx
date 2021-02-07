@@ -1,7 +1,7 @@
 package net.starype.quiz.api.game;
 
-import net.starype.quiz.api.game.event.EventHandler;
 import net.starype.quiz.api.game.event.GameEvent;
+import net.starype.quiz.api.game.event.UpdatableHandler;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -12,7 +12,7 @@ public class Timer extends GameEvent {
     private TimeUnit unit;
     private Instant startingInstant;
     private Instant currentInstant;
-    private EventHandler eventHandler;
+    private UpdatableHandler updatableHandler;
 
     public Timer(TimeUnit unit, long time) {
         this.unit = unit;
@@ -20,9 +20,9 @@ public class Timer extends GameEvent {
     }
 
     @Override
-    public void start(EventHandler eventHandler) {
-        eventHandler.registerEvent(this);
-        this.eventHandler = eventHandler;
+    public void start(UpdatableHandler updatableHandler) {
+        updatableHandler.registerEvent(this);
+        this.updatableHandler = updatableHandler;
         this.startingInstant = Instant.now();
         this.currentInstant = Instant.now();
     }
@@ -38,6 +38,6 @@ public class Timer extends GameEvent {
     }
 
     public void shutDown() {
-        eventHandler.unregisterEvent(this);
+        updatableHandler.unregisterEvent(this);
     }
 }

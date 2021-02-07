@@ -1,29 +1,27 @@
 package net.starype.quiz.api.game;
 
-import net.starype.quiz.api.game.player.IDHolder;
 import net.starype.quiz.api.game.player.Player;
-
-import java.util.Map;
 
 public class BinaryDistribution implements ScoreDistribution {
     double threshold;
-    Map<? extends IDHolder<?>, Double> playersCorrectness;
+    Leaderboard leaderboard;
     private double scoreForWinner;
 
-    public BinaryDistribution(double threshold, Map<? extends IDHolder<?>, Double> playersCorrectness,
+    public BinaryDistribution(double threshold, Leaderboard leaderboard,
                               double scoreForWinner) {
         this.threshold = threshold;
-        this.playersCorrectness = playersCorrectness;
+        this.leaderboard = leaderboard;
         this.scoreForWinner = scoreForWinner;
     }
 
-    public BinaryDistribution(Map<? extends IDHolder<?>, Double> playersCorrectness, double scoreForWinner) {
-        this(0.5, playersCorrectness, scoreForWinner);
+    public BinaryDistribution(Leaderboard leaderboard, double scoreForWinner) {
+        this(0.5, leaderboard, scoreForWinner);
     }
 
     @Override
     public Double apply(Player<?> player) {
-        return playersCorrectness.get(player) < threshold
+        double correctness = leaderboard.getByPlayer(player).orElse(0.0);
+        return correctness < threshold
                 ? 0.0
                 : scoreForWinner;
     }

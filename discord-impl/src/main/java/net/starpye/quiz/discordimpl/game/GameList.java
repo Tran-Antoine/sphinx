@@ -8,6 +8,7 @@ import net.starpye.quiz.discordimpl.user.DiscordPlayer;
 import net.starype.quiz.api.game.GameRound;
 import net.starype.quiz.api.server.GameServer;
 import net.starype.quiz.api.server.ServerGate;
+import reactor.core.publisher.Flux;
 
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -25,17 +26,22 @@ public class GameList {
     }
 
     public void startNewGame(Collection<? extends Snowflake> playersId, Queue<? extends GameRound> rounds, TextChannel channel, Snowflake authorId) {
-        Set<DiscordPlayer> gamePlayers = playersId
-                .stream()
-                .map(id -> asPlayer(channel.getGuild().block(), id))
-                .collect(Collectors.toSet());
-        GameServer<DiscordQuizGame> server = new DiscordGameServer(channel, this::stopGame);
+        Collection<DiscordPlayer> gamePlayers = asGamePlayers(playersId, channel);
+        DiscordGameServer server = new DiscordGameServer(channel, this::stopGame);
         ServerGate<DiscordQuizGame> gate = server.createGate();
-        DiscordQuizGame game = new DiscordQuizGame(rounds, gamePlayers, gate, authorId);
+        DiscordQuizGame game = new DiscordQuizGame(rounds, gamePlayers, gate, authorId, server);
         ScheduledExecutorService task = Executors.newScheduledThreadPool(1);
         ScheduledFuture<?> future = task.scheduleAtFixedRate(game::update, 0, 250, TimeUnit.MILLISECONDS);
         game.start();
         ongoingGames.put(game, future);
+    }
+
+    private Collection<DiscordPlayer> asGamePlayers(Collection<? extends Snowflake> playersId, TextChannel channel) {
+        return Flux.fromIterable(playersId)
+                .flatMap(id -> channel.getGuild().flatMap(guild -> guild.getMemberById(id)))
+                .map(this::asPlayer)
+                .collectList()
+                .block();
     }
 
     public boolean isPlaying(Snowflake playerId) {
@@ -61,10 +67,10 @@ public class GameList {
         future.cancel(true);
     }
 
-    private DiscordPlayer asPlayer(Guild guild, Snowflake id) {
-        Member player = guild.getMemberById(id).block();
-        String userName = player.getUsername();
-        String nickName = player.getDisplayName();
+    private DiscordPlayer asPlayer(Member member) {
+        String userName = member.getUsername();
+        String nickName = member.getDisplayName();
+        Snowflake id = member.getId();
         return new DiscordPlayer(id, userName, nickName);
     }
 }

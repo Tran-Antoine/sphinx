@@ -8,7 +8,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
- * Creates an immutable connection between a server and a game object.
+ * An immutable connection between a server and a game object.
  * <p>
  * The main purpose of {@code ServerGate} is to provide a simple way for any quiz game to update the server when needed.
  * Server gates can be generated using {@link GameServer#createGate()}, then configured with {@link #withGame(QuizGame)}.
