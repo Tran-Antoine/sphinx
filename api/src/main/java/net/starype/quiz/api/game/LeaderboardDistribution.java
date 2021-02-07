@@ -33,7 +33,17 @@ public class LeaderboardDistribution implements ScoreDistribution {
 
     @Override
     public Double apply(Player<?> player) {
-        return null;
+        int playersCount = leaderboard.getStandings().size();
+
+        int position = leaderboard.getPosition(player);
+
+        if(playersCount == 1) {
+            return maxAwarded;
+        }
+
+        double gapPerSeat = maxAwarded/(playersCount - 1);
+
+        return maxAwarded - (gapPerSeat * position);
     }
 
 

@@ -44,4 +44,14 @@ public class Leaderboard {
         }
         return Optional.ofNullable(score);
     }
+
+    public int getPosition(Player<?> player) {
+        int position = 0;
+        for(int i = 0; i < standings.size(); i++) {
+            if(standings.get(i).getPlayer().equals(player)) {
+                position = i;
+            }
+        }
+        return position;
+    }
 }
