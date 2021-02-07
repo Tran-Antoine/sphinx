@@ -36,6 +36,7 @@ public class ClassicalRoundTest {
         Assert.assertTrue(context.getEndingCondition().ends());
     }
 
+    @Test
     public void round_ends_when_players_give_up() {
         UpdatableHandler updatableHandler = new GameUpdatableHandler();
         Set<Player<UUID>> players = new HashSet<>();

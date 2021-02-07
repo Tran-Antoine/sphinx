@@ -16,7 +16,7 @@ public abstract class ConditionalConsumer<T, U> implements BiConsumer<T, U>,
      * The bounded predicate of this ConditionalConsumer. This consumer will execute only if this bounded predicate
      * is true.
      */
-    BiPredicate<T, U> boundedPredicate = (t, u) -> true;
+    private BiPredicate<T, U> boundedPredicate = (t, u) -> true;
 
     /**
      * the AtomicBoolean controlled by this consumer

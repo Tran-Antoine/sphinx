@@ -18,7 +18,7 @@ public class TimedRaceRoundFactory {
         RoundState roundState = new RoundState(counter, counter);
         NoGuessLeft noGuessLeft = new NoGuessLeft(counter);
 
-        FalseToTruePredicate timeOutEnding = new FalseToTruePredicate();
+        SwitchPredicate timeOutEnding = new SwitchPredicate(false);
         Timer timer = new Timer(unit, time);
         timer.addEventListener(timeOutEnding);
 
