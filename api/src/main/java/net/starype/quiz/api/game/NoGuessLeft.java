@@ -16,7 +16,6 @@ public class NoGuessLeft implements RoundEndingPredicate, PlayerSettable {
 
     @Override
     public boolean ends() {
-        boolean value = !counter.existsEligible(players);
         return !counter.existsEligible(players);
     }
 
