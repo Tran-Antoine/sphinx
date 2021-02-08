@@ -30,7 +30,7 @@ public class RaceRoundTest {
         GameRound round = new RaceRoundFactory()
                 .create(question, 1, 1);
 
-        round.start(null, players, updatableHandler, r -> {});
+        round.start(null, players, updatableHandler);
         GameRoundContext context = round.getContext();
 
         for(Player<?> player : players) {
@@ -49,7 +49,7 @@ public class RaceRoundTest {
                 .create(new MockQuestion(factory.createCorrectAnswer(Answer.fromString("CORRECT"), new IdentityProcessor())),
                         3, 1);
 
-        round.start(null, Collections.singletonList(player), updatableHandler, r -> {});
+        round.start(null, Collections.singletonList(player), updatableHandler);
 
         RoundEndingPredicate endingPredicate = round.getContext().getEndingCondition();
 
@@ -69,7 +69,7 @@ public class RaceRoundTest {
                 .create(new MockQuestion(factory.createCorrectAnswer(Answer.fromString("CORRECT"), new IdentityProcessor())),
                         10, 1);
 
-        round.start(null, Collections.singletonList(player), updatableHandler, r -> {});
+        round.start(null, Collections.singletonList(player), updatableHandler);
 
         RoundEndingPredicate endingCondition = round.getContext().getEndingCondition();
         Assert.assertFalse(endingCondition.ends());
@@ -88,7 +88,7 @@ public class RaceRoundTest {
                 .create(new MockQuestion(factory.createCorrectAnswer(Answer.fromString("CORRECT"), new IdentityProcessor())),
                         1, pointsToAward);
 
-        round.start(null, Arrays.asList(player1, player2), updatableHandler, r -> {});
+        round.start(null, Arrays.asList(player1, player2), updatableHandler);
 
         round.onGuessReceived(player1, "CORRECT");
         ScoreDistribution scoreDistribution = round.getContext().getScoreDistribution();

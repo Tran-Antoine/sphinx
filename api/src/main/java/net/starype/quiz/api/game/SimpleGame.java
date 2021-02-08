@@ -96,7 +96,7 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
     private void startHead(boolean firstRound) {
         GameRound round = rounds.element();
         gate.gameCallback((server, game) -> server.onRoundStarting(game, firstRound));
-        round.start(this, players, updatableHandler, this::checkEndOfRound);
+        round.start(this, players, updatableHandler);
     }
 
     @Override
@@ -121,7 +121,7 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
         transferRequestToRound(player, message, current);
     }
 
-    private void checkEndOfRound(GameRound current) {
+    public void checkEndOfRound(GameRound current) {
         synchronized (paused) {
             if(paused.get()) {
                 return;

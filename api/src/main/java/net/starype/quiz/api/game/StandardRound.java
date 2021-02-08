@@ -24,7 +24,7 @@ public class StandardRound implements GameRound {
     private List<EntityEligibility> playerEligibilities;
     private RoundState roundState;
     private Collection<Event> events;
-    private Consumer<GameRound> checkEndOfRound;
+    private Consumer<GameRound> checkEndOfRound = gameRound -> {};
     private Collection<PlayerSettable> toPlayerSet;
 
     private GuessReceivedHead guessReceivedHead;
@@ -52,11 +52,11 @@ public class StandardRound implements GameRound {
 
     @Override
     public void start(QuizGame game, Collection<? extends Player<?>> players,
-                      UpdatableHandler updatableHandler, Consumer<GameRound> checkEndOfRound) {
-        this.checkEndOfRound = checkEndOfRound;
+                      UpdatableHandler updatableHandler) {
         toPlayerSet.forEach(playerSettable -> playerSettable.setPlayers(players));
         if(game != null) {
             game.sendInputToServer(server -> server.onQuestionReleased(pickedQuestion));
+            this.checkEndOfRound = gameRound -> game.checkEndOfRound(this);
         }
         events.forEach(updatableHandler::registerEvent);
         events.forEach(event -> event.start(updatableHandler));

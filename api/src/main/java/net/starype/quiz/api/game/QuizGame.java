@@ -118,4 +118,13 @@ public interface QuizGame {
      * @param playerId the ID of the player that is to be removed
      */
     void removePlayer(Object playerId);
+
+    /**
+     * Require the game to check whether the current round is over. Even though usually called internally, the method
+     * can also be called when an exterior factor may make the round terminate. Timers are a good example, since they
+     * should usually be handled externally.
+     * @param current the current round
+     */
+    void checkEndOfRound(GameRound current);
+
 }

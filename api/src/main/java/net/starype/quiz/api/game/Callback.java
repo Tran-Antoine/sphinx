@@ -1,10 +1,10 @@
 package net.starype.quiz.api.game;
 
-public class CheckEndOfRound implements EventListener {
+public class Callback implements EventListener {
 
     Runnable callback;
 
-    public CheckEndOfRound(Runnable callback) {
+    public Callback(Runnable callback) {
         this.callback = callback;
     }
 

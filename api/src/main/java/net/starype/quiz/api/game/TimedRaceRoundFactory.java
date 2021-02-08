@@ -41,7 +41,7 @@ public class TimedRaceRoundFactory {
                 .addPlayerSettable(roundState)
                 .build();
 
-        timer.addEventListener(new CheckEndOfRound(round::checkEndOfRound));
+        timer.addEventListener(new Callback(round::checkEndOfRound));
 
         return round;
     }
