@@ -15,9 +15,6 @@ public class ClassicalRoundFactory {
         MaxGuessCounter counter = new MaxGuessCounter(maxGuesses);
         RoundState roundState = new RoundState(counter, counter);
         LeaderboardDistribution distribution = new LeaderboardDistribution(maxAwarded, roundState.getLeaderboard());
-        NoGuessLeft noGuessLeft = new NoGuessLeft(counter);
-        FixedLeaderboardEnding fixedLeaderboardEnding = new FixedLeaderboardEnding(roundState.getLeaderboard());
-
 
         GuessReceivedAction consumer =
                 new InvalidateCurrentPlayerCorrectness().linkTo(isGuessEmptyPredicate)
@@ -36,10 +33,7 @@ public class ClassicalRoundFactory {
                 .addScoreDistribution(distribution)
                 .addPlayerEligibility(counter)
                 .withRoundState(roundState)
-                .withEndingCondition(noGuessLeft.or(fixedLeaderboardEnding))
-                .addPlayerSettable(noGuessLeft)
-                .addPlayerSettable(fixedLeaderboardEnding)
-                .addPlayerSettable(roundState)
+                .withEndingCondition(new NoGuessLeft().or(new FixedLeaderboardEnding()))
                 .build();
     }
 }

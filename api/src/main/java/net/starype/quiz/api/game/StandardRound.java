@@ -25,7 +25,6 @@ public class StandardRound implements GameRound {
     private RoundState roundState;
     private Collection<Event> events;
     private Consumer<GameRound> checkEndOfRound = gameRound -> {};
-    private Collection<PlayerSettable> toPlayerSet;
 
     private GuessReceivedHead guessReceivedHead;
     private GuessReceivedAction guessReceivedAction;
@@ -37,7 +36,7 @@ public class StandardRound implements GameRound {
                          GuessReceivedAction giveUpReceivedConsumer,
                          List<ScoreDistribution> scoreDistributions, RoundEndingPredicate endingCondition,
                          List<EntityEligibility> playerEligibilities, RoundState roundState,
-                         Collection<Event> events, Collection<PlayerSettable> toPlayersSet) {
+                         Collection<Event> events) {
         this.pickedQuestion = pickedQuestion;
         this.guessReceivedHead = guessReceivedHead;
         this.guessReceivedAction = GuessReceivedAction;
@@ -47,17 +46,17 @@ public class StandardRound implements GameRound {
         this.playerEligibilities = playerEligibilities;
         this.roundState = roundState;
         this.events = events;
-        this.toPlayerSet = toPlayersSet;
     }
 
     @Override
     public void start(QuizGame game, Collection<? extends Player<?>> players,
                       UpdatableHandler updatableHandler) {
-        toPlayerSet.forEach(playerSettable -> playerSettable.setPlayers(players));
+        roundState.initPlayers(players);
         if(game != null) {
             game.sendInputToServer(server -> server.onQuestionReleased(pickedQuestion));
             this.checkEndOfRound = gameRound -> game.checkEndOfRound(this);
         }
+        endingCondition.initRoundState(roundState);
         events.forEach(updatableHandler::registerEvent);
         events.forEach(event -> event.start(updatableHandler));
     }
@@ -125,7 +124,6 @@ public class StandardRound implements GameRound {
         private List<EntityEligibility> playerEligibility = new ArrayList<>();
         private RoundState roundState;
         private Collection<Event> events = new ArrayList<>();
-        private Collection<PlayerSettable> playerSettables = new ArrayList<>();
 
         public Builder withGuessReceivedAction(GuessReceivedAction guessReceivedAction) {
             this.guessReceivedAction = guessReceivedAction;
@@ -172,15 +170,10 @@ public class StandardRound implements GameRound {
             return this;
         }
 
-        public Builder addPlayerSettable(PlayerSettable playerSettable) {
-            playerSettables.add(playerSettable);
-            return this;
-        }
-
         public StandardRound build() {
             return new StandardRound(question, guessReceivedHead, guessReceivedAction,
                     giveUpReceivedConsumer, scoreDistributions, endingPredicate,
-                    playerEligibility, roundState, events, playerSettables);
+                    playerEligibility, roundState, events);
         }
 
     }

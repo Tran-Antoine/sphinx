@@ -13,7 +13,6 @@ public class IndividualRoundFactory {
 
         MaxGuessCounter counter = new MaxGuessCounter(1);
         RoundState roundState = new RoundState(counter, counter);
-        NoGuessLeft noGuessLeft = new NoGuessLeft(counter);
 
         GuessReceivedAction consumer =
                 new InvalidateCurrentPlayerCorrectness().linkTo(isGuessEmptyPredicate)
@@ -27,12 +26,10 @@ public class IndividualRoundFactory {
                 .withGuessReceivedAction(consumer)
                 .withGiveUpReceivedConsumer(new AddCorrectnessIfNew())
                 .withRoundState(roundState)
-                .withEndingCondition(noGuessLeft)
+                .withEndingCondition(new NoGuessLeft())
                 .withQuestion(question)
                 .addScoreDistribution(new OneTryDistribution(maxToAward))
                 .addPlayerEligibility(counter)
-                .addPlayerSettable(roundState)
-                .addPlayerSettable(noGuessLeft)
                 .build();
     }
 }

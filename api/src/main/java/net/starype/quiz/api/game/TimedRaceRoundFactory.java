@@ -15,7 +15,6 @@ public class TimedRaceRoundFactory {
 
         MaxGuessCounter counter = new MaxGuessCounter(maxGuesses);
         RoundState roundState = new RoundState(counter, counter);
-        NoGuessLeft noGuessLeft = new NoGuessLeft(counter);
 
         SwitchPredicate timeOutEnding = new SwitchPredicate(false);
         Timer timer = new Timer(unit, time);
@@ -36,9 +35,7 @@ public class TimedRaceRoundFactory {
                 .addPlayerEligibility(counter)
                 .withRoundState(roundState)
                 .addEvent(timer)
-                .withEndingCondition(noGuessLeft.or(timeOutEnding))
-                .addPlayerSettable(noGuessLeft)
-                .addPlayerSettable(roundState)
+                .withEndingCondition(new NoGuessLeft().or(timeOutEnding))
                 .build();
 
         timer.addEventListener(new Callback(round::checkEndOfRound));

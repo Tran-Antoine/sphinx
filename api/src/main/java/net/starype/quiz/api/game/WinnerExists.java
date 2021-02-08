@@ -1,5 +1,6 @@
 package net.starype.quiz.api.game;
 
+import net.starype.quiz.api.game.guessreceived.RoundState;
 import net.starype.quiz.api.game.player.IDHolder;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -15,5 +16,10 @@ public class WinnerExists implements RoundEndingPredicate {
     @Override
     public boolean ends() {
         return container.get() != null;
+    }
+
+    @Override
+    public void initRoundState(RoundState roundState) {
+
     }
 }

@@ -13,7 +13,6 @@ public class RaceRoundFactory {
 
         MaxGuessCounter counter = new MaxGuessCounter(maxGuesses);
         RoundState roundState = new RoundState(counter, counter);
-        NoGuessLeft noGuessLeft = new NoGuessLeft(counter);
 
         GuessReceivedAction consumer =
                 new InvalidateCurrentPlayerCorrectness().linkTo(isGuessEmptyPredicate)
@@ -32,9 +31,7 @@ public class RaceRoundFactory {
                 .addScoreDistribution(new BinaryDistribution(roundState.getLeaderboard(), scoreForWinner))
                 .addPlayerEligibility(counter)
                 .withRoundState(roundState)
-                .withEndingCondition(noGuessLeft)
-                .addPlayerSettable(noGuessLeft)
-                .addPlayerSettable(roundState)
+                .withEndingCondition(new NoGuessLeft())
                 .build();
     }
 }

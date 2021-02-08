@@ -7,7 +7,6 @@ public class PollRoundFactory {
     public StandardRound create(Question question, int maxGuesses) {
         MaxGuessCounter counter = new MaxGuessCounter(maxGuesses);
         RoundState roundState = new RoundState(counter, counter);
-        NoGuessLeft noGuessLeft = new NoGuessLeft(counter);
 
         GuessReceivedAction consumer =
                 new IncrementPlayerGuess()
@@ -22,9 +21,7 @@ public class PollRoundFactory {
                 .addScoreDistribution(new ZeroScoreDistribution())
                 .addPlayerEligibility(counter)
                 .withRoundState(roundState)
-                .withEndingCondition(noGuessLeft)
-                .addPlayerSettable(noGuessLeft)
-                .addPlayerSettable(roundState)
+                .withEndingCondition(new NoGuessLeft())
                 .build();
     }
 }

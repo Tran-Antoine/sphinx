@@ -1,17 +1,11 @@
 package net.starype.quiz.api.game;
 
-import net.starype.quiz.api.game.player.Player;
+import net.starype.quiz.api.game.guessreceived.RoundState;
 
-import java.util.Collection;
-
-public class FixedLeaderboardEnding implements RoundEndingPredicate, PlayerSettable {
+public class FixedLeaderboardEnding implements RoundEndingPredicate {
 
     private Leaderboard leaderboard;
     private int playersCount;
-
-    public FixedLeaderboardEnding(Leaderboard leaderboard) {
-        this.leaderboard = leaderboard;
-    }
 
     @Override
     public boolean ends() {
@@ -38,7 +32,8 @@ public class FixedLeaderboardEnding implements RoundEndingPredicate, PlayerSetta
     }
 
     @Override
-    public void setPlayers(Collection<? extends Player<?>> players) {
-        this.playersCount = players.size();
+    public void initRoundState(RoundState roundState) {
+        this.leaderboard = roundState.getLeaderboard();
+        this.playersCount = roundState.getPlayers().size();
     }
 }
