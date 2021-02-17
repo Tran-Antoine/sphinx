@@ -11,8 +11,7 @@ import java.util.function.Consumer;
  * the correctness, the current {@link RoundState}, etc.
  * This function is generally called before the {@link ConditionalConsumer}.
  */
-public abstract class GuessReceivedHead implements Consumer<GuessReceivedParameters>,
-        BooleanController {
+public abstract class GuessReceivedHead implements Consumer<GuessReceivedParameters> {
 
     boolean controlledBoolean = false;
 
@@ -20,7 +19,6 @@ public abstract class GuessReceivedHead implements Consumer<GuessReceivedParamet
         controlledBoolean = newValue;
     }
 
-    @Override
     public boolean value() {
         return controlledBoolean;
     }

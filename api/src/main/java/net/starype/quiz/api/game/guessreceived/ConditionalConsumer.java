@@ -9,7 +9,7 @@ import java.util.function.BiPredicate;
  * this ConditionalConsumer will execute only if the bounded BiPredicate is true. The ConditionalConsumer
  * may also control the value of a boolean to enable/disable the execution of other ConditionalConsumer.
  */
-public abstract class ConditionalConsumer implements GuessReceivedAction, BooleanController {
+public abstract class ConditionalConsumer implements GuessReceivedAction {
 
     /**
      * The bounded predicate of this ConditionalConsumer. This consumer will execute only if this bounded predicate
@@ -28,7 +28,6 @@ public abstract class ConditionalConsumer implements GuessReceivedAction, Boolea
         }
     }
 
-    @Override
     public boolean value() {
         return controlledBoolean;
     }
@@ -39,7 +38,6 @@ public abstract class ConditionalConsumer implements GuessReceivedAction, Boolea
         return this;
     }
 
-    @Override
     public void setControlledBoolean(boolean newValue) {
         controlledBoolean = newValue;
     }
