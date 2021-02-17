@@ -17,8 +17,6 @@ public abstract class ConditionalConsumer implements GuessReceivedAction {
      */
     private BiPredicate<RoundState, MutableGuessContext> boundedPredicate = (t, u) -> true;
 
-    boolean controlledBoolean = false;
-
     public abstract void execute(RoundState t, MutableGuessContext u);
 
     @Override
@@ -28,17 +26,9 @@ public abstract class ConditionalConsumer implements GuessReceivedAction {
         }
     }
 
-    public boolean value() {
-        return controlledBoolean;
-    }
-
     public ConditionalConsumer linkTo(BiPredicate<RoundState,
             MutableGuessContext> biPredicate) {
         boundedPredicate = biPredicate;
         return this;
-    }
-
-    public void setControlledBoolean(boolean newValue) {
-        controlledBoolean = newValue;
     }
 }
