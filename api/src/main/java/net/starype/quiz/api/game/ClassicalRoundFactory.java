@@ -14,13 +14,13 @@ public class ClassicalRoundFactory {
         LeaderboardDistribution distribution = new LeaderboardDistribution(maxAwarded, roundState.getLeaderboard());
 
         GuessReceivedAction consumer =
-                new InvalidateCurrentPlayerCorrectness().linkTo(isGuessEmpty)
-                        .followedBy(new MakePlayerEligible().linkTo(isGuessEmpty))
-                        .followedBy(new IncrementPlayerGuess().linkTo(isGuessEmpty.negate()))
-                        .followedBy(new UpdateLeaderboard().linkTo(isGuessEmpty.negate()
+                new InvalidateCurrentPlayerCorrectness().withCondition(isGuessEmpty)
+                        .followedBy(new MakePlayerEligible().withCondition(isGuessEmpty))
+                        .followedBy(new IncrementPlayerGuess().withCondition(isGuessEmpty.negate()))
+                        .followedBy(new UpdateLeaderboard().withCondition(isGuessEmpty.negate()
                                 .and(new IsCorrectnessZero().negate())))
-                        .followedBy(new ConsumePlayerGuess().linkTo(isGuessEmpty.negate().and(new IsCorrectnessZero())))
-                        .followedBy(new UpdatePlayerEligibility().linkTo(isGuessEmpty.negate()));
+                        .followedBy(new ConsumePlayerGuess().withCondition(isGuessEmpty.negate().and(new IsCorrectnessZero())))
+                        .followedBy(new UpdatePlayerEligibility().withCondition(isGuessEmpty.negate()));
 
         return new StandardRound.Builder()
                 .withGuessReceivedAction(consumer)

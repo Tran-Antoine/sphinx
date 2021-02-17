@@ -12,13 +12,13 @@ public class RaceRoundFactory {
         RoundState roundState = new RoundState(counter, counter);
 
         GuessReceivedAction consumer =
-                new InvalidateCurrentPlayerCorrectness().linkTo(isGuessEmpty)
-                        .followedBy(new MakePlayerEligible().linkTo(isGuessEmpty))
-                        .followedBy(new IncrementPlayerGuess().linkTo(isGuessEmpty.negate()))
+                new InvalidateCurrentPlayerCorrectness().withCondition(isGuessEmpty)
+                        .followedBy(new MakePlayerEligible().withCondition(isGuessEmpty))
+                        .followedBy(new IncrementPlayerGuess().withCondition(isGuessEmpty.negate()))
                         .followedBy(new ConsumeAllPlayersGuess()
-                                .linkTo(new IsCorrectnessOne().and(isGuessEmpty.negate())))
-                        .followedBy(new UpdatePlayerEligibility().linkTo(isGuessEmpty.negate())
-                        .followedBy(new UpdateLeaderboard().linkTo(isGuessEmpty.negate())));
+                                .withCondition(new IsCorrectnessOne().and(isGuessEmpty.negate())))
+                        .followedBy(new UpdatePlayerEligibility().withCondition(isGuessEmpty.negate())
+                        .followedBy(new UpdateLeaderboard().withCondition(isGuessEmpty.negate())));
 
         return new StandardRound.Builder()
                 .withGuessReceivedAction(consumer)

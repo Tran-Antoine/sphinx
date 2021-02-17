@@ -26,7 +26,7 @@ public abstract class SimpleReceivedAction implements GuessReceivedAction {
         }
     }
 
-    public SimpleReceivedAction linkTo(BiPredicate<RoundState,
+    public SimpleReceivedAction withCondition(BiPredicate<RoundState,
             MutableGuessContext> biPredicate) {
         boundedPredicate = biPredicate;
         return this;

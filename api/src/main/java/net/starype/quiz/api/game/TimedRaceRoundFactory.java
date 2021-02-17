@@ -19,9 +19,9 @@ public class TimedRaceRoundFactory {
         timer.addEventListener(timeOutEnding);
 
         GuessReceivedAction consumer =
-                new InvalidateCurrentPlayerCorrectness().linkTo(isGuessEmpty)
+                new InvalidateCurrentPlayerCorrectness().withCondition(isGuessEmpty)
                         .followedBy(new IncrementPlayerGuess())
-                        .followedBy(new ConsumeAllPlayersGuess().linkTo(new IsCorrectnessOne()))
+                        .followedBy(new ConsumeAllPlayersGuess().withCondition(new IsCorrectnessOne()))
                         .followedBy(new UpdatePlayerEligibility());
 
         StandardRound round = new StandardRound.Builder()
