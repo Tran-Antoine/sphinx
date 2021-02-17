@@ -24,8 +24,8 @@ public class IndividualRoundFactory {
                 .withRoundState(roundState)
                 .withEndingCondition(new NoGuessLeft())
                 .withQuestion(question)
-                .addScoreDistribution(new OneTryDistribution(maxToAward))
-                .addPlayerEligibility(counter)
+                .withScoreDistribution(new OneTryDistribution(maxToAward))
+                .withPlayerEligibility(counter)
                 .build();
     }
 }

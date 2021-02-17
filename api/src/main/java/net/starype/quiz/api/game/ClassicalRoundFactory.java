@@ -26,8 +26,8 @@ public class ClassicalRoundFactory {
                 .withGuessReceivedAction(consumer)
                 .withGiveUpReceivedConsumer(new ConsumePlayerGuess())
                 .withQuestion(question)
-                .addScoreDistribution(distribution)
-                .addPlayerEligibility(counter)
+                .withScoreDistribution(distribution)
+                .withPlayerEligibility(counter)
                 .withRoundState(roundState)
                 .withEndingCondition(new NoGuessLeft().or(new FixedLeaderboardEnding()))
                 .build();

@@ -135,12 +135,9 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
             paused.set(true);
             waitingForNextRound = true;
 
-            List<ScoreDistribution> scoreDistributions = new ArrayList<>();
-            scoreDistributions.add(context.getScoreDistribution());
 
-            List<Standing> standings = updateScores(scoreDistributions.get(0));
+            List<Standing> standings = updateScores(context);
             current.onRoundStopped();
-
             gate.gameCallback((server, game) -> server.onRoundEnded(context.getReportCreator(standings), game));
         }
     }
@@ -151,7 +148,8 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
         }
     }
 
-    private List<Standing> updateScores(ScoreDistribution scoreDistribution) {
+    private List<Standing> updateScores(GameRoundContext context) {
+        ScoreDistribution scoreDistribution = context.getScoreDistribution();
         return scoreDistribution.applyAll(players, this::updateScore);
     }
 

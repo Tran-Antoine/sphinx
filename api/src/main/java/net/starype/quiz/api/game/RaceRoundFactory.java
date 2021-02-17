@@ -24,8 +24,8 @@ public class RaceRoundFactory {
                 .withGuessReceivedAction(consumer)
                 .withGiveUpReceivedConsumer(new ConsumePlayerGuess())
                 .withQuestion(question)
-                .addScoreDistribution(new BinaryDistribution(roundState.getLeaderboard(), scoreForWinner))
-                .addPlayerEligibility(counter)
+                .withScoreDistribution(new BinaryDistribution(roundState.getLeaderboard(), scoreForWinner))
+                .withPlayerEligibility(counter)
                 .withRoundState(roundState)
                 .withEndingCondition(new NoGuessLeft())
                 .build();

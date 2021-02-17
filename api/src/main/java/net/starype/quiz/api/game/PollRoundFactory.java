@@ -18,8 +18,8 @@ public class PollRoundFactory {
                 .withGuessReceivedAction(consumer)
                 .withGiveUpReceivedConsumer(new ConsumePlayerGuess())
                 .withQuestion(question)
-                .addScoreDistribution(new ZeroScoreDistribution())
-                .addPlayerEligibility(counter)
+                .withScoreDistribution(new ZeroScoreDistribution())
+                .withPlayerEligibility(counter)
                 .withRoundState(roundState)
                 .withEndingCondition(new NoGuessLeft())
                 .build();

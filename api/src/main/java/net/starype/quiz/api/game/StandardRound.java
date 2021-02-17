@@ -19,29 +19,29 @@ import static net.starype.quiz.api.game.ScoreDistribution.Standing;
 public class StandardRound implements GameRound {
 
     private Question pickedQuestion;
-    private List<ScoreDistribution> scoreDistributions;
+    private ScoreDistribution scoreDistribution;
     private RoundEndingPredicate endingCondition;
-    private List<EntityEligibility> playerEligibilities;
+    private EntityEligibility playerEligibility;
     private RoundState roundState;
     private Collection<Event> events;
     private Consumer<GameRound> checkEndOfRound = gameRound -> {};
 
     private GuessReceivedAction guessReceivedAction;
 
-    private GuessReceivedAction giveupReceivedAction;
+    private GuessReceivedAction giveUpReceivedAction;
 
     public StandardRound(Question pickedQuestion,
                          GuessReceivedAction GuessReceivedAction,
-                         GuessReceivedAction giveupReceivedAction,
-                         List<ScoreDistribution> scoreDistributions, RoundEndingPredicate endingCondition,
-                         List<EntityEligibility> playerEligibilities, RoundState roundState,
+                         GuessReceivedAction giveUpReceivedAction,
+                         ScoreDistribution scoreDistribution, RoundEndingPredicate endingCondition,
+                         EntityEligibility playerEligibility, RoundState roundState,
                          Collection<Event> events) {
         this.pickedQuestion = pickedQuestion;
         this.guessReceivedAction = GuessReceivedAction;
-        this.giveupReceivedAction = giveupReceivedAction;
-        this.scoreDistributions = scoreDistributions;
+        this.giveUpReceivedAction = giveUpReceivedAction;
+        this.scoreDistribution = scoreDistribution;
         this.endingCondition = endingCondition;
-        this.playerEligibilities = playerEligibilities;
+        this.playerEligibility = playerEligibility;
         this.roundState = roundState;
         this.events = events;
     }
@@ -77,7 +77,7 @@ public class StandardRound implements GameRound {
 
     @Override
     public void onGiveUpReceived(Player<?> source) {
-        giveupReceivedAction.accept(roundState, new MutableGuessContext(source, 0.0, false,
+        giveUpReceivedAction.accept(roundState, new MutableGuessContext(source, 0.0, false,
                 Answer.fromString(""), false));
     }
 
@@ -88,7 +88,7 @@ public class StandardRound implements GameRound {
 
     @Override
     public EntityEligibility initPlayerEligibility() {
-        return playerEligibilities.get(0);
+        return playerEligibility;
     }
 
     @Override
@@ -98,7 +98,7 @@ public class StandardRound implements GameRound {
 
     @Override
     public ScoreDistribution initScoreDistribution() {
-        return scoreDistributions.get(0);
+        return scoreDistribution;
     }
 
     @Override
@@ -118,11 +118,11 @@ public class StandardRound implements GameRound {
 
     public static class Builder {
         private GuessReceivedAction guessReceivedAction;
-        private GuessReceivedAction giveupReceivedAction;
-        private List<ScoreDistribution> scoreDistributions = new ArrayList<>();
+        private GuessReceivedAction giveUpReceivedAction;
+        private ScoreDistribution scoreDistribution;
         private Question question;
         private RoundEndingPredicate endingPredicate;
-        private List<EntityEligibility> playerEligibility = new ArrayList<>();
+        private EntityEligibility playerEligibility;
         private RoundState roundState;
         private Collection<Event> events = new ArrayList<>();
 
@@ -132,7 +132,7 @@ public class StandardRound implements GameRound {
         }
 
         public Builder withGiveUpReceivedConsumer(GuessReceivedAction giveUpReceivedConsumer) {
-            this.giveupReceivedAction = giveUpReceivedConsumer;
+            this.giveUpReceivedAction = giveUpReceivedConsumer;
             return this;
         }
 
@@ -141,8 +141,8 @@ public class StandardRound implements GameRound {
             return this;
         }
 
-        public Builder addScoreDistribution(ScoreDistribution scoreDistribution) {
-            scoreDistributions.add(scoreDistribution);
+        public Builder withScoreDistribution(ScoreDistribution scoreDistribution) {
+            this.scoreDistribution = scoreDistribution;
             return this;
         }
 
@@ -156,8 +156,8 @@ public class StandardRound implements GameRound {
             return this;
         }
 
-        public Builder addPlayerEligibility(EntityEligibility playerEligibility) {
-            this.playerEligibility.add(playerEligibility);
+        public Builder withPlayerEligibility(EntityEligibility playerEligibility) {
+            this.playerEligibility = playerEligibility;
             return this;
         }
 
@@ -168,7 +168,7 @@ public class StandardRound implements GameRound {
 
         public StandardRound build() {
             return new StandardRound(question, guessReceivedAction,
-                    giveupReceivedAction, scoreDistributions, endingPredicate,
+                    giveUpReceivedAction, scoreDistribution, endingPredicate,
                     playerEligibility, roundState, events);
         }
 

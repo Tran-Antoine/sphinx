@@ -11,12 +11,10 @@ public class MutableGuessContext implements PlayerGuessContext {
     private Answer answer;
     private boolean isAnswerValid;
 
-    public MutableGuessContext(Player<?> player, Double correctness, boolean eligibility, Answer answer,
+    public MutableGuessContext(Player<?> player, double correctness, boolean eligibility, Answer answer,
                                boolean isAnswerValid) {
         this.player = player;
-        if(correctness != null) {
-            this.correctness = correctness;
-        }
+        this.correctness = correctness;
         this.eligibility = eligibility;
         this.answer = answer;
         this.isAnswerValid = isAnswerValid;
