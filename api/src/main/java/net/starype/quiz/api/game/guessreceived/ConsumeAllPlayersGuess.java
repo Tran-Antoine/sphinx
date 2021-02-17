@@ -7,9 +7,9 @@ import net.starype.quiz.api.game.player.IDHolder;
 import java.util.Collection;
 
 /**
- * ConditionalConsumer that consumes every guesses from every players of the round
+ * SimpleReceivedAction that consumes every guesses from every players of the round
  */
-public class ConsumeAllPlayersGuess extends ConditionalConsumer {
+public class ConsumeAllPlayersGuess extends SimpleReceivedAction {
     @Override
     public void execute(RoundState roundState, MutableGuessContext playerGuessContext) {
         MaxGuessCounter counter = roundState.getCounter();

@@ -9,7 +9,7 @@ import java.util.function.Consumer;
  * The first function called in {@link net.starype.quiz.api.game.StandardRound#onGuessReceived(Player, String)}
  * This function process the answer given by the player and the information related to this answer such as
  * the correctness, the current {@link RoundState}, etc.
- * This function is generally called before the {@link ConditionalConsumer}.
+ * This function is generally called before the {@link SimpleReceivedAction}.
  */
 public abstract class GuessReceivedHead implements Consumer<GuessReceivedParameters> {
 
