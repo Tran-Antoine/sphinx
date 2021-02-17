@@ -26,7 +26,10 @@ public class ClassicalRoundTest {
         GameRound round = new ClassicalRoundFactory()
                 .create(new MockQuestion(), 3, 1);
 
-        round.start(null, players, updatableHandler);
+        Queue<GameRound> rounds = new LinkedList<>();
+        rounds.add(round);
+
+        round.start(new SimpleGame<>(rounds, players), players, updatableHandler);
         GameRoundContext context = round.getContext();
 
         for(Player<?> player : players) {
@@ -46,7 +49,10 @@ public class ClassicalRoundTest {
         GameRound round = new ClassicalRoundFactory()
                 .create(new MockQuestion(), 3, 1);
 
-        round.start(null, players, updatableHandler);
+        Queue<GameRound> rounds = new LinkedList<>();
+        rounds.add(round);
+
+        round.start(new SimpleGame<>(rounds, players), players, updatableHandler);
         GameRoundContext context = round.getContext();
 
         for(Player<?> player : players) {
@@ -70,7 +76,10 @@ public class ClassicalRoundTest {
         GameRound round = new ClassicalRoundFactory()
                 .create(new MockQuestion(), 3, 1);
 
-        round.start(null, players, updatableHandler);
+        Queue<GameRound> rounds = new LinkedList<>();
+        rounds.add(round);
+
+        round.start(new SimpleGame<>(rounds, players), players, updatableHandler);
 
         round.onGuessReceived(player1, "correct");
         round.onGuessReceived(player2, "kinda-correct");

@@ -71,9 +71,9 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
         }
 
         return rounds.peek()
-        .getContext()
-        .getEndingCondition()
-        .ends();
+                .getContext()
+                .getEndingCondition()
+                .ends();
     }
 
     @Override

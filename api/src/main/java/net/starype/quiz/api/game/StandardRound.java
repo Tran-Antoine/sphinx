@@ -53,6 +53,8 @@ public class StandardRound implements GameRound {
         if(game != null) {
             game.sendInputToServer(server -> server.onQuestionReleased(pickedQuestion));
             this.checkEndOfRound = gameRound -> game.checkEndOfRound(this);
+        } else {
+            throw new IllegalStateException("Game cannot be null");
         }
         endingCondition.initRoundState(roundState);
         events.forEach(updatableHandler::registerEvent);
