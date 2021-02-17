@@ -1,6 +1,6 @@
 package net.starype.quiz.api.game;
 
-import net.starype.quiz.api.game.guessreceived.*;
+import net.starype.quiz.api.game.round.*;
 import net.starype.quiz.api.game.question.Question;
 
 public class RaceRoundFactory {

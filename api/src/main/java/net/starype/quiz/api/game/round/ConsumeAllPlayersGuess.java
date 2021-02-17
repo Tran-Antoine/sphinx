@@ -1,4 +1,4 @@
-package net.starype.quiz.api.game.guessreceived;
+package net.starype.quiz.api.game.round;
 
 import net.starype.quiz.api.game.MaxGuessCounter;
 import net.starype.quiz.api.game.MutableGuessContext;

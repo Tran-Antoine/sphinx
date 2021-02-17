@@ -1,6 +1,6 @@
 package net.starype.quiz.api.game;
 
-import net.starype.quiz.api.game.guessreceived.RoundState;
+import net.starype.quiz.api.game.round.RoundState;
 
 public class GuessReceivedParameters {
 

@@ -3,8 +3,8 @@ package net.starype.quiz.api.game;
 import net.starype.quiz.api.game.answer.Answer;
 import net.starype.quiz.api.game.event.Event;
 import net.starype.quiz.api.game.event.UpdatableHandler;
-import net.starype.quiz.api.game.guessreceived.GuessReceivedAction;
-import net.starype.quiz.api.game.guessreceived.RoundState;
+import net.starype.quiz.api.game.round.GuessReceivedAction;
+import net.starype.quiz.api.game.round.RoundState;
 import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.question.Question;
 

@@ -1,4 +1,4 @@
-package net.starype.quiz.api.game.guessreceived;
+package net.starype.quiz.api.game.round;
 
 import net.starype.quiz.api.game.EntityEligibility;
 import net.starype.quiz.api.game.Leaderboard;
@@ -93,11 +93,7 @@ public class RoundState {
      * @param answer the answer corresponding to the current player
      */
     public void updateRoundAnswers(Player<?> player, Answer answer) {
-        if(answers.containsKey(player)) {
-            answers.replace(player, answer);
-        } else {
-            answers.put(player, answer);
-        }
+        answers.put(player, answer);
     }
 
     /**
