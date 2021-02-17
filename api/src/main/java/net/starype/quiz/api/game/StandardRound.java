@@ -4,7 +4,6 @@ import net.starype.quiz.api.game.answer.Answer;
 import net.starype.quiz.api.game.event.Event;
 import net.starype.quiz.api.game.event.UpdatableHandler;
 import net.starype.quiz.api.game.guessreceived.GuessReceivedAction;
-import net.starype.quiz.api.game.guessreceived.GuessReceivedHead;
 import net.starype.quiz.api.game.guessreceived.RoundState;
 import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.question.Question;
@@ -12,6 +11,7 @@ import net.starype.quiz.api.game.question.Question;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import static net.starype.quiz.api.game.ScoreDistribution.Standing;
@@ -26,21 +26,19 @@ public class StandardRound implements GameRound {
     private Collection<Event> events;
     private Consumer<GameRound> checkEndOfRound = gameRound -> {};
 
-    private GuessReceivedHead guessReceivedHead;
     private GuessReceivedAction guessReceivedAction;
 
-    private GuessReceivedAction giveUpReceivedConsumer;
+    private GuessReceivedAction giveupReceivedAction;
 
-    public StandardRound(Question pickedQuestion, GuessReceivedHead guessReceivedHead,
+    public StandardRound(Question pickedQuestion,
                          GuessReceivedAction GuessReceivedAction,
-                         GuessReceivedAction giveUpReceivedConsumer,
+                         GuessReceivedAction giveupReceivedAction,
                          List<ScoreDistribution> scoreDistributions, RoundEndingPredicate endingCondition,
                          List<EntityEligibility> playerEligibilities, RoundState roundState,
                          Collection<Event> events) {
         this.pickedQuestion = pickedQuestion;
-        this.guessReceivedHead = guessReceivedHead;
         this.guessReceivedAction = GuessReceivedAction;
-        this.giveUpReceivedConsumer = giveUpReceivedConsumer;
+        this.giveupReceivedAction = giveupReceivedAction;
         this.scoreDistributions = scoreDistributions;
         this.endingCondition = endingCondition;
         this.playerEligibilities = playerEligibilities;
@@ -63,10 +61,13 @@ public class StandardRound implements GameRound {
 
     @Override
     public PlayerGuessContext onGuessReceived(Player<?> source, String message) {
-        Double correctness = pickedQuestion.evaluateAnswer(Answer.fromString(message)).orElse(null);
-        MutableGuessContext playerGuessContext = new MutableGuessContext(source, correctness, false);
 
-        guessReceivedHead.accept(new GuessReceivedParameters(message, correctness, roundState, playerGuessContext));
+        Optional<Double> optCorrectness = pickedQuestion.evaluateAnswer(Answer.fromString(message));
+
+
+        MutableGuessContext playerGuessContext = new MutableGuessContext(source, optCorrectness.orElse(0.0), false,
+                Answer.fromString(message), optCorrectness.isPresent());
+
         guessReceivedAction.accept(roundState, playerGuessContext);
 
         checkEndOfRound();
@@ -76,7 +77,8 @@ public class StandardRound implements GameRound {
 
     @Override
     public void onGiveUpReceived(Player<?> source) {
-        giveUpReceivedConsumer.accept(roundState, new MutableGuessContext(source, 0.0, false));
+        giveupReceivedAction.accept(roundState, new MutableGuessContext(source, 0.0, false,
+                Answer.fromString(""), false));
     }
 
     @Override
@@ -115,9 +117,8 @@ public class StandardRound implements GameRound {
     }
 
     public static class Builder {
-        private GuessReceivedHead guessReceivedHead;
         private GuessReceivedAction guessReceivedAction;
-        private GuessReceivedAction giveUpReceivedConsumer;
+        private GuessReceivedAction giveupReceivedAction;
         private List<ScoreDistribution> scoreDistributions = new ArrayList<>();
         private Question question;
         private RoundEndingPredicate endingPredicate;
@@ -130,13 +131,8 @@ public class StandardRound implements GameRound {
             return this;
         }
 
-        public Builder withGuessReceivedHead(GuessReceivedHead guessReceivedHead) {
-            this.guessReceivedHead = guessReceivedHead;
-            return this;
-        }
-
         public Builder withGiveUpReceivedConsumer(GuessReceivedAction giveUpReceivedConsumer) {
-            this.giveUpReceivedConsumer = giveUpReceivedConsumer;
+            this.giveupReceivedAction = giveUpReceivedConsumer;
             return this;
         }
 
@@ -171,8 +167,8 @@ public class StandardRound implements GameRound {
         }
 
         public StandardRound build() {
-            return new StandardRound(question, guessReceivedHead, guessReceivedAction,
-                    giveUpReceivedConsumer, scoreDistributions, endingPredicate,
+            return new StandardRound(question, guessReceivedAction,
+                    giveupReceivedAction, scoreDistributions, endingPredicate,
                     playerEligibility, roundState, events);
         }
 

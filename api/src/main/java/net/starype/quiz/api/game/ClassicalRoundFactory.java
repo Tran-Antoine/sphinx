@@ -3,30 +3,26 @@ package net.starype.quiz.api.game;
 import net.starype.quiz.api.game.guessreceived.*;
 import net.starype.quiz.api.game.question.Question;
 
-import java.util.function.BiPredicate;
-
 public class ClassicalRoundFactory {
 
     public StandardRound create(Question question, double maxAwarded, int maxGuesses) {
 
         IsGuessEmpty isGuessEmpty = new IsGuessEmpty();
-        BiPredicate<RoundState, MutableGuessContext> isGuessEmptyPredicate = (t, u) -> isGuessEmpty.value();
 
         MaxGuessCounter counter = new MaxGuessCounter(maxGuesses);
         RoundState roundState = new RoundState(counter, counter);
         LeaderboardDistribution distribution = new LeaderboardDistribution(maxAwarded, roundState.getLeaderboard());
 
         GuessReceivedAction consumer =
-                new InvalidateCurrentPlayerCorrectness().linkTo(isGuessEmptyPredicate)
-                        .followedBy(new MakePlayerEligible().linkTo(isGuessEmptyPredicate))
-                        .followedBy(new IncrementPlayerGuess().linkTo(isGuessEmptyPredicate.negate()))
-                        .followedBy(new UpdateLeaderboard().linkTo(isGuessEmptyPredicate.negate()
+                new InvalidateCurrentPlayerCorrectness().linkTo(isGuessEmpty)
+                        .followedBy(new MakePlayerEligible().linkTo(isGuessEmpty))
+                        .followedBy(new IncrementPlayerGuess().linkTo(isGuessEmpty.negate()))
+                        .followedBy(new UpdateLeaderboard().linkTo(isGuessEmpty.negate()
                                 .and(new IsCorrectnessZero().negate())))
-                        .followedBy(new ConsumePlayerGuess().linkTo(isGuessEmptyPredicate.negate().and(new IsCorrectnessZero())))
-                        .followedBy(new UpdatePlayerEligibility().linkTo(isGuessEmptyPredicate.negate()));
+                        .followedBy(new ConsumePlayerGuess().linkTo(isGuessEmpty.negate().and(new IsCorrectnessZero())))
+                        .followedBy(new UpdatePlayerEligibility().linkTo(isGuessEmpty.negate()));
 
         return new StandardRound.Builder()
-                .withGuessReceivedHead(isGuessEmpty)
                 .withGuessReceivedAction(consumer)
                 .withGiveUpReceivedConsumer(new ConsumePlayerGuess())
                 .withQuestion(question)

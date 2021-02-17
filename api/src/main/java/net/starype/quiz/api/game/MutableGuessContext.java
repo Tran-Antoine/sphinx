@@ -1,5 +1,6 @@
 package net.starype.quiz.api.game;
 
+import net.starype.quiz.api.game.answer.Answer;
 import net.starype.quiz.api.game.player.Player;
 
 public class MutableGuessContext implements PlayerGuessContext {
@@ -7,13 +8,18 @@ public class MutableGuessContext implements PlayerGuessContext {
     private Player<?> player;
     private double correctness;
     private boolean eligibility;
+    private Answer answer;
+    private boolean isAnswerValid;
 
-    public MutableGuessContext(Player<?> player, Double correctness, boolean eligibility) {
+    public MutableGuessContext(Player<?> player, Double correctness, boolean eligibility, Answer answer,
+                               boolean isAnswerValid) {
         this.player = player;
         if(correctness != null) {
             this.correctness = correctness;
         }
         this.eligibility = eligibility;
+        this.answer = answer;
+        this.isAnswerValid = isAnswerValid;
     }
 
     public double getCorrectness() {
@@ -22,6 +28,16 @@ public class MutableGuessContext implements PlayerGuessContext {
 
     public Player<?> getPlayer() {
         return player;
+    }
+
+    @Override
+    public boolean isAnswerValid() {
+        return isAnswerValid;
+    }
+
+    @Override
+    public Answer getAnswer() {
+        return answer;
     }
 
     public boolean isEligible() {

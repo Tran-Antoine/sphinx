@@ -9,12 +9,12 @@ public class PollRoundFactory {
         RoundState roundState = new RoundState(counter, counter);
 
         GuessReceivedAction consumer =
-                new IncrementPlayerGuess()
+                new UpdateAnswers()
+                .followedBy(new IncrementPlayerGuess())
                 .followedBy(new UpdatePlayerEligibility());
 
 
         return new StandardRound.Builder()
-                .withGuessReceivedHead(new UpdateAnswers())
                 .withGuessReceivedAction(consumer)
                 .withGiveUpReceivedConsumer(new ConsumePlayerGuess())
                 .withQuestion(question)
