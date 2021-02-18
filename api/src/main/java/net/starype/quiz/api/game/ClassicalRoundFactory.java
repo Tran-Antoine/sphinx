@@ -5,7 +5,7 @@ import net.starype.quiz.api.game.question.Question;
 
 public class ClassicalRoundFactory {
 
-    public StandardRound create(Question question, double maxAwarded, int maxGuesses) {
+    public GameRound create(Question question, double maxAwarded, int maxGuesses) {
 
         IsGuessValid isGuessValid = new IsGuessValid();
 

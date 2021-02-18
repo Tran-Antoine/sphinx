@@ -10,8 +10,8 @@ public class GameFactory {
 
     public static QuizGame createRaceGame(Player<?> player, GameServer<? super QuizGame> server) {
 
-        StandardRound raceRound = new RaceRoundFactory().create(new MockQuestion(), 2, 1.5);
-        StandardRound raceRound2 = new RaceRoundFactory().create(new MockQuestion(), 2, 1.5);
+        GameRound raceRound = new RaceRoundFactory().create(new MockQuestion(), 2, 1.5);
+        GameRound raceRound2 = new RaceRoundFactory().create(new MockQuestion(), 2, 1.5);
 
         Queue<GameRound> rounds = new LinkedList<>(Arrays.asList(raceRound, raceRound2));
 
