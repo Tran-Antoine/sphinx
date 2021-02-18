@@ -12,7 +12,8 @@ import org.junit.Test;
 
 import java.util.*;
 
-import static net.starype.quiz.api.game.ScoreDistribution.*;
+import static net.starype.quiz.api.game.ScoreDistribution.EPSILON;
+import static net.starype.quiz.api.game.ScoreDistribution.Standing;
 
 public class ClassicalRoundTest {
 
@@ -32,13 +33,12 @@ public class ClassicalRoundTest {
         rounds.add(round);
 
         round.start(new SimpleGame<>(rounds, players), players, updatableHandler);
-        GameRoundContext context = round.getContext();
 
         for(Player<?> player : players) {
             round.onGuessReceived(player, "incorrect");
         }
 
-        Assert.assertTrue(context.getEndingCondition().ends());
+        Assert.assertTrue(round.hasRoundEnded());
     }
 
     @Test
@@ -55,13 +55,12 @@ public class ClassicalRoundTest {
         rounds.add(round);
 
         round.start(new SimpleGame<>(rounds, players), players, updatableHandler);
-        GameRoundContext context = round.getContext();
 
         for(Player<?> player : players) {
             round.onGiveUpReceived(player);
         }
 
-        Assert.assertTrue(context.getEndingCondition().ends());
+        Assert.assertTrue(round.hasRoundEnded());
     }
 
     @Test

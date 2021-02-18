@@ -11,13 +11,9 @@ public class NoGuessLeft implements RoundEndingPredicate {
     private Collection<? extends IDHolder<?>> players;
 
     @Override
-    public boolean ends() {
-        return !counter.existsEligible(players);
-    }
-
-    @Override
-    public void initRoundState(RoundState roundState) {
+    public boolean ends(RoundState roundState) {
         this.counter = roundState.getCounter();
         this.players = roundState.getPlayers();
+        return !counter.existsEligible(players);
     }
 }

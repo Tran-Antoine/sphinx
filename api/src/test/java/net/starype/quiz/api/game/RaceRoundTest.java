@@ -34,13 +34,12 @@ public class RaceRoundTest {
         rounds.add(round);
 
         round.start(new SimpleGame<>(rounds, players), players, updatableHandler);
-        GameRoundContext context = round.getContext();
 
         for(Player<?> player : players) {
             round.onGuessReceived(player, "INCORRECT-ANSWER");
         }
 
-        Assert.assertTrue(context.getEndingCondition().ends());
+        Assert.assertTrue(round.hasRoundEnded());
     }
 
     @Test
@@ -58,13 +57,11 @@ public class RaceRoundTest {
         round.start(new SimpleGame<>(rounds, Collections.singletonList(player)),
                 Collections.singletonList(player), updatableHandler);
 
-        RoundEndingPredicate endingPredicate = round.getContext().getEndingCondition();
-
-        Assert.assertFalse(endingPredicate.ends());
+        Assert.assertFalse(round.hasRoundEnded());
         round.onGuessReceived(player, "INCORRECT ANSWER");
-        Assert.assertFalse(endingPredicate.ends());
+        Assert.assertFalse(round.hasRoundEnded());
         round.onGuessReceived(player, "CORRECT");
-        Assert.assertTrue(endingPredicate.ends());
+        Assert.assertTrue(round.hasRoundEnded());
     }
 
     @Test
@@ -82,10 +79,9 @@ public class RaceRoundTest {
         round.start(new SimpleGame<>(rounds, Collections.singletonList(player)),
                 Collections.singletonList(player), updatableHandler);
 
-        RoundEndingPredicate endingCondition = round.getContext().getEndingCondition();
-        Assert.assertFalse(endingCondition.ends());
+        Assert.assertFalse(round.hasRoundEnded());
         round.onGiveUpReceived(player);
-        Assert.assertTrue(endingCondition.ends());
+        Assert.assertTrue(round.hasRoundEnded());
     }
 
     @Test

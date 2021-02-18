@@ -1,8 +1,8 @@
 package net.starype.quiz.api.game;
 
 import net.starype.quiz.api.game.ScoreDistribution.Standing;
-import net.starype.quiz.api.game.event.UpdatableHandler;
 import net.starype.quiz.api.game.event.GameUpdatableHandler;
+import net.starype.quiz.api.game.event.UpdatableHandler;
 import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.server.GameServer;
 import net.starype.quiz.api.server.ServerGate;
@@ -70,10 +70,7 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
             return true;
         }
 
-        return rounds.peek()
-                .getContext()
-                .getEndingCondition()
-                .ends();
+        return rounds.peek().hasRoundEnded();
     }
 
     @Override
@@ -121,13 +118,14 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
         transferRequestToRound(player, message, current);
     }
 
+    @Override
     public void checkEndOfRound(GameRound current) {
         synchronized (paused) {
             if(paused.get()) {
                 return;
             }
             GameRoundContext context = current.getContext();
-            if (!context.getEndingCondition().ends()) {
+            if (!current.hasRoundEnded()) {
                 return;
             }
 

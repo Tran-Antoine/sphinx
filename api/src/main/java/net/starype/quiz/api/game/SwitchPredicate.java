@@ -10,12 +10,9 @@ public class SwitchPredicate implements RoundEndingPredicate, EventListener {
     }
 
     @Override
-    public boolean ends() {
+    public boolean ends(RoundState roundState) {
         return state;
     }
-
-    @Override
-    public void initRoundState(RoundState roundState) {}
 
     @Override
     public void onNotified() {

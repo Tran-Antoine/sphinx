@@ -8,7 +8,9 @@ public class FixedLeaderboardEnding implements RoundEndingPredicate {
     private int playersCount;
 
     @Override
-    public boolean ends() {
+    public boolean ends(RoundState roundState) {
+        this.leaderboard = roundState.getLeaderboard();
+        this.playersCount = roundState.getPlayers().size();
         return fullAndOneNonGraded() || fullAndOneBelow();
     }
 
@@ -31,9 +33,4 @@ public class FixedLeaderboardEnding implements RoundEndingPredicate {
                 .count() == 1;
     }
 
-    @Override
-    public void initRoundState(RoundState roundState) {
-        this.leaderboard = roundState.getLeaderboard();
-        this.playersCount = roundState.getPlayers().size();
-    }
 }

@@ -56,7 +56,6 @@ public class StandardRound implements GameRound {
         } else {
             throw new IllegalStateException("Game cannot be null");
         }
-        endingCondition.initRoundState(roundState);
         updatables.forEach(updatableHandler::registerEvent);
         updatables.forEach(event -> event.start(updatableHandler));
     }
@@ -106,6 +105,10 @@ public class StandardRound implements GameRound {
     @Override
     public GameRoundReport initReport(List<Standing> standings) {
         return new SimpleGameReport(standings);
+    }
+
+    public boolean hasRoundEnded() {
+        return endingCondition.ends(roundState);
     }
 
     @Override

@@ -20,10 +20,12 @@ public class MutableGuessContext implements PlayerGuessContext {
         this.isAnswerValid = isAnswerValid;
     }
 
+    @Override
     public double getCorrectness() {
         return correctness;
     }
 
+    @Override
     public Player<?> getPlayer() {
         return player;
     }
@@ -38,6 +40,7 @@ public class MutableGuessContext implements PlayerGuessContext {
         return answer;
     }
 
+    @Override
     public boolean isEligible() {
         return eligibility;
     }
