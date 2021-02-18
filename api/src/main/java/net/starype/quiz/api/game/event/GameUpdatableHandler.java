@@ -1,14 +1,11 @@
 package net.starype.quiz.api.game.event;
 
-import net.starype.quiz.api.game.EventListener;
-
 import java.util.Collection;
 import java.util.LinkedList;
 
 public class GameUpdatableHandler implements UpdatableHandler {
 
     private long lastMillis;
-    private Collection<EventListener> eventListeners;
     private Collection<Updatable> eventsList;
 
     public GameUpdatableHandler() {

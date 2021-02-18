@@ -1,7 +1,7 @@
 package net.starype.quiz.api.game;
 
 import net.starype.quiz.api.game.answer.Answer;
-import net.starype.quiz.api.game.event.Event;
+import net.starype.quiz.api.game.event.Updatable;
 import net.starype.quiz.api.game.event.UpdatableHandler;
 import net.starype.quiz.api.game.round.GuessReceivedAction;
 import net.starype.quiz.api.game.round.RoundState;
@@ -23,7 +23,7 @@ public class StandardRound implements GameRound {
     private RoundEndingPredicate endingCondition;
     private EntityEligibility playerEligibility;
     private RoundState roundState;
-    private Collection<Event> events;
+    private Collection<Updatable> updatables;
     private Consumer<GameRound> checkEndOfRound = gameRound -> {};
 
     private GuessReceivedAction guessReceivedAction;
@@ -35,7 +35,7 @@ public class StandardRound implements GameRound {
                          GuessReceivedAction giveUpReceivedAction,
                          ScoreDistribution scoreDistribution, RoundEndingPredicate endingCondition,
                          EntityEligibility playerEligibility, RoundState roundState,
-                         Collection<Event> events) {
+                         Collection<Updatable> updatables) {
         this.pickedQuestion = pickedQuestion;
         this.guessReceivedAction = GuessReceivedAction;
         this.giveUpReceivedAction = giveUpReceivedAction;
@@ -43,7 +43,7 @@ public class StandardRound implements GameRound {
         this.endingCondition = endingCondition;
         this.playerEligibility = playerEligibility;
         this.roundState = roundState;
-        this.events = events;
+        this.updatables = updatables;
     }
 
     @Override
@@ -57,8 +57,8 @@ public class StandardRound implements GameRound {
             throw new IllegalStateException("Game cannot be null");
         }
         endingCondition.initRoundState(roundState);
-        events.forEach(updatableHandler::registerEvent);
-        events.forEach(event -> event.start(updatableHandler));
+        updatables.forEach(updatableHandler::registerEvent);
+        updatables.forEach(event -> event.start(updatableHandler));
     }
 
     @Override
@@ -110,7 +110,7 @@ public class StandardRound implements GameRound {
 
     @Override
     public void onRoundStopped() {
-        events.forEach((Event::shutDown));
+        updatables.forEach((Updatable::shutDown));
     }
 
     @Override
@@ -126,7 +126,7 @@ public class StandardRound implements GameRound {
         private RoundEndingPredicate endingPredicate;
         private EntityEligibility playerEligibility;
         private RoundState roundState;
-        private Collection<Event> events = new ArrayList<>();
+        private Collection<Updatable> updatables = new ArrayList<>();
 
         public Builder withGuessReceivedAction(GuessReceivedAction guessReceivedAction) {
             this.guessReceivedAction = guessReceivedAction;
@@ -163,15 +163,15 @@ public class StandardRound implements GameRound {
             return this;
         }
 
-        public Builder addEvent(Event event) {
-            events.add(event);
+        public Builder addEvent(Updatable updatable) {
+            updatables.add(updatable);
             return this;
         }
 
         public StandardRound build() {
             return new StandardRound(question, guessReceivedAction,
                     giveUpReceivedAction, scoreDistribution, endingPredicate,
-                    playerEligibility, roundState, events);
+                    playerEligibility, roundState, updatables);
         }
 
     }

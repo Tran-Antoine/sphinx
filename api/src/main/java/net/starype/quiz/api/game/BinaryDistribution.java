@@ -3,8 +3,8 @@ package net.starype.quiz.api.game;
 import net.starype.quiz.api.game.player.Player;
 
 public class BinaryDistribution implements ScoreDistribution {
-    double threshold;
-    Leaderboard leaderboard;
+    private double threshold;
+    private Leaderboard leaderboard;
     private double scoreForWinner;
 
     public BinaryDistribution(double threshold, Leaderboard leaderboard,

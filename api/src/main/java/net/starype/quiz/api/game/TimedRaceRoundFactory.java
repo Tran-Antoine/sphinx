@@ -1,5 +1,6 @@
 package net.starype.quiz.api.game;
 
+import net.starype.quiz.api.game.event.GameUpdatable;
 import net.starype.quiz.api.game.round.*;
 import net.starype.quiz.api.game.question.Question;
 
@@ -15,8 +16,8 @@ public class TimedRaceRoundFactory {
         RoundState roundState = new RoundState(counter, counter);
 
         SwitchPredicate timeOutEnding = new SwitchPredicate(false);
-        Timer timer = new Timer(unit, time);
-        timer.addEventListener(timeOutEnding);
+        GameUpdatable quizTimer = new QuizTimer(unit, time);
+        quizTimer.addEventListener(timeOutEnding);
 
         GuessReceivedAction consumer =
                 new InvalidateCurrentPlayerCorrectness().withCondition(isGuessValid)
@@ -31,11 +32,11 @@ public class TimedRaceRoundFactory {
                 .withScoreDistribution(new BinaryDistribution(roundState.getLeaderboard(), scoreForWinner))
                 .withPlayerEligibility(counter)
                 .withRoundState(roundState)
-                .addEvent(timer)
+                .addEvent(quizTimer)
                 .withEndingCondition(new NoGuessLeft().or(timeOutEnding))
                 .build();
 
-        timer.addEventListener(new Callback(round::checkEndOfRound));
+        quizTimer.addEventListener(round::checkEndOfRound);
 
         return round;
     }
