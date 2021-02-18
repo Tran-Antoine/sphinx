@@ -36,13 +36,12 @@ public class Leaderboard {
     }
 
     public Optional<Double> getByPlayer(Player<?> player) {
-        Double score = null;
         for(Standing standing : standings) {
             if(standing.getPlayer().equals(player)) {
-                score = standing.getScoreAcquired();
+                return Optional.of(standing.getScoreAcquired());
             }
         }
-        return Optional.ofNullable(score);
+        return Optional.empty();
     }
 
     public int getPosition(Player<?> player) {
