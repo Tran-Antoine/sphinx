@@ -32,7 +32,7 @@ public class Leaderboard {
     }
 
     public List<? extends Standing> getStandings() {
-        return standings;
+        return new ArrayList<>(standings);
     }
 
     public Optional<Double> getByPlayer(Player<?> player) {
