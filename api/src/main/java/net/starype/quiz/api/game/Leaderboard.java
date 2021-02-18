@@ -36,12 +36,9 @@ public class Leaderboard {
     }
 
     public Optional<Double> getByPlayer(Player<?> player) {
-        for(Standing standing : standings) {
-            if(standing.getPlayer().equals(player)) {
-                return Optional.of(standing.getScoreAcquired());
-            }
-        }
-        return Optional.empty();
+        return standings.stream().filter(standing -> standing.getPlayer().equals(player))
+                .findAny()
+                .map(Standing::getScoreAcquired);
     }
 
     public int getPosition(Player<?> player) {

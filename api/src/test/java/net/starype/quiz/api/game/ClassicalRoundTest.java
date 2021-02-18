@@ -12,6 +12,8 @@ import org.junit.Test;
 
 import java.util.*;
 
+import static net.starype.quiz.api.game.ScoreDistribution.*;
+
 public class ClassicalRoundTest {
 
     private static CorrectAnswerFactory factory = new WordAnswerFactory();
@@ -70,11 +72,12 @@ public class ClassicalRoundTest {
         Player<UUID> player2 = new MockPlayer();
         Player<UUID> player3 = new MockPlayer();
         Player<UUID> player4 = new MockPlayer();
+        Player<UUID> player5 = new MockPlayer();
 
-        List<Player<UUID>> players = Arrays.asList(player1, player2, player3, player4);
+        List<Player<UUID>> players = Arrays.asList(player1, player2, player3, player4, player5);
 
         GameRound round = new ClassicalRoundFactory()
-                .create(new MockQuestion(), 3, 1);
+                .create(new MockQuestion(), 4, 1);
 
         Queue<GameRound> rounds = new LinkedList<>();
         rounds.add(round);
@@ -84,19 +87,27 @@ public class ClassicalRoundTest {
         round.onGuessReceived(player1, "correct");
         round.onGuessReceived(player2, "kinda-correct");
         round.onGuessReceived(player3, "pretty-correct");
-        round.onGuessReceived(player4, "correct");
 
         ScoreDistribution scoreDistribution = round.initScoreDistribution();
 
-        double score1 = scoreDistribution.apply(player1);
-        double score2 = scoreDistribution.apply(player2);
-        double score3 = scoreDistribution.apply(player3);
-        double score4 = scoreDistribution.apply(player4);
+        List<Standing> standings = scoreDistribution.applyAll(players, (player, score) -> {});
 
-        Assert.assertEquals(3, score1, ScoreDistribution.EPSILON);
-        Assert.assertEquals(0, score2, ScoreDistribution.EPSILON);
-        Assert.assertEquals(1, score3, ScoreDistribution.EPSILON);
-        Assert.assertEquals(2, score4, ScoreDistribution.EPSILON);
+        double score1 = standings.get(0).getScoreAcquired();
+        double score2 = standings.get(1).getScoreAcquired();
+        double score3 = standings.get(2).getScoreAcquired();
+        double score4 = standings.get(3).getScoreAcquired();
+        double score5 = standings.get(4).getScoreAcquired();
 
+        Assert.assertEquals(player1, standings.get(0).getPlayer());
+        Assert.assertEquals(player3, standings.get(1).getPlayer());
+        Assert.assertEquals(player2, standings.get(2).getPlayer());
+        Assert.assertEquals(player4, standings.get(3).getPlayer());
+        Assert.assertEquals(player5, standings.get(4).getPlayer());
+
+        Assert.assertEquals(4, score1, EPSILON);
+        Assert.assertEquals(3, score2, EPSILON);
+        Assert.assertEquals(2, score3, EPSILON);
+        Assert.assertEquals(0, score4, EPSILON);
+        Assert.assertEquals(0, score5, EPSILON);
     }
 }

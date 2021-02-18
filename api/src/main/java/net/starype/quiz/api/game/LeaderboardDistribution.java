@@ -2,13 +2,15 @@ package net.starype.quiz.api.game;
 
 import net.starype.quiz.api.game.player.Player;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
 import java.util.function.BiConsumer;
 
 public class LeaderboardDistribution implements ScoreDistribution {
 
     private double maxAwarded;
     private Leaderboard leaderboard;
+    private int playersCount = 0;
 
     public LeaderboardDistribution(double maxAwarded, Leaderboard leaderboard) {
         this.maxAwarded = maxAwarded;
@@ -17,23 +19,16 @@ public class LeaderboardDistribution implements ScoreDistribution {
 
     @Override
     public List<Standing> applyAll(Collection<? extends Player<?>> players,
-                                           BiConsumer<Player<?>, Double> action) {
-        List<Standing> scores = new ArrayList<>();
-        double gapPerSeat = maxAwarded / (players.size() - 1);
-
-        int position = leaderboard.getStandings().size();
-        for (Standing standing : leaderboard.getStandings()) {
-            scores.add(new Standing(standing.getPlayer(), maxAwarded - (position * gapPerSeat)));
-            action.accept(standing.getPlayer(), maxAwarded - (position * gapPerSeat));
-            position--;
-        }
-
-        return scores;
+                                   BiConsumer<Player<?>, Double> action) {
+        this.playersCount = players.size();
+        return ScoreDistribution.super.applyAll(players, action);
     }
 
     @Override
     public Double apply(Player<?> player) {
-        int playersCount = leaderboard.getStandings().size();
+        if(!leaderboard.contains(player)) {
+            return 0.0;
+        }
 
         int position = leaderboard.getPosition(player);
 
@@ -45,6 +40,5 @@ public class LeaderboardDistribution implements ScoreDistribution {
 
         return maxAwarded - (gapPerSeat * position);
     }
-
 
 }
