@@ -7,20 +7,20 @@ public class ClassicalRoundFactory {
 
     public StandardRound create(Question question, double maxAwarded, int maxGuesses) {
 
-        IsGuessEmpty isGuessEmpty = new IsGuessEmpty();
+        IsGuessValid isGuessValid = new IsGuessValid();
 
         MaxGuessCounter counter = new MaxGuessCounter(maxGuesses);
         RoundState roundState = new RoundState(counter, counter);
         LeaderboardDistribution distribution = new LeaderboardDistribution(maxAwarded, roundState.getLeaderboard());
 
         GuessReceivedAction consumer =
-                new InvalidateCurrentPlayerCorrectness().withCondition(isGuessEmpty)
-                        .followedBy(new MakePlayerEligible().withCondition(isGuessEmpty))
-                        .followedBy(new IncrementPlayerGuess().withCondition(isGuessEmpty.negate()))
-                        .followedBy(new UpdateLeaderboard().withCondition(isGuessEmpty.negate()
+                new InvalidateCurrentPlayerCorrectness().withCondition(isGuessValid)
+                        .followedBy(new MakePlayerEligible().withCondition(isGuessValid))
+                        .followedBy(new IncrementPlayerGuess().withCondition(isGuessValid.negate()))
+                        .followedBy(new UpdateLeaderboard().withCondition(isGuessValid.negate()
                                 .and(new IsCorrectnessZero().negate())))
-                        .followedBy(new ConsumePlayerGuess().withCondition(isGuessEmpty.negate().and(new IsCorrectnessZero())))
-                        .followedBy(new UpdatePlayerEligibility().withCondition(isGuessEmpty.negate()));
+                        .followedBy(new ConsumePlayerGuess().withCondition(isGuessValid.negate().and(new IsCorrectnessZero())))
+                        .followedBy(new UpdatePlayerEligibility().withCondition(isGuessValid.negate()));
 
         return new StandardRound.Builder()
                 .withGuessReceivedAction(consumer)

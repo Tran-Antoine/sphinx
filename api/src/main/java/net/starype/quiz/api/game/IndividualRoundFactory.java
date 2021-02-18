@@ -6,17 +6,17 @@ import net.starype.quiz.api.game.question.Question;
 public class IndividualRoundFactory {
     public StandardRound create(Question question, double maxToAward) {
 
-        IsGuessEmpty isGuessEmpty = new IsGuessEmpty();
+        IsGuessValid isGuessValid = new IsGuessValid();
 
         MaxGuessCounter counter = new MaxGuessCounter(1);
         RoundState roundState = new RoundState(counter, counter);
 
         GuessReceivedAction consumer =
-                new InvalidateCurrentPlayerCorrectness().withCondition(isGuessEmpty)
-                        .followedBy(new MakePlayerEligible().withCondition(isGuessEmpty))
-                        .followedBy(new UpdateLeaderboard().withCondition(isGuessEmpty.negate()))
-                        .followedBy(new IncrementPlayerGuess().withCondition(isGuessEmpty.negate()))
-                        .followedBy(new UpdatePlayerEligibility().withCondition(isGuessEmpty.negate()));
+                new InvalidateCurrentPlayerCorrectness().withCondition(isGuessValid)
+                        .followedBy(new MakePlayerEligible().withCondition(isGuessValid))
+                        .followedBy(new UpdateLeaderboard().withCondition(isGuessValid.negate()))
+                        .followedBy(new IncrementPlayerGuess().withCondition(isGuessValid.negate()))
+                        .followedBy(new UpdatePlayerEligibility().withCondition(isGuessValid.negate()));
 
         return new StandardRound.Builder()
                 .withGuessReceivedAction(consumer)

@@ -9,7 +9,7 @@ public class TimedRaceRoundFactory {
     public StandardRound create(Question question, int maxGuesses,
                                 double scoreForWinner, long time, TimeUnit unit) {
 
-        IsGuessEmpty isGuessEmpty = new IsGuessEmpty();
+        IsGuessValid isGuessValid = new IsGuessValid();
 
         MaxGuessCounter counter = new MaxGuessCounter(maxGuesses);
         RoundState roundState = new RoundState(counter, counter);
@@ -19,7 +19,7 @@ public class TimedRaceRoundFactory {
         timer.addEventListener(timeOutEnding);
 
         GuessReceivedAction consumer =
-                new InvalidateCurrentPlayerCorrectness().withCondition(isGuessEmpty)
+                new InvalidateCurrentPlayerCorrectness().withCondition(isGuessValid)
                         .followedBy(new IncrementPlayerGuess())
                         .followedBy(new ConsumeAllPlayersGuess().withCondition(new IsCorrectnessOne()))
                         .followedBy(new UpdatePlayerEligibility());

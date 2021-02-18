@@ -6,19 +6,19 @@ import net.starype.quiz.api.game.question.Question;
 public class RaceRoundFactory {
     public StandardRound create(Question question, int maxGuesses, double scoreForWinner) {
 
-        IsGuessEmpty isGuessEmpty = new IsGuessEmpty();
+        IsGuessValid isGuessValid = new IsGuessValid();
 
         MaxGuessCounter counter = new MaxGuessCounter(maxGuesses);
         RoundState roundState = new RoundState(counter, counter);
 
         GuessReceivedAction consumer =
-                new InvalidateCurrentPlayerCorrectness().withCondition(isGuessEmpty)
-                        .followedBy(new MakePlayerEligible().withCondition(isGuessEmpty))
-                        .followedBy(new IncrementPlayerGuess().withCondition(isGuessEmpty.negate()))
+                new InvalidateCurrentPlayerCorrectness().withCondition(isGuessValid)
+                        .followedBy(new MakePlayerEligible().withCondition(isGuessValid))
+                        .followedBy(new IncrementPlayerGuess().withCondition(isGuessValid.negate()))
                         .followedBy(new ConsumeAllPlayersGuess()
-                                .withCondition(new IsCorrectnessOne().and(isGuessEmpty.negate())))
-                        .followedBy(new UpdatePlayerEligibility().withCondition(isGuessEmpty.negate())
-                        .followedBy(new UpdateLeaderboard().withCondition(isGuessEmpty.negate())));
+                                .withCondition(new IsCorrectnessOne().and(isGuessValid.negate())))
+                        .followedBy(new UpdatePlayerEligibility().withCondition(isGuessValid.negate())
+                        .followedBy(new UpdateLeaderboard().withCondition(isGuessValid.negate())));
 
         return new StandardRound.Builder()
                 .withGuessReceivedAction(consumer)
