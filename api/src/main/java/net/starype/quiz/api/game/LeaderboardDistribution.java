@@ -26,11 +26,11 @@ public class LeaderboardDistribution implements ScoreDistribution {
 
     @Override
     public Double apply(Player<?> player) {
-        if(!leaderboard.contains(player)) {
+        if(leaderboard.getPosition(player).isEmpty()) {
             return 0.0;
         }
 
-        int position = leaderboard.getPosition(player);
+        int position = leaderboard.getPosition(player).get();
 
         if(playersCount == 1) {
             return maxAwarded;

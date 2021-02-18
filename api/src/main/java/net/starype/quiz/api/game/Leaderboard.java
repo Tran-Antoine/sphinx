@@ -36,18 +36,16 @@ public class Leaderboard {
     }
 
     public Optional<Double> getByPlayer(Player<?> player) {
-        return standings.stream().filter(standing -> standing.getPlayer().equals(player))
+        return standings.stream()
+                .filter(standing -> standing.getPlayer().equals(player))
                 .findAny()
                 .map(Standing::getScoreAcquired);
     }
 
-    public int getPosition(Player<?> player) {
-        int position = 0;
-        for(int i = 0; i < standings.size(); i++) {
-            if(standings.get(i).getPlayer().equals(player)) {
-                position = i;
-            }
-        }
-        return position;
+    public Optional<Integer> getPosition(Player<?> player) {
+        return standings.stream()
+                .filter(standing -> standing.getPlayer().equals(player))
+                .findAny()
+                .map(standing -> standings.indexOf(standing));
     }
 }
