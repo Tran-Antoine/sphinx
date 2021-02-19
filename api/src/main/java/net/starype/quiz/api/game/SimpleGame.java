@@ -122,25 +122,16 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
     }
 
     @Override
-    public void checkEndOfRound(GameRound current) {
-        synchronized (paused) {
-            if(paused.get()) {
-                return;
-            }
-            GameRoundContext context = current.getContext();
-            if (!context.getEndingCondition().ends()) {
-                return;
-            }
-
-            rounds.poll();
-            paused.set(true);
-            waitingForNextRound = true;
-
-
-            List<Standing> standings = updateScores(context);
-            current.onRoundStopped();
-            gate.gameCallback((server, game) -> server.onRoundEnded(context.getReportCreator(standings), game));
+    public void onEndOfRound(GameRoundContext context) {
+        if(paused.get()) {
+            return;
         }
+        rounds.poll();
+        paused.set(true);
+        waitingForNextRound = true;
+
+        List<Standing> standings = updateScores(context);
+        gate.gameCallback((server, game) -> server.onRoundEnded(context.getReportCreator(standings), game));
     }
 
     public void checkEndOfGame() {

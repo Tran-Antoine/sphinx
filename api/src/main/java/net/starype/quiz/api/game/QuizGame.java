@@ -31,8 +31,8 @@ import java.util.function.Consumer;
  *          By default, when a round terminates, the game will be paused until it is asked to continue.
  *     </li>
  *     <li>
- *         A system that detects whether the current round terminated and performs actions
- *         accordingly (through {@link #checkEndOfRound(GameRound)}.
+ *         A system that performs actions
+ *         accordingly (through {@link #onEndOfRound(GameRoundContext)}).
  *     </li>
  *     <li>
  *         Other minor utility methods that can be useful externally
@@ -120,11 +120,9 @@ public interface QuizGame {
     void removePlayer(Object playerId);
 
     /**
-     * Require the game to check whether the current round is over. Even though usually called internally, the method
-     * can also be called when an exterior factor may make the round terminate. Timers are a good example, since they
-     * should usually be handled externally.
-     * @param current the current round
+     * Prepare the game for the next round. This method is usually used to update the score of each player and
+     * callback the gate.
+     * @param context the context of the current round
      */
-    void checkEndOfRound(GameRound current);
-
+    void onEndOfRound(GameRoundContext context);
 }

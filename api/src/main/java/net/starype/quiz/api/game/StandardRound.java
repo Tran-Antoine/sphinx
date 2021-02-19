@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 import static net.starype.quiz.api.game.ScoreDistribution.Standing;
@@ -24,10 +25,10 @@ public class StandardRound implements GameRound {
     private EntityEligibility playerEligibility;
     private RoundState roundState;
     private Collection<Updatable> updatables;
-    private Consumer<GameRound> checkEndOfRound = gameRound -> {};
+    private final AtomicBoolean hasRoundEnded;
+    private Consumer<GameRoundContext> callback = context -> {};
 
     private GuessReceivedAction guessReceivedAction;
-
     private GuessReceivedAction giveUpReceivedAction;
 
     public StandardRound(Question pickedQuestion,
@@ -44,6 +45,7 @@ public class StandardRound implements GameRound {
         this.playerEligibility = playerEligibility;
         this.roundState = roundState;
         this.updatables = updatables;
+        hasRoundEnded = new AtomicBoolean(true);
     }
 
     @Override
@@ -54,7 +56,7 @@ public class StandardRound implements GameRound {
             throw new IllegalStateException("Game cannot be null");
         }
         game.sendInputToServer(server -> server.onQuestionReleased(pickedQuestion));
-        this.checkEndOfRound = gameRound -> game.checkEndOfRound(this);
+        this.callback = game::onEndOfRound;
         updatables.forEach(updatableHandler::registerEvent);
         updatables.forEach(event -> event.start(updatableHandler));
     }
@@ -79,11 +81,19 @@ public class StandardRound implements GameRound {
     public void onGiveUpReceived(Player<?> source) {
         giveUpReceivedAction.accept(roundState, new MutableGuessContext(source, 0.0, false,
                 Answer.fromString(""), false));
+        checkEndOfRound();
     }
 
     @Override
     public void checkEndOfRound() {
-        checkEndOfRound.accept(this);
+        synchronized (hasRoundEnded) {
+            if(!endingCondition.ends()) {
+                return;
+            }
+            hasRoundEnded.set(true);
+            onRoundStopped();
+            callback.accept(new GameRoundContext(this));
+        }
     }
 
     @Override
