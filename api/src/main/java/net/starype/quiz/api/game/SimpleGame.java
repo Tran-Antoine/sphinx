@@ -70,7 +70,10 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
             return true;
         }
 
-        return rounds.peek().hasRoundEnded();
+        return rounds.peek()
+                .getContext()
+                .getEndingCondition()
+                .ends();
     }
 
     @Override
@@ -125,7 +128,7 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
                 return;
             }
             GameRoundContext context = current.getContext();
-            if (!current.hasRoundEnded()) {
+            if (!context.getEndingCondition().ends()) {
                 return;
             }
 

@@ -38,7 +38,9 @@ public class ClassicalRoundTest {
             round.onGuessReceived(player, "incorrect");
         }
 
-        Assert.assertTrue(round.hasRoundEnded());
+        GameRoundContext context = round.getContext();
+
+        Assert.assertTrue(context.getEndingCondition().ends());
     }
 
     @Test
@@ -60,7 +62,9 @@ public class ClassicalRoundTest {
             round.onGiveUpReceived(player);
         }
 
-        Assert.assertTrue(round.hasRoundEnded());
+        GameRoundContext context = round.getContext();
+
+        Assert.assertTrue(context.getEndingCondition().ends());
     }
 
     @Test

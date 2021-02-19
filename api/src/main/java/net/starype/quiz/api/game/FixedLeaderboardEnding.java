@@ -2,15 +2,19 @@ package net.starype.quiz.api.game;
 
 import net.starype.quiz.api.game.round.RoundState;
 
-public class FixedLeaderboardEnding implements RoundEndingPredicate {
+public class FixedLeaderboardEnding extends RoundEndingPredicate {
 
     private Leaderboard leaderboard;
     private int playersCount;
 
+    public FixedLeaderboardEnding(RoundState roundState) {
+        super(roundState);
+    }
+
     @Override
-    public boolean ends(RoundState roundState) {
-        this.leaderboard = roundState.getLeaderboard();
-        this.playersCount = roundState.getPlayers().size();
+    public boolean ends() {
+        this.leaderboard = getRoundState().getLeaderboard();
+        this.playersCount = getRoundState().getPlayers().size();
         return fullAndOneNonGraded() || fullAndOneBelow();
     }
 

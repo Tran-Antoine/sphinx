@@ -2,15 +2,16 @@ package net.starype.quiz.api.game;
 
 import net.starype.quiz.api.game.round.RoundState;
 
-public class SwitchPredicate implements RoundEndingPredicate, EventListener {
+public class SwitchPredicate extends RoundEndingPredicate implements EventListener {
     private boolean state;
 
-    public SwitchPredicate(boolean initial) {
+    public SwitchPredicate(boolean initial, RoundState roundState) {
+        super(roundState);
         this.state = initial;
     }
 
     @Override
-    public boolean ends(RoundState roundState) {
+    public boolean ends() {
         return state;
     }
 

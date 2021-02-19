@@ -7,7 +7,7 @@ import java.util.List;
 public class GameRoundContext {
 
     private EntityEligibility playerEligibility;
-    private RoundEndingPredicate endingCondition;
+    private EndingPredicate endingCondition;
     private ScoreDistribution scoreDistributionCreator;
     private GameRoundReport reportCreator;
 
@@ -38,7 +38,7 @@ public class GameRoundContext {
         return reportCreator;
     }
 
-    public RoundEndingPredicate getEndingCondition() {
+    public EndingPredicate getEndingCondition() {
         if(endingCondition == null) {
             endingCondition = round.initEndingCondition();
         }
@@ -51,4 +51,5 @@ public class GameRoundContext {
         }
         return scoreDistributionCreator;
     }
+
 }

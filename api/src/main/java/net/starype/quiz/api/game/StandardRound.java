@@ -20,7 +20,7 @@ public class StandardRound implements GameRound {
 
     private Question pickedQuestion;
     private ScoreDistribution scoreDistribution;
-    private RoundEndingPredicate endingCondition;
+    private EndingPredicate endingCondition;
     private EntityEligibility playerEligibility;
     private RoundState roundState;
     private Collection<Updatable> updatables;
@@ -33,7 +33,7 @@ public class StandardRound implements GameRound {
     public StandardRound(Question pickedQuestion,
                          GuessReceivedAction GuessReceivedAction,
                          GuessReceivedAction giveUpReceivedAction,
-                         ScoreDistribution scoreDistribution, RoundEndingPredicate endingCondition,
+                         ScoreDistribution scoreDistribution, EndingPredicate endingCondition,
                          EntityEligibility playerEligibility, RoundState roundState,
                          Collection<Updatable> updatables) {
         this.pickedQuestion = pickedQuestion;
@@ -50,12 +50,11 @@ public class StandardRound implements GameRound {
     public void start(QuizGame game, Collection<? extends Player<?>> players,
                       UpdatableHandler updatableHandler) {
         roundState.initPlayers(players);
-        if(game != null) {
-            game.sendInputToServer(server -> server.onQuestionReleased(pickedQuestion));
-            this.checkEndOfRound = gameRound -> game.checkEndOfRound(this);
-        } else {
+        if(game == null) {
             throw new IllegalStateException("Game cannot be null");
         }
+        game.sendInputToServer(server -> server.onQuestionReleased(pickedQuestion));
+        this.checkEndOfRound = gameRound -> game.checkEndOfRound(this);
         updatables.forEach(updatableHandler::registerEvent);
         updatables.forEach(event -> event.start(updatableHandler));
     }
@@ -93,7 +92,7 @@ public class StandardRound implements GameRound {
     }
 
     @Override
-    public RoundEndingPredicate initEndingCondition() {
+    public EndingPredicate initEndingCondition() {
         return endingCondition;
     }
 
@@ -105,10 +104,6 @@ public class StandardRound implements GameRound {
     @Override
     public GameRoundReport initReport(List<Standing> standings) {
         return new SimpleGameReport(standings);
-    }
-
-    public boolean hasRoundEnded() {
-        return endingCondition.ends(roundState);
     }
 
     @Override
@@ -126,7 +121,7 @@ public class StandardRound implements GameRound {
         private GuessReceivedAction giveUpReceivedAction;
         private ScoreDistribution scoreDistribution;
         private Question question;
-        private RoundEndingPredicate endingPredicate;
+        private EndingPredicate endingPredicate;
         private EntityEligibility playerEligibility;
         private RoundState roundState;
         private Collection<Updatable> updatables = new ArrayList<>();
@@ -151,7 +146,7 @@ public class StandardRound implements GameRound {
             return this;
         }
 
-        public Builder withEndingCondition(RoundEndingPredicate endingCondition) {
+        public Builder withEndingCondition(EndingPredicate endingCondition) {
             this.endingPredicate = endingCondition;
             return this;
         }

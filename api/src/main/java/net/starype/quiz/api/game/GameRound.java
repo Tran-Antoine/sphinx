@@ -15,10 +15,9 @@ public interface GameRound {
     void onGiveUpReceived(Player<?> source);
     default void onRoundStopped(){}
     void checkEndOfRound();
-    boolean hasRoundEnded();
 
     EntityEligibility initPlayerEligibility();
-    RoundEndingPredicate initEndingCondition();
+    EndingPredicate initEndingCondition();
     ScoreDistribution initScoreDistribution();
     GameRoundReport initReport(List<Standing> standings);
 

@@ -29,7 +29,7 @@ public class ClassicalRoundFactory {
                 .withScoreDistribution(distribution)
                 .withPlayerEligibility(counter)
                 .withRoundState(roundState)
-                .withEndingCondition(new NoGuessLeft().or(new FixedLeaderboardEnding()))
+                .withEndingCondition(new NoGuessLeft(roundState).or(new FixedLeaderboardEnding(roundState)))
                 .build();
     }
 }
