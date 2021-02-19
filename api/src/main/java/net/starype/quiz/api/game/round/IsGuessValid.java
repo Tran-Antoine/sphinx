@@ -3,8 +3,7 @@ package net.starype.quiz.api.game.round;
 import net.starype.quiz.api.game.MutableGuessContext;
 
 /**
- * This predicate is set to true if the guess is valid, it is set
- * to false if not.
+ * BiPredicate that tests if the guess is valid or not
  */
 public class IsGuessValid implements GuessReceivedPredicate {
 
