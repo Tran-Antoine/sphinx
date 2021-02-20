@@ -5,7 +5,7 @@ import net.starype.quiz.api.game.EventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-abstract public class GameUpdatable implements Updatable {
+public abstract class GameUpdatable implements Updatable {
     private List<EventListener> eventListeners = new ArrayList<>();
 
     public void addEventListener(EventListener eventListener) {
