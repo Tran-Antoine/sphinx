@@ -114,5 +114,5 @@ public class RoundAddCommand implements QuizCommand {
         }
     }
 
-    public interface PartialRound extends Function<Question, GameRound> { }
+    public interface PartialRound extends Function<Question, QuizRound> { }
 }

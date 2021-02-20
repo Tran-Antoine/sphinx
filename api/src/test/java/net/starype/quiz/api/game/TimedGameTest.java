@@ -13,7 +13,7 @@ public class TimedGameTest {
     public static void main(String[] args) throws InterruptedException {
         MockServer server = new MockServer();
 
-        GameRound timedRaceRound = new TimedRaceRoundFactory().create(new MockQuestion(),
+        QuizRound timedRaceRound = new TimedRaceRoundFactory().create(new MockQuestion(),
                 1, 1, 10, TimeUnit.SECONDS);
 
         SimpleGame<QuizGame> game = new SimpleGame<>(

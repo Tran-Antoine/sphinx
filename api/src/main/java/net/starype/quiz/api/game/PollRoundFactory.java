@@ -4,7 +4,7 @@ import net.starype.quiz.api.game.round.*;
 import net.starype.quiz.api.game.question.Question;
 
 public class PollRoundFactory {
-    public GameRound create(Question question, int maxGuesses) {
+    public QuizRound create(Question question, int maxGuesses) {
         GuessCounter counter = new GuessCounter(maxGuesses);
         MaxGuess maxGuess = new MaxGuess(counter);
         RoundState roundState = new RoundState(counter, maxGuess);

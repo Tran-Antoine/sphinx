@@ -1,6 +1,7 @@
 package net.starype.quiz.api.game;
 
 
+import net.starype.quiz.api.game.round.GameRound;
 import net.starype.quiz.api.server.GameServer;
 import net.starype.quiz.api.server.ServerGate;
 
@@ -32,7 +33,7 @@ import java.util.function.Consumer;
  *     </li>
  *     <li>
  *         A system that performs actions
- *         accordingly (through {@link #onRoundEnded(GameRoundContext)}).
+ *         accordingly (through {@link #onRoundEnded(GameRound)}).
  *     </li>
  *     <li>
  *         Other minor utility methods that can be useful externally
@@ -122,7 +123,7 @@ public interface QuizGame {
     /**
      * Prepare the game for the next round. This method is usually used to update the score of each player and
      * callback the gate.
-     * @param context the context of the current round
+     * @param round the current round
      */
-    void onRoundEnded(GameRoundContext context);
+    void onRoundEnded(GameRound round);
 }

@@ -1,6 +1,6 @@
 package net.starype.quiz.api.server;
 
-import net.starype.quiz.api.game.GameRound;
+import net.starype.quiz.api.game.QuizRound;
 import net.starype.quiz.api.game.GameRoundReport;
 import net.starype.quiz.api.game.PlayerGuessContext;
 import net.starype.quiz.api.game.MutableGuessContext;
@@ -41,7 +41,7 @@ public interface GameServer<T extends QuizGame> {
     /**
      * Perform appropriate actions when a game object notifies the server that a new round is about to start.
      * Note that this event will also be triggered for the very first round. Note also that {@code onRoundStarted} should,
-     * conventionally, be triggered before {@link GameRound#start(QuizGame, Collection, UpdatableHandler)}
+     * conventionally, be triggered before {@link QuizRound#start(QuizGame, Collection, UpdatableHandler)}
      * @param game the game object that notifies the server
      * @param firstRound whether the very first round is about to start or not
      */

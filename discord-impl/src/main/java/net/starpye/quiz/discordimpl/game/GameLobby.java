@@ -13,7 +13,7 @@ import net.starpye.quiz.discordimpl.util.MessageUtils;
 import net.starype.quiz.api.database.QuestionQueries;
 import net.starype.quiz.api.database.QuestionQuery;
 import net.starype.quiz.api.database.QuizQueryable;
-import net.starype.quiz.api.game.GameRound;
+import net.starype.quiz.api.game.QuizRound;
 import net.starype.quiz.api.game.question.Question;
 
 import javax.imageio.ImageIO;
@@ -103,7 +103,7 @@ public class GameLobby extends DiscordLogContainer {
             return false;
         }
 
-        Queue<GameRound> rounds = partialRounds
+        Queue<QuizRound> rounds = partialRounds
                 .stream()
                 .map(partial -> partial.apply(questions.poll()))
                 .collect(Collectors.toCollection(LinkedList::new));

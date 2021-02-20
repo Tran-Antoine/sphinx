@@ -4,6 +4,7 @@ import net.starype.quiz.api.game.ScoreDistribution.Standing;
 import net.starype.quiz.api.game.event.GameUpdatableHandler;
 import net.starype.quiz.api.game.event.UpdatableHandler;
 import net.starype.quiz.api.game.player.Player;
+import net.starype.quiz.api.game.round.GameRound;
 import net.starype.quiz.api.server.GameServer;
 import net.starype.quiz.api.server.ServerGate;
 
@@ -28,17 +29,17 @@ import java.util.function.Supplier;
 public class SimpleGame<T extends QuizGame> implements QuizGame {
 
     private ServerGate<T> gate;
-    private Queue<? extends GameRound> rounds;
+    private Queue<? extends QuizRound> rounds;
     private Collection<? extends Player<?>> players;
     private final AtomicBoolean paused;
     private boolean waitingForNextRound;
     private UpdatableHandler updatableHandler = new GameUpdatableHandler();
 
-    public SimpleGame(Queue<? extends GameRound> rounds, Collection<? extends Player<?>> players) {
+    public SimpleGame(Queue<? extends QuizRound> rounds, Collection<? extends Player<?>> players) {
         this(rounds, players, null);
     }
 
-    public SimpleGame(Queue<? extends GameRound> rounds, Collection<? extends Player<?>> players, ServerGate<T> gate) {
+    public SimpleGame(Queue<? extends QuizRound> rounds, Collection<? extends Player<?>> players, ServerGate<T> gate) {
         this.rounds = rounds;
         this.players = players;
         this.paused = new AtomicBoolean(true);
@@ -71,7 +72,6 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
         }
 
         return rounds.peek()
-                .getContext()
                 .getEndingCondition()
                 .ends();
     }
@@ -94,7 +94,7 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
     }
 
     private void startHead(boolean firstRound) {
-        GameRound round = rounds.element();
+        QuizRound round = rounds.element();
         gate.gameCallback((server, game) -> server.onRoundStarting(game, firstRound));
         round.start(this, players, updatableHandler);
     }
@@ -109,12 +109,11 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
             throw new IllegalStateException();
         }
 
-        GameRound current = rounds.peek();
-        GameRoundContext context = current.getContext();
+        QuizRound current = rounds.peek();
 
         Player<?> player = findHolder(playerId);
 
-        if(!context.getPlayerEligibility().isEligible(player)) {
+        if(!current.getPlayerEligibility().isEligible(player)) {
             gate.callback(server -> server.onNonEligiblePlayerGuessed(player));
             return;
         }
@@ -122,7 +121,7 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
     }
 
     @Override
-    public void onRoundEnded(GameRoundContext context) {
+    public void onRoundEnded(GameRound round) {
         if(paused.get()) {
             return;
         }
@@ -130,8 +129,8 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
         paused.set(true);
         waitingForNextRound = true;
 
-        List<Standing> standings = updateScores(context);
-        gate.gameCallback((server, game) -> server.onRoundEnded(context.getReportCreator(standings), game));
+        List<Standing> standings = updateScores(round);
+        gate.gameCallback((server, game) -> server.onRoundEnded(round.getReport(standings), game));
     }
 
     public void checkEndOfGame() {
@@ -140,8 +139,8 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
         }
     }
 
-    private List<Standing> updateScores(GameRoundContext context) {
-        ScoreDistribution scoreDistribution = context.getScoreDistribution();
+    private List<Standing> updateScores(GameRound round) {
+        ScoreDistribution scoreDistribution = round.getScoreDistribution();
         return scoreDistribution.applyAll(players, this::updateScore);
     }
 
@@ -152,7 +151,7 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
         }
     }
 
-    private void transferRequestToRound(Player<?> player, String message, GameRound current) {
+    private void transferRequestToRound(Player<?> player, String message, QuizRound current) {
         if(message.isEmpty()) {
             current.onGiveUpReceived(player);
             gate.callback(server -> server.onPlayerGaveUp(player));

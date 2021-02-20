@@ -26,10 +26,10 @@ public class ClassicalRoundTest {
         players.add(new MockPlayer());
         players.add(new MockPlayer());
 
-        GameRound round = new ClassicalRoundFactory()
+        QuizRound round = new ClassicalRoundFactory()
                 .create(new MockQuestion(), 3, 1);
 
-        Queue<GameRound> rounds = new LinkedList<>();
+        Queue<QuizRound> rounds = new LinkedList<>();
         rounds.add(round);
 
         round.start(new SimpleGame<>(rounds, players), players, updatableHandler);
@@ -38,9 +38,7 @@ public class ClassicalRoundTest {
             round.onGuessReceived(player, "incorrect");
         }
 
-        GameRoundContext context = round.getContext();
-
-        Assert.assertTrue(context.getEndingCondition().ends());
+        Assert.assertTrue(round.getEndingCondition().ends());
     }
 
     @Test
@@ -50,10 +48,10 @@ public class ClassicalRoundTest {
         players.add(new MockPlayer());
         players.add(new MockPlayer());
 
-        GameRound round = new ClassicalRoundFactory()
+        QuizRound round = new ClassicalRoundFactory()
                 .create(new MockQuestion(), 3, 1);
 
-        Queue<GameRound> rounds = new LinkedList<>();
+        Queue<QuizRound> rounds = new LinkedList<>();
         rounds.add(round);
 
         round.start(new SimpleGame<>(rounds, players), players, updatableHandler);
@@ -62,9 +60,7 @@ public class ClassicalRoundTest {
             round.onGiveUpReceived(player);
         }
 
-        GameRoundContext context = round.getContext();
-
-        Assert.assertTrue(context.getEndingCondition().ends());
+        Assert.assertTrue(round.getEndingCondition().ends());
     }
 
     @Test
@@ -79,10 +75,10 @@ public class ClassicalRoundTest {
 
         List<Player<UUID>> players = Arrays.asList(player1, player2, player3, player4, player5);
 
-        GameRound round = new ClassicalRoundFactory()
+        QuizRound round = new ClassicalRoundFactory()
                 .create(new MockQuestion(), 4, 1);
 
-        Queue<GameRound> rounds = new LinkedList<>();
+        Queue<QuizRound> rounds = new LinkedList<>();
         rounds.add(round);
 
         round.start(new SimpleGame<>(rounds, players), players, updatableHandler);
@@ -91,7 +87,7 @@ public class ClassicalRoundTest {
         round.onGuessReceived(player2, "kinda-correct");
         round.onGuessReceived(player3, "pretty-correct");
 
-        ScoreDistribution scoreDistribution = round.initScoreDistribution();
+        ScoreDistribution scoreDistribution = round.getScoreDistribution();
 
         List<Standing> standings = scoreDistribution.applyAll(players, (player, score) -> {});
 

@@ -4,7 +4,7 @@ import net.starype.quiz.api.game.round.*;
 import net.starype.quiz.api.game.question.Question;
 
 public class RaceRoundFactory {
-    public GameRound create(Question question, int maxGuesses, double scoreForWinner) {
+    public QuizRound create(Question question, int maxGuesses, double scoreForWinner) {
 
         IsGuessValid isGuessValid = new IsGuessValid();
 

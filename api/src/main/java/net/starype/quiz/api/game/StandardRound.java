@@ -3,10 +3,11 @@ package net.starype.quiz.api.game;
 import net.starype.quiz.api.game.answer.Answer;
 import net.starype.quiz.api.game.event.Updatable;
 import net.starype.quiz.api.game.event.UpdatableHandler;
-import net.starype.quiz.api.game.round.GuessReceivedAction;
-import net.starype.quiz.api.game.round.RoundState;
 import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.question.Question;
+import net.starype.quiz.api.game.round.GameRound;
+import net.starype.quiz.api.game.round.GuessReceivedAction;
+import net.starype.quiz.api.game.round.RoundState;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,7 +18,7 @@ import java.util.function.Consumer;
 
 import static net.starype.quiz.api.game.ScoreDistribution.Standing;
 
-public class StandardRound implements GameRound {
+public class StandardRound implements QuizRound {
 
     private Question pickedQuestion;
     private ScoreDistribution scoreDistribution;
@@ -26,7 +27,7 @@ public class StandardRound implements GameRound {
     private RoundState roundState;
     private Collection<Updatable> updatables;
     private final AtomicBoolean hasRoundEnded;
-    private Consumer<GameRoundContext> callback = context -> {};
+    private Consumer<GameRound> callback = context -> {};
 
     private GuessReceivedAction guessReceivedAction;
     private GuessReceivedAction giveUpReceivedAction;
@@ -92,38 +93,33 @@ public class StandardRound implements GameRound {
             }
             hasRoundEnded.set(true);
             onRoundStopped();
-            callback.accept(new GameRoundContext(this));
+            callback.accept(this);
         }
     }
 
     @Override
-    public EntityEligibility initPlayerEligibility() {
+    public EntityEligibility getPlayerEligibility() {
         return playerEligibility;
     }
 
     @Override
-    public EndingPredicate initEndingCondition() {
+    public EndingPredicate getEndingCondition() {
         return endingCondition;
     }
 
     @Override
-    public ScoreDistribution initScoreDistribution() {
+    public ScoreDistribution getScoreDistribution() {
         return scoreDistribution;
     }
 
     @Override
-    public GameRoundReport initReport(List<Standing> standings) {
+    public GameRoundReport getReport(List<Standing> standings) {
         return new SimpleGameReport(standings);
     }
 
     @Override
     public void onRoundStopped() {
         updatables.forEach((Updatable::shutDown));
-    }
-
-    @Override
-    public GameRoundContext getContext() {
-        return new GameRoundContext(this);
     }
 
     public static class Builder {

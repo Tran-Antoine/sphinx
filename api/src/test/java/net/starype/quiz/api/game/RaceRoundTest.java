@@ -27,10 +27,10 @@ public class RaceRoundTest {
 
         Question question = new MockQuestion(factory.createCorrectAnswer(Answer.fromString("CORRECT"), new IdentityProcessor()));
 
-        GameRound round = new RaceRoundFactory()
+        QuizRound round = new RaceRoundFactory()
                 .create(question, 1, 1);
 
-        Queue<GameRound> rounds = new LinkedList<>();
+        Queue<QuizRound> rounds = new LinkedList<>();
         rounds.add(round);
 
         round.start(new SimpleGame<>(rounds, players), players, updatableHandler);
@@ -39,9 +39,7 @@ public class RaceRoundTest {
             round.onGuessReceived(player, "INCORRECT-ANSWER");
         }
 
-        GameRoundContext context = round.getContext();
-
-        Assert.assertTrue(context.getEndingCondition().ends());
+        Assert.assertTrue(round.getEndingCondition().ends());
     }
 
     @Test
@@ -49,23 +47,21 @@ public class RaceRoundTest {
         UpdatableHandler updatableHandler = new GameUpdatableHandler();
         MockPlayer player = new MockPlayer();
 
-        GameRound round = new RaceRoundFactory()
+        QuizRound round = new RaceRoundFactory()
                 .create(new MockQuestion(factory.createCorrectAnswer(Answer.fromString("CORRECT"), new IdentityProcessor())),
                         3, 1);
 
-        Queue<GameRound> rounds = new LinkedList<>();
+        Queue<QuizRound> rounds = new LinkedList<>();
         rounds.add(round);
 
         round.start(new SimpleGame<>(rounds, Collections.singletonList(player)),
                 Collections.singletonList(player), updatableHandler);
 
-        GameRoundContext context = round.getContext();
-
-        Assert.assertFalse(context.getEndingCondition().ends());
+        Assert.assertFalse(round.getEndingCondition().ends());
         round.onGuessReceived(player, "INCORRECT ANSWER");
-        Assert.assertFalse(context.getEndingCondition().ends());
+        Assert.assertFalse(round.getEndingCondition().ends());
         round.onGuessReceived(player, "CORRECT");
-        Assert.assertTrue(context.getEndingCondition().ends());
+        Assert.assertTrue(round.getEndingCondition().ends());
     }
 
     @Test
@@ -73,21 +69,19 @@ public class RaceRoundTest {
         UpdatableHandler updatableHandler = new GameUpdatableHandler();
         Player<UUID> player = new MockPlayer();
 
-        GameRound round = new RaceRoundFactory()
+        QuizRound round = new RaceRoundFactory()
                 .create(new MockQuestion(factory.createCorrectAnswer(Answer.fromString("CORRECT"), new IdentityProcessor())),
                         10, 1);
 
-        Queue<GameRound> rounds = new LinkedList<>();
+        Queue<QuizRound> rounds = new LinkedList<>();
         rounds.add(round);
 
         round.start(new SimpleGame<>(rounds, Collections.singletonList(player)),
                 Collections.singletonList(player), updatableHandler);
 
-        GameRoundContext context = round.getContext();
-
-        Assert.assertFalse(context.getEndingCondition().ends());
+        Assert.assertFalse(round.getEndingCondition().ends());
         round.onGiveUpReceived(player);
-        Assert.assertTrue(context.getEndingCondition().ends());
+        Assert.assertTrue(round.getEndingCondition().ends());
     }
 
     @Test
@@ -97,18 +91,18 @@ public class RaceRoundTest {
         Player<UUID> player1 = new MockPlayer();
         Player<UUID> player2 = new MockPlayer();
 
-        GameRound round = new RaceRoundFactory()
+        QuizRound round = new RaceRoundFactory()
                 .create(new MockQuestion(factory.createCorrectAnswer(Answer.fromString("CORRECT"), new IdentityProcessor())),
                         1, pointsToAward);
 
-        Queue<GameRound> rounds = new LinkedList<>();
+        Queue<QuizRound> rounds = new LinkedList<>();
         rounds.add(round);
 
         round.start(new SimpleGame<>(rounds, Arrays.asList(player1, player2)),
                 Arrays.asList(player1, player2), updatableHandler);
 
         round.onGuessReceived(player1, "CORRECT");
-        ScoreDistribution scoreDistribution = round.getContext().getScoreDistribution();
+        ScoreDistribution scoreDistribution = round.getScoreDistribution();
 
         double score1 = scoreDistribution.apply(player1);
         double score2 = scoreDistribution.apply(player2);

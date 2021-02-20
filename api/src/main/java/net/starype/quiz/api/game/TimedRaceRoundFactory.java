@@ -7,8 +7,8 @@ import net.starype.quiz.api.game.question.Question;
 import java.util.concurrent.TimeUnit;
 
 public class TimedRaceRoundFactory {
-    public GameRound create(Question question, int maxGuesses,
-                                double scoreForWinner, long time, TimeUnit unit) {
+    public QuizRound create(Question question, int maxGuesses,
+                            double scoreForWinner, long time, TimeUnit unit) {
 
         IsGuessValid isGuessValid = new IsGuessValid();
 

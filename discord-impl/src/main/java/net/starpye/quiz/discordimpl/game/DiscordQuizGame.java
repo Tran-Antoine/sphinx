@@ -1,7 +1,7 @@
 package net.starpye.quiz.discordimpl.game;
 
 import discord4j.common.util.Snowflake;
-import net.starype.quiz.api.game.GameRound;
+import net.starype.quiz.api.game.QuizRound;
 import net.starype.quiz.api.game.SimpleGame;
 import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.server.ServerGate;
@@ -18,7 +18,7 @@ public class DiscordQuizGame extends SimpleGame<DiscordQuizGame> {
     private LogContainer container;
 
     public DiscordQuizGame(
-            Queue<? extends GameRound> rounds,
+            Queue<? extends QuizRound> rounds,
             Collection<? extends Player<?>> players,
             ServerGate<DiscordQuizGame> gate,
             Snowflake authorId,
