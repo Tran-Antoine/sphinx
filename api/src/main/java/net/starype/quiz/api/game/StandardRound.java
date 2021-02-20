@@ -87,7 +87,7 @@ public class StandardRound implements GameRound {
     @Override
     public void checkEndOfRound() {
         synchronized (hasRoundEnded) {
-            if(!endingCondition.ends()) {
+            if(!endingCondition.ends() || hasRoundEnded.get()) {
                 return;
             }
             hasRoundEnded.set(true);
