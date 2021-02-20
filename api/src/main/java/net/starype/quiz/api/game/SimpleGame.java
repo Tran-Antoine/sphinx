@@ -122,7 +122,7 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
     }
 
     @Override
-    public void onEndOfRound(GameRoundContext context) {
+    public void onRoundEnded(GameRoundContext context) {
         if(paused.get()) {
             return;
         }

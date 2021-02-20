@@ -32,7 +32,7 @@ import java.util.function.Consumer;
  *     </li>
  *     <li>
  *         A system that performs actions
- *         accordingly (through {@link #onEndOfRound(GameRoundContext)}).
+ *         accordingly (through {@link #onRoundEnded(GameRoundContext)}).
  *     </li>
  *     <li>
  *         Other minor utility methods that can be useful externally
@@ -124,5 +124,5 @@ public interface QuizGame {
      * callback the gate.
      * @param context the context of the current round
      */
-    void onEndOfRound(GameRoundContext context);
+    void onRoundEnded(GameRoundContext context);
 }

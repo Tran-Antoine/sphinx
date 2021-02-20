@@ -56,7 +56,7 @@ public class StandardRound implements GameRound {
             throw new IllegalStateException("Game cannot be null");
         }
         game.sendInputToServer(server -> server.onQuestionReleased(pickedQuestion));
-        this.callback = game::onEndOfRound;
+        this.callback = game::onRoundEnded;
         updatables.forEach(updatableHandler::registerEvent);
         updatables.forEach(event -> event.start(updatableHandler));
     }
