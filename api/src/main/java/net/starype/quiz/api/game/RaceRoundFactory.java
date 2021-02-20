@@ -8,8 +8,9 @@ public class RaceRoundFactory {
 
         IsGuessValid isGuessValid = new IsGuessValid();
 
-        MaxGuessCounter counter = new MaxGuessCounter(maxGuesses);
-        RoundState roundState = new RoundState(counter, counter);
+        GuessCounter counter = new GuessCounter(maxGuesses);
+        MaxGuess maxGuess = new MaxGuess(counter);
+        RoundState roundState = new RoundState(counter, maxGuess);
 
         GuessReceivedAction consumer =
                 new InvalidateCurrentPlayerCorrectness().withCondition(isGuessValid)
@@ -25,9 +26,9 @@ public class RaceRoundFactory {
                 .withGiveUpReceivedConsumer(new ConsumePlayerGuess())
                 .withQuestion(question)
                 .withScoreDistribution(new BinaryDistribution(roundState.getLeaderboard(), scoreForWinner))
-                .withPlayerEligibility(counter)
+                .withPlayerEligibility(maxGuess)
                 .withRoundState(roundState)
-                .withEndingCondition(new NoGuessLeft(roundState))
+                .withEndingCondition(new NoPlayerEligible(roundState))
                 .build();
     }
 }

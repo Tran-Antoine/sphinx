@@ -1,8 +1,8 @@
 package net.starype.quiz.api.game.round;
 
 import net.starype.quiz.api.game.EntityEligibility;
+import net.starype.quiz.api.game.GuessCounter;
 import net.starype.quiz.api.game.Leaderboard;
-import net.starype.quiz.api.game.MaxGuessCounter;
 import net.starype.quiz.api.game.ScoreDistribution.Standing;
 import net.starype.quiz.api.game.answer.Answer;
 import net.starype.quiz.api.game.player.IDHolder;
@@ -22,7 +22,7 @@ public class RoundState {
     /**
      * Counter of guesses for this round
      */
-    private MaxGuessCounter counter;
+    private GuessCounter counter;
 
     /**
      * Answers of all players of this round
@@ -34,23 +34,26 @@ public class RoundState {
      */
     private EntityEligibility playerEligibility;
 
+    /**
+     * Players of the round
+     */
     private Collection<? extends Player<?>> players;
 
     /**
      * Constructor of RoundState
-     * @param counter MaxGuessCounter of the round
+     * @param counter GuessCounter of the round
      * @param playerEligibility PlayerEligibility of the Round
      */
-    public RoundState(MaxGuessCounter counter,
+    public RoundState(GuessCounter counter,
                       EntityEligibility playerEligibility) {
         this.counter = counter;
         this.playerEligibility = playerEligibility;
     }
 
     /**
-     * @return the MaxGuessCounter
+     * @return the GuessCounter
      */
-    public MaxGuessCounter getCounter() {
+    public GuessCounter getCounter() {
         return counter;
     }
 
@@ -102,6 +105,13 @@ public class RoundState {
      */
     public boolean isPlayerEligible(IDHolder<?> player) {
         return playerEligibility.isEligible(player);
+    }
+
+    /**
+     * @return if there exists an eligible player
+     */
+    public boolean existsEligible() {
+        return playerEligibility.existsEligible(players);
     }
 
     /**

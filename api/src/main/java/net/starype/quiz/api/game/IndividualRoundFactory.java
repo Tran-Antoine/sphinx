@@ -8,8 +8,9 @@ public class IndividualRoundFactory {
 
         IsGuessValid isGuessValid = new IsGuessValid();
 
-        MaxGuessCounter counter = new MaxGuessCounter(1);
-        RoundState roundState = new RoundState(counter, counter);
+        GuessCounter counter = new GuessCounter(1);
+        MaxGuess maxGuess = new MaxGuess(counter);
+        RoundState roundState = new RoundState(counter, maxGuess);
 
         GuessReceivedAction consumer =
                 new InvalidateCurrentPlayerCorrectness().withCondition(isGuessValid)
@@ -22,10 +23,10 @@ public class IndividualRoundFactory {
                 .withGuessReceivedAction(consumer)
                 .withGiveUpReceivedConsumer(new AddCorrectnessIfNew())
                 .withRoundState(roundState)
-                .withEndingCondition(new NoGuessLeft(roundState))
+                .withEndingCondition(new NoPlayerEligible(roundState))
                 .withQuestion(question)
                 .withScoreDistribution(new OneTryDistribution(maxToAward))
-                .withPlayerEligibility(counter)
+                .withPlayerEligibility(maxGuess)
                 .build();
     }
 }

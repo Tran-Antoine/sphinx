@@ -9,8 +9,9 @@ public class ClassicalRoundFactory {
 
         IsGuessValid isGuessValid = new IsGuessValid();
 
-        MaxGuessCounter counter = new MaxGuessCounter(maxGuesses);
-        RoundState roundState = new RoundState(counter, counter);
+        GuessCounter counter = new GuessCounter(maxGuesses);
+        MaxGuess maxGuess = new MaxGuess(counter);
+        RoundState roundState = new RoundState(counter, maxGuess);
         LeaderboardDistribution distribution = new LeaderboardDistribution(maxAwarded, roundState.getLeaderboard());
 
         GuessReceivedAction consumer =
@@ -27,9 +28,9 @@ public class ClassicalRoundFactory {
                 .withGiveUpReceivedConsumer(new ConsumePlayerGuess())
                 .withQuestion(question)
                 .withScoreDistribution(distribution)
-                .withPlayerEligibility(counter)
+                .withPlayerEligibility(maxGuess)
                 .withRoundState(roundState)
-                .withEndingCondition(new NoGuessLeft(roundState).or(new FixedLeaderboardEnding(roundState)))
+                .withEndingCondition(new NoPlayerEligible(roundState).or(new FixedLeaderboardEnding(roundState)))
                 .build();
     }
 }

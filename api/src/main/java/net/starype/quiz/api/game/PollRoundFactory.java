@@ -5,8 +5,9 @@ import net.starype.quiz.api.game.question.Question;
 
 public class PollRoundFactory {
     public GameRound create(Question question, int maxGuesses) {
-        MaxGuessCounter counter = new MaxGuessCounter(maxGuesses);
-        RoundState roundState = new RoundState(counter, counter);
+        GuessCounter counter = new GuessCounter(maxGuesses);
+        MaxGuess maxGuess = new MaxGuess(counter);
+        RoundState roundState = new RoundState(counter, maxGuess);
 
         GuessReceivedAction consumer =
                 new UpdateAnswers()
@@ -19,9 +20,9 @@ public class PollRoundFactory {
                 .withGiveUpReceivedConsumer(new ConsumePlayerGuess())
                 .withQuestion(question)
                 .withScoreDistribution(new ZeroScoreDistribution())
-                .withPlayerEligibility(counter)
+                .withPlayerEligibility(maxGuess)
                 .withRoundState(roundState)
-                .withEndingCondition(new NoGuessLeft(roundState))
+                .withEndingCondition(new NoPlayerEligible(roundState))
                 .build();
     }
 }
