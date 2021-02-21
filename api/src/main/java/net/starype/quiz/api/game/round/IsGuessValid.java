@@ -9,6 +9,6 @@ public class IsGuessValid implements GuessReceivedPredicate {
 
     @Override
     public boolean test(RoundState roundState, MutableGuessContext guessContext) {
-        return !guessContext.isAnswerValid();
+        return guessContext.isAnswerValid();
     }
 }

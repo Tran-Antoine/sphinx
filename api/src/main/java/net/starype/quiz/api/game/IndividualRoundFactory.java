@@ -13,11 +13,11 @@ public class IndividualRoundFactory {
         RoundState roundState = new RoundState(counter, maxGuess);
 
         GuessReceivedAction consumer =
-                new InvalidateCurrentPlayerCorrectness().withCondition(isGuessValid)
-                        .followedBy(new MakePlayerEligible().withCondition(isGuessValid))
-                        .followedBy(new UpdateLeaderboard().withCondition(isGuessValid.negate()))
-                        .followedBy(new IncrementPlayerGuess().withCondition(isGuessValid.negate()))
-                        .followedBy(new UpdatePlayerEligibility().withCondition(isGuessValid.negate()));
+                new InvalidateCurrentPlayerCorrectness().withCondition(isGuessValid.negate())
+                        .followedBy(new MakePlayerEligible().withCondition(isGuessValid.negate()))
+                        .followedBy(new UpdateLeaderboard().withCondition(isGuessValid))
+                        .followedBy(new IncrementPlayerGuess().withCondition(isGuessValid))
+                        .followedBy(new UpdatePlayerEligibility().withCondition(isGuessValid));
 
         return new StandardRound.Builder()
                 .withGuessReceivedAction(consumer)

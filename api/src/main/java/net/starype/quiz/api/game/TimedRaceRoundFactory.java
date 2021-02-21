@@ -21,7 +21,7 @@ public class TimedRaceRoundFactory {
         quizTimer.addEventListener(timeOutEnding);
 
         GuessReceivedAction consumer =
-                new InvalidateCurrentPlayerCorrectness().withCondition(isGuessValid)
+                new InvalidateCurrentPlayerCorrectness().withCondition(isGuessValid.negate())
                         .followedBy(new IncrementPlayerGuess())
                         .followedBy(new ConsumeAllPlayersGuess().withCondition(new IsCorrectnessOne()))
                         .followedBy(new UpdatePlayerEligibility());
