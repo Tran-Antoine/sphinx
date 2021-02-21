@@ -27,7 +27,7 @@ public class GuessCounter {
         return guessesPerPlayer.getOrDefault(holder, 0);
     }
 
-    public int getMaxGuesses() {
-        return maxGuesses;
+    public boolean maxReached(IDHolder<?> holder) {
+        return getPlayerGuess(holder) < maxGuesses;
     }
 }
