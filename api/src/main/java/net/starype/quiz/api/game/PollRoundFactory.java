@@ -6,13 +6,11 @@ import net.starype.quiz.api.game.question.Question;
 public class PollRoundFactory {
     public QuizRound create(Question question, int maxGuesses) {
         GuessCounter counter = new GuessCounter(maxGuesses);
-        MaxGuess maxGuess = new MaxGuess(counter);
-        RoundState roundState = new RoundState(counter, maxGuess);
+        RoundState roundState = new RoundState(counter);
 
         GuessReceivedAction consumer =
                 new UpdateAnswers()
-                .followedBy(new IncrementPlayerGuess())
-                .followedBy(new UpdatePlayerEligibility());
+                .followedBy(new IncrementPlayerGuess());
 
 
         return new StandardRound.Builder()
@@ -21,7 +19,7 @@ public class PollRoundFactory {
                 .withQuestion(question)
                 .withScoreDistribution(new ZeroScoreDistribution())
                 .withRoundState(roundState)
-                .withEndingCondition(new NoPlayerEligible(roundState))
+                .withPlayerEligibility(new MaxGuess(counter))
                 .build();
     }
 }

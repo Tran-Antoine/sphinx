@@ -9,25 +9,23 @@ public class RaceRoundFactory {
         IsGuessValid isGuessValid = new IsGuessValid();
 
         GuessCounter counter = new GuessCounter(maxGuesses);
-        MaxGuess maxGuess = new MaxGuess(counter);
-        RoundState roundState = new RoundState(counter, maxGuess);
+        RoundState roundState = new RoundState(counter);
 
-        GuessReceivedAction consumer =
-                new InvalidateCurrentPlayerCorrectness().withCondition(isGuessValid.negate())
-                        .followedBy(new MakePlayerEligible().withCondition(isGuessValid.negate()))
-                        .followedBy(new IncrementPlayerGuess().withCondition(isGuessValid))
-                        .followedBy(new ConsumeAllPlayersGuess()
-                                .withCondition(new IsCorrectnessOne().and(isGuessValid)))
-                        .followedBy(new UpdatePlayerEligibility().withCondition(isGuessValid)
-                        .followedBy(new UpdateLeaderboard().withCondition(isGuessValid)));
+            GuessReceivedAction consumer =
+                    new InvalidateCurrentPlayerCorrectness().withCondition(isGuessValid.negate())
+                            .followedBy(new MakePlayerEligible().withCondition(isGuessValid.negate()))
+                            .followedBy(new IncrementPlayerGuess().withCondition(isGuessValid))
+                            .followedBy(new ConsumeAllPlayersGuess()
+                                    .withCondition(new IsCorrectnessOne().and(isGuessValid)))
+                            .followedBy(new UpdateLeaderboard().withCondition(isGuessValid));
 
-        return new StandardRound.Builder()
-                .withGuessReceivedAction(consumer)
-                .withGiveUpReceivedConsumer(new ConsumePlayerGuess())
-                .withQuestion(question)
-                .withScoreDistribution(new BinaryDistribution(roundState.getLeaderboard(), scoreForWinner))
-                .withRoundState(roundState)
-                .withEndingCondition(new NoPlayerEligible(roundState))
-                .build();
+            return new StandardRound.Builder()
+                    .withGuessReceivedAction(consumer)
+                    .withGiveUpReceivedConsumer(new ConsumePlayerGuess())
+                    .withQuestion(question)
+                    .withScoreDistribution(new BinaryDistribution(roundState.getLeaderboard(), scoreForWinner))
+                    .withRoundState(roundState)
+                    .withPlayerEligibility(new MaxGuess(counter))
+                    .build();
     }
 }

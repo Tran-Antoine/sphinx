@@ -3,7 +3,6 @@ package net.starype.quiz.api.game;
 import net.starype.quiz.api.game.answer.Answer;
 import net.starype.quiz.api.game.event.Updatable;
 import net.starype.quiz.api.game.event.UpdatableHandler;
-import net.starype.quiz.api.game.player.IDHolder;
 import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.question.Question;
 import net.starype.quiz.api.game.round.GameRound;
@@ -26,7 +25,8 @@ public class StandardRound implements QuizRound {
     private EndingPredicate endingCondition;
     private RoundState roundState;
     private Collection<Updatable> updatables;
-    private AtomicBoolean hasRoundEnded;
+    private EntityEligibility playerEligibility;
+    private final AtomicBoolean hasRoundEnded;
     private Consumer<GameRound> callback = context -> {};
 
     private GuessReceivedAction guessReceivedAction;
@@ -36,7 +36,7 @@ public class StandardRound implements QuizRound {
                          GuessReceivedAction GuessReceivedAction,
                          GuessReceivedAction giveUpReceivedAction,
                          ScoreDistribution scoreDistribution, EndingPredicate endingCondition,
-                         RoundState roundState,
+                         EntityEligibility playerEligibility, RoundState roundState,
                          Collection<Updatable> updatables) {
         this.pickedQuestion = pickedQuestion;
         this.guessReceivedAction = GuessReceivedAction;
@@ -45,6 +45,7 @@ public class StandardRound implements QuizRound {
         this.endingCondition = endingCondition;
         this.roundState = roundState;
         this.updatables = updatables;
+        this.playerEligibility = playerEligibility;
         this.hasRoundEnded = new AtomicBoolean(false);
     }
 
@@ -65,10 +66,14 @@ public class StandardRound implements QuizRound {
     public PlayerGuessContext onGuessReceived(Player<?> source, String message) {
         Optional<Double> optCorrectness = pickedQuestion.evaluateAnswer(Answer.fromString(message));
 
-        MutableGuessContext playerGuessContext = new MutableGuessContext(source, optCorrectness.orElse(0.0), false,
-                Answer.fromString(message), optCorrectness.isPresent());
+        MutableGuessContext playerGuessContext = new MutableGuessContext(source, optCorrectness.orElse(0.0),
+                false, Answer.fromString(message), optCorrectness.isPresent());
 
         guessReceivedAction.accept(roundState, playerGuessContext);
+
+        if(optCorrectness.isPresent()) {
+            playerGuessContext.setEligibility(playerEligibility.isEligible(source));
+        }
 
         checkEndOfRound();
 
@@ -96,12 +101,13 @@ public class StandardRound implements QuizRound {
 
     @Override
     public EntityEligibility getPlayerEligibility() {
-        return roundState.getPlayerEligibility();
+        return playerEligibility;
     }
 
     @Override
     public EndingPredicate getEndingCondition() {
-        return endingCondition;
+        return endingCondition
+                .or(() -> !playerEligibility.existsEligible(roundState.getPlayers()));
     }
 
     @Override
@@ -124,9 +130,10 @@ public class StandardRound implements QuizRound {
         private GuessReceivedAction giveUpReceivedAction;
         private ScoreDistribution scoreDistribution;
         private Question question;
-        private EndingPredicate endingPredicate;
+        private EndingPredicate endingPredicate = () -> false;
         private RoundState roundState;
         private Collection<Updatable> updatables = new ArrayList<>();
+        private EntityEligibility playerEligibility;
 
         public Builder withGuessReceivedAction(GuessReceivedAction guessReceivedAction) {
             this.guessReceivedAction = guessReceivedAction;
@@ -158,6 +165,11 @@ public class StandardRound implements QuizRound {
             return this;
         }
 
+        public Builder withPlayerEligibility(EntityEligibility playerEligibility) {
+            this.playerEligibility = playerEligibility;
+            return this;
+        }
+
         public Builder addEvent(Updatable updatable) {
             updatables.add(updatable);
             return this;
@@ -166,7 +178,7 @@ public class StandardRound implements QuizRound {
         public StandardRound build() {
             return new StandardRound(question, guessReceivedAction,
                     giveUpReceivedAction, scoreDistribution, endingPredicate,
-                    roundState, updatables);
+                    playerEligibility, roundState, updatables);
         }
 
     }

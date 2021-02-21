@@ -13,8 +13,7 @@ public class TimedRaceRoundFactory {
         IsGuessValid isGuessValid = new IsGuessValid();
 
         GuessCounter counter = new GuessCounter(maxGuesses);
-        MaxGuess maxGuess = new MaxGuess(counter);
-        RoundState roundState = new RoundState(counter, maxGuess);
+        RoundState roundState = new RoundState(counter);
 
         SwitchPredicate timeOutEnding = new SwitchPredicate(false, roundState);
         GameUpdatable quizTimer = new QuizTimer(unit, time);
@@ -23,8 +22,7 @@ public class TimedRaceRoundFactory {
         GuessReceivedAction consumer =
                 new InvalidateCurrentPlayerCorrectness().withCondition(isGuessValid.negate())
                         .followedBy(new IncrementPlayerGuess())
-                        .followedBy(new ConsumeAllPlayersGuess().withCondition(new IsCorrectnessOne()))
-                        .followedBy(new UpdatePlayerEligibility());
+                        .followedBy(new ConsumeAllPlayersGuess().withCondition(new IsCorrectnessOne()));
 
         StandardRound round = new StandardRound.Builder()
                 .withGuessReceivedAction(consumer)
@@ -33,7 +31,8 @@ public class TimedRaceRoundFactory {
                 .withScoreDistribution(new BinaryDistribution(roundState.getLeaderboard(), scoreForWinner))
                 .withRoundState(roundState)
                 .addEvent(quizTimer)
-                .withEndingCondition(new NoPlayerEligible(roundState).or(timeOutEnding))
+                .withEndingCondition(timeOutEnding)
+                .withPlayerEligibility(new MaxGuess(counter))
                 .build();
 
         quizTimer.addEventListener(round::checkEndOfRound);

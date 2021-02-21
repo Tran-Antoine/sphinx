@@ -10,8 +10,7 @@ public class ClassicalRoundFactory {
         IsGuessValid isGuessValid = new IsGuessValid();
 
         GuessCounter counter = new GuessCounter(maxGuesses);
-        MaxGuess maxGuess = new MaxGuess(counter);
-        RoundState roundState = new RoundState(counter, maxGuess);
+        RoundState roundState = new RoundState(counter);
         LeaderboardDistribution distribution = new LeaderboardDistribution(maxAwarded, roundState.getLeaderboard());
 
         GuessReceivedAction consumer =
@@ -19,8 +18,7 @@ public class ClassicalRoundFactory {
                         .followedBy(new MakePlayerEligible().withCondition(isGuessValid.negate()))
                         .followedBy(new IncrementPlayerGuess().withCondition(isGuessValid))
                         .followedBy(new UpdateLeaderboard().withCondition(isGuessValid))
-                        .followedBy(new ConsumePlayerGuess().withCondition(isGuessValid.and(new IsCorrectnessZero())))
-                        .followedBy(new UpdatePlayerEligibility().withCondition(isGuessValid));
+                        .followedBy(new ConsumePlayerGuess().withCondition(isGuessValid.and(new IsCorrectnessZero())));
 
         return new StandardRound.Builder()
                 .withGuessReceivedAction(consumer)
@@ -28,7 +26,8 @@ public class ClassicalRoundFactory {
                 .withQuestion(question)
                 .withScoreDistribution(distribution)
                 .withRoundState(roundState)
-                .withEndingCondition(new NoPlayerEligible(roundState).or(new FixedLeaderboardEnding(roundState)))
+                .withPlayerEligibility(new MaxGuess(counter))
+                .withEndingCondition(new FixedLeaderboardEnding(roundState))
                 .build();
     }
 }

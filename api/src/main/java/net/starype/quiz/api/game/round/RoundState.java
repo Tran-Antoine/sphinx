@@ -1,6 +1,5 @@
 package net.starype.quiz.api.game.round;
 
-import net.starype.quiz.api.game.EntityEligibility;
 import net.starype.quiz.api.game.GuessCounter;
 import net.starype.quiz.api.game.Leaderboard;
 import net.starype.quiz.api.game.ScoreDistribution.Standing;
@@ -29,11 +28,6 @@ public class RoundState {
     private Map<Player<?>, Answer> answers = new HashMap<>();
 
     /**
-     * Eligibility of the player
-     */
-    private EntityEligibility playerEligibility;
-
-    /**
      * Players of the round
      */
     private Collection<? extends Player<?>> players;
@@ -41,12 +35,9 @@ public class RoundState {
     /**
      * Constructor of RoundState
      * @param counter GuessCounter of the round
-     * @param playerEligibility PlayerEligibility of the Round
      */
-    public RoundState(GuessCounter counter,
-                      EntityEligibility playerEligibility) {
+    public RoundState(GuessCounter counter) {
         this.counter = counter;
-        this.playerEligibility = playerEligibility;
     }
 
     /**
@@ -96,13 +87,6 @@ public class RoundState {
      */
     public void updateRoundAnswers(Player<?> player, Answer answer) {
         answers.put(player, answer);
-    }
-
-    /**
-     * @return the EntityEligibility of this round
-     */
-    public EntityEligibility getPlayerEligibility() {
-        return playerEligibility;
     }
 
     /**
