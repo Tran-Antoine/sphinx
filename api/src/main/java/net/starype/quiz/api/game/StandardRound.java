@@ -3,6 +3,7 @@ package net.starype.quiz.api.game;
 import net.starype.quiz.api.game.answer.Answer;
 import net.starype.quiz.api.game.event.Updatable;
 import net.starype.quiz.api.game.event.UpdatableHandler;
+import net.starype.quiz.api.game.player.IDHolder;
 import net.starype.quiz.api.game.player.Player;
 import net.starype.quiz.api.game.question.Question;
 import net.starype.quiz.api.game.round.GameRound;
@@ -44,7 +45,7 @@ public class StandardRound implements QuizRound {
         this.endingCondition = endingCondition;
         this.roundState = roundState;
         this.updatables = updatables;
-        hasRoundEnded = new AtomicBoolean(true);
+        this.hasRoundEnded = new AtomicBoolean(false);
     }
 
     @Override
@@ -62,9 +63,7 @@ public class StandardRound implements QuizRound {
 
     @Override
     public PlayerGuessContext onGuessReceived(Player<?> source, String message) {
-
         Optional<Double> optCorrectness = pickedQuestion.evaluateAnswer(Answer.fromString(message));
-
 
         MutableGuessContext playerGuessContext = new MutableGuessContext(source, optCorrectness.orElse(0.0), false,
                 Answer.fromString(message), optCorrectness.isPresent());
