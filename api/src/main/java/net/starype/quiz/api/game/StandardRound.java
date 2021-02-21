@@ -23,10 +23,9 @@ public class StandardRound implements QuizRound {
     private Question pickedQuestion;
     private ScoreDistribution scoreDistribution;
     private EndingPredicate endingCondition;
-    private EntityEligibility playerEligibility;
     private RoundState roundState;
     private Collection<Updatable> updatables;
-    private final AtomicBoolean hasRoundEnded;
+    private AtomicBoolean hasRoundEnded;
     private Consumer<GameRound> callback = context -> {};
 
     private GuessReceivedAction guessReceivedAction;
@@ -36,14 +35,13 @@ public class StandardRound implements QuizRound {
                          GuessReceivedAction GuessReceivedAction,
                          GuessReceivedAction giveUpReceivedAction,
                          ScoreDistribution scoreDistribution, EndingPredicate endingCondition,
-                         EntityEligibility playerEligibility, RoundState roundState,
+                         RoundState roundState,
                          Collection<Updatable> updatables) {
         this.pickedQuestion = pickedQuestion;
         this.guessReceivedAction = GuessReceivedAction;
         this.giveUpReceivedAction = giveUpReceivedAction;
         this.scoreDistribution = scoreDistribution;
         this.endingCondition = endingCondition;
-        this.playerEligibility = playerEligibility;
         this.roundState = roundState;
         this.updatables = updatables;
         hasRoundEnded = new AtomicBoolean(true);
@@ -99,7 +97,7 @@ public class StandardRound implements QuizRound {
 
     @Override
     public EntityEligibility getPlayerEligibility() {
-        return playerEligibility;
+        return roundState.getPlayerEligibility();
     }
 
     @Override
@@ -128,7 +126,6 @@ public class StandardRound implements QuizRound {
         private ScoreDistribution scoreDistribution;
         private Question question;
         private EndingPredicate endingPredicate;
-        private EntityEligibility playerEligibility;
         private RoundState roundState;
         private Collection<Updatable> updatables = new ArrayList<>();
 
@@ -162,11 +159,6 @@ public class StandardRound implements QuizRound {
             return this;
         }
 
-        public Builder withPlayerEligibility(EntityEligibility playerEligibility) {
-            this.playerEligibility = playerEligibility;
-            return this;
-        }
-
         public Builder addEvent(Updatable updatable) {
             updatables.add(updatable);
             return this;
@@ -175,7 +167,7 @@ public class StandardRound implements QuizRound {
         public StandardRound build() {
             return new StandardRound(question, guessReceivedAction,
                     giveUpReceivedAction, scoreDistribution, endingPredicate,
-                    playerEligibility, roundState, updatables);
+                    roundState, updatables);
         }
 
     }

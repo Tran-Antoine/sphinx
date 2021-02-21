@@ -8,6 +8,8 @@ import net.starype.quiz.api.game.MutableGuessContext;
 public class UpdatePlayerEligibility extends SimpleReceivedAction {
     @Override
     public void execute(RoundState roundState, MutableGuessContext playerGuessContext) {
-        playerGuessContext.setEligibility(roundState.isPlayerEligible(playerGuessContext.getPlayer()));
+        playerGuessContext.setEligibility(roundState
+                .getPlayerEligibility()
+                .isEligible(playerGuessContext.getPlayer()));
     }
 }

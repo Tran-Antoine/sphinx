@@ -20,7 +20,6 @@ public class PollRoundFactory {
                 .withGiveUpReceivedConsumer(new ConsumePlayerGuess())
                 .withQuestion(question)
                 .withScoreDistribution(new ZeroScoreDistribution())
-                .withPlayerEligibility(maxGuess)
                 .withRoundState(roundState)
                 .withEndingCondition(new NoPlayerEligible(roundState))
                 .build();

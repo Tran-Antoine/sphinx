@@ -5,7 +5,6 @@ import net.starype.quiz.api.game.GuessCounter;
 import net.starype.quiz.api.game.Leaderboard;
 import net.starype.quiz.api.game.ScoreDistribution.Standing;
 import net.starype.quiz.api.game.answer.Answer;
-import net.starype.quiz.api.game.player.IDHolder;
 import net.starype.quiz.api.game.player.Player;
 
 import java.util.Collection;
@@ -100,18 +99,10 @@ public class RoundState {
     }
 
     /**
-     * @param player the player
-     * @return if the player is eligible or not
+     * @return the EntityEligibility of this round
      */
-    public boolean isPlayerEligible(IDHolder<?> player) {
-        return playerEligibility.isEligible(player);
-    }
-
-    /**
-     * @return if there exists an eligible player
-     */
-    public boolean existsEligible() {
-        return playerEligibility.existsEligible(players);
+    public EntityEligibility getPlayerEligibility() {
+        return playerEligibility;
     }
 
     /**
