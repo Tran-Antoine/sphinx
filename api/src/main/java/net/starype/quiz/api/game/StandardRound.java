@@ -26,7 +26,7 @@ public class StandardRound implements QuizRound {
     private EndingPredicate endingCondition;
     private RoundState roundState;
     private Collection<Updatable> updatables;
-    private final AtomicBoolean hasRoundEnded;
+    private AtomicBoolean hasRoundEnded;
     private Consumer<GameRound> callback = context -> {};
 
     private GuessReceivedAction guessReceivedAction;
