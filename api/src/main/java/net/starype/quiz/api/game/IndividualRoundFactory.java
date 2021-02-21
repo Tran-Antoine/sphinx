@@ -26,7 +26,6 @@ public class IndividualRoundFactory {
                 .withEndingCondition(new NoPlayerEligible(roundState))
                 .withQuestion(question)
                 .withScoreDistribution(new OneTryDistribution(maxToAward))
-                .withPlayerEligibility(maxGuess)
                 .build();
     }
 }

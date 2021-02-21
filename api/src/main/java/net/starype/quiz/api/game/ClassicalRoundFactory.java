@@ -27,7 +27,6 @@ public class ClassicalRoundFactory {
                 .withGiveUpReceivedConsumer(new ConsumePlayerGuess())
                 .withQuestion(question)
                 .withScoreDistribution(distribution)
-                .withPlayerEligibility(maxGuess)
                 .withRoundState(roundState)
                 .withEndingCondition(new NoPlayerEligible(roundState).or(new FixedLeaderboardEnding(roundState)))
                 .build();

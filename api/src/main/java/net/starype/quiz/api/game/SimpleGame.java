@@ -72,8 +72,7 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
         }
 
         return rounds.peek()
-                .getEndingCondition()
-                .ends();
+                .hasRoundEnded();
     }
 
     @Override
@@ -113,7 +112,7 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
 
         Player<?> player = findHolder(playerId);
 
-        if(!current.getPlayerEligibility().isEligible(player)) {
+        if(!current.isEligible(player)) {
             gate.callback(server -> server.onNonEligiblePlayerGuessed(player));
             return;
         }

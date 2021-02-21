@@ -31,7 +31,6 @@ public class TimedRaceRoundFactory {
                 .withGiveUpReceivedConsumer(new ConsumePlayerGuess())
                 .withQuestion(question)
                 .withScoreDistribution(new BinaryDistribution(roundState.getLeaderboard(), scoreForWinner))
-                .withPlayerEligibility(maxGuess)
                 .withRoundState(roundState)
                 .addEvent(quizTimer)
                 .withEndingCondition(new NoPlayerEligible(roundState).or(timeOutEnding))
