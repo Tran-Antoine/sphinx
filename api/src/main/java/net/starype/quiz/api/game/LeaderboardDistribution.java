@@ -1,95 +1,44 @@
 package net.starype.quiz.api.game;
 
-import net.starype.quiz.api.game.player.IDHolder;
 import net.starype.quiz.api.game.player.Player;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
+import java.util.function.BiConsumer;
 
 public class LeaderboardDistribution implements ScoreDistribution {
 
     private double maxAwarded;
-    private int playersCount;
-    private List<LeaderboardPosition> leaderboard;
+    private Leaderboard leaderboard;
+    private int playersCount = 0;
 
-    public LeaderboardDistribution(double maxAwarded, int playersCount) {
+    public LeaderboardDistribution(double maxAwarded, Leaderboard leaderboard) {
         this.maxAwarded = maxAwarded;
-        this.playersCount = playersCount;
-        this.leaderboard = new ArrayList<>();
-    }
-
-
-    public void scoreUpdate(IDHolder<?> player, double score) {
-        Optional<LeaderboardPosition> seat = getCurrent(player);
-        if(seat.isEmpty()) {
-            insertNewPlayer(new LeaderboardPosition(player, score));
-            return;
-        }
-        LeaderboardPosition current = seat.get();
-        double currentScore = current.score;
-        if(score < currentScore) {
-            return;
-        }
-        leaderboard.remove(current);
-        insertNewPlayer(new LeaderboardPosition(player, score));
-    }
-
-    private void insertNewPlayer(LeaderboardPosition playerPosition) {
-        int index = 0;
-        for(LeaderboardPosition seat : leaderboard) {
-            if(playerPosition.score > (seat.score + 0.01)) {
-                leaderboard.add(index, playerPosition);
-                return;
-            }
-            index++;
-        }
-        leaderboard.add(playerPosition);
-    }
-
-    private Optional<LeaderboardPosition> getCurrent(IDHolder<?> player) {
-        return leaderboard
-                .stream()
-                .filter((seat) -> seat.player.equals(player))
-                .findAny();
+        this.leaderboard = leaderboard;
     }
 
     @Override
-    public Double apply(Player player) {
-        Optional<LeaderboardPosition> seat = getCurrent(player);
-        if(seat.isEmpty()) {
-            return 0D;
+    public List<Standing> applyAll(Collection<? extends Player<?>> players,
+                                   BiConsumer<Player<?>, Double> action) {
+        this.playersCount = players.size();
+        return ScoreDistribution.super.applyAll(players, action);
+    }
+
+    @Override
+    public Double apply(Player<?> player) {
+        if(leaderboard.getPosition(player).isEmpty()) {
+            return 0.0;
         }
-        if(leaderboard.size() == 1) {
+
+        int position = leaderboard.getPosition(player).get();
+
+        if(playersCount == 1) {
             return maxAwarded;
         }
 
-        int position = leaderboard.indexOf(seat.get());
-        double gapPerSeat = maxAwarded / (playersCount - 1);
-        return maxAwarded - (position * gapPerSeat);
+        double gapPerSeat = maxAwarded/(playersCount - 1);
+
+        return maxAwarded - (gapPerSeat * position);
     }
 
-    public Collection<? extends LeaderboardPosition> getLeaderboard() {
-        return leaderboard;
-    }
-
-    public static class LeaderboardPosition {
-
-        private final IDHolder<?> player;
-        private final double score;
-
-        private LeaderboardPosition(IDHolder<?> player, double score) {
-            this.player = player;
-            this.score = score;
-        }
-
-        public IDHolder<?> getPlayer() {
-            return player;
-        }
-
-        public double getScore() {
-            return score;
-        }
-    }
 }

@@ -1,7 +1,6 @@
 package net.starpye.quiz.discordimpl.command;
 
 import discord4j.common.util.Snowflake;
-import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.TextChannel;
 import net.starpye.quiz.discordimpl.game.GameLobby;
 import net.starpye.quiz.discordimpl.game.LobbyList;
@@ -21,13 +20,13 @@ import java.util.function.Supplier;
 public class RoundAddCommand implements QuizCommand {
 
     private static final ConfigMapper<PartialRound> DEFAULT =
-            new RoundMapper((q) -> new IndividualRound(q, 1), "individual");
+            new RoundMapper((q) -> new IndividualRoundFactory().create(q, 1), "individual");
 
     private static final ConfigMatcher<PartialRound> ROUND_MATCHER = new ConfigMatcher<>(Arrays.asList(
             DEFAULT,
-            new RoundMapper((q) -> new RaceRound(1, q, 1.5), "race"),
-            new RoundMapper((q) -> new ClassicalRound(q, 1, 3), "classical"),
-            new RoundMapper((q) -> new PollRound(q, 1), "poll")
+            new RoundMapper((q) -> new RaceRoundFactory().create(q, 1, 1.5), "race"),
+            new RoundMapper((q) -> new ClassicalRoundFactory().create(q, 3, 1), "classical"),
+            new RoundMapper((q) -> new PollRoundFactory().create(q, 1), "poll")
     ), DEFAULT);
 
     @Override
@@ -115,5 +114,5 @@ public class RoundAddCommand implements QuizCommand {
         }
     }
 
-    public interface PartialRound extends Function<Question, GameRound> { }
+    public interface PartialRound extends Function<Question, QuizRound> { }
 }

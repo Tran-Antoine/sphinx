@@ -1,8 +1,9 @@
 package net.starype.quiz.api.server;
 
-import net.starype.quiz.api.game.GameRound;
+import net.starype.quiz.api.game.QuizRound;
 import net.starype.quiz.api.game.GameRoundReport;
 import net.starype.quiz.api.game.PlayerGuessContext;
+import net.starype.quiz.api.game.MutableGuessContext;
 import net.starype.quiz.api.game.QuizGame;
 import net.starype.quiz.api.game.event.UpdatableHandler;
 import net.starype.quiz.api.game.player.Player;
@@ -40,7 +41,7 @@ public interface GameServer<T extends QuizGame> {
     /**
      * Perform appropriate actions when a game object notifies the server that a new round is about to start.
      * Note that this event will also be triggered for the very first round. Note also that {@code onRoundStarted} should,
-     * conventionally, be triggered before {@link GameRound#start(QuizGame, Collection, UpdatableHandler)}
+     * conventionally, be triggered before {@link QuizRound#start(QuizGame, Collection, UpdatableHandler)}
      * @param game the game object that notifies the server
      * @param firstRound whether the very first round is about to start or not
      */
@@ -63,7 +64,7 @@ public interface GameServer<T extends QuizGame> {
     /**
      * Perform appropriate actions when a game object notifies the server that an eligible player sent a guess.
      * <p>
-     * Is provided a {@link PlayerGuessContext} object that contains useful information about who the player is,
+     * Is provided a {@link MutableGuessContext} object that contains useful information about who the player is,
      * the accuracy of their answer (from {@code 0.0} to {@code 1.0}) and whether after sending this guess they
      * will be eligible for future guesses in this round. Typically, if the accuracy is {@code 100%}, the eligible
      * should, in most cases, be {@code false} since there is usually no point in accepting further answers from

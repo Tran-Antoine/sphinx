@@ -9,19 +9,18 @@ import java.util.*;
 public class GameFactory {
 
     public static QuizGame createRaceGame(Player<?> player, GameServer<? super QuizGame> server) {
-        RaceRound.Builder builder = new RaceRound.Builder()
-                .withQuestion(new MockQuestion())
-                .withMaxGuessesPerPlayer(2)
-                .withPointsToAward(1.5);
 
-        Queue<GameRound> rounds = new LinkedList<>(Arrays.asList(builder.build(), builder.build()));
+        QuizRound raceRound = new RaceRoundFactory().create(new MockQuestion(), 2, 1.5);
+        QuizRound raceRound2 = new RaceRoundFactory().create(new MockQuestion(), 2, 1.5);
+
+        Queue<QuizRound> rounds = new LinkedList<>(Arrays.asList(raceRound, raceRound2));
 
         return new DefaultSimpleGame(rounds, Collections.singletonList(player), server);
     }
 
     public static QuizGame createClassicalGame(List<Player<?>> players, GameServer<? super QuizGame> server) {
-        GameRound round = new ClassicalRound(new MockQuestion(), 5, 4.0);
-        Queue<GameRound> rounds = new LinkedList<>(Collections.singletonList(round));
+        QuizRound round = new ClassicalRoundFactory().create(new MockQuestion(), 4.0, 5);
+        Queue<QuizRound> rounds = new LinkedList<>(Collections.singletonList(round));
         return new DefaultSimpleGame(rounds, players, server);
     }
 }

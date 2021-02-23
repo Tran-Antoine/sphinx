@@ -1,7 +1,6 @@
 package net.starpye.quiz.discordimpl.game;
 
 import discord4j.core.object.entity.Guild;
-import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.TextChannel;
 import net.starpye.quiz.discordimpl.util.ImageUtils;
 import net.starpye.quiz.discordimpl.util.MessageUtils;

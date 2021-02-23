@@ -1,14 +1,15 @@
 package net.starype.quiz.api.game;
 
-public interface RoundEndingPredicate {
+import net.starype.quiz.api.game.round.RoundState;
 
-    boolean ends();
+public abstract class RoundEndingPredicate implements EndingPredicate {
+    private RoundState roundState;
 
-    default RoundEndingPredicate or(RoundEndingPredicate other) {
-        return () -> this.ends() || other.ends();
+    public RoundEndingPredicate(RoundState roundState) {
+        this.roundState = roundState;
     }
 
-    default RoundEndingPredicate and(RoundEndingPredicate other) {
-        return () -> this.ends() && other.ends();
+    public RoundState getRoundState() {
+        return roundState;
     }
 }

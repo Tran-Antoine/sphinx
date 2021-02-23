@@ -1,10 +1,9 @@
 package net.starype.quiz.discordimpl.parsing
 
-import java.util.concurrent.TimeUnit
-
-import net.starype.quiz.api.game.question.Question
 import net.starype.quiz.api.game._
+import net.starype.quiz.api.game.question.Question
 
+import java.util.concurrent.TimeUnit
 import scala.util.parsing.combinator.RegexParsers
 
 class GameSettingsParser extends RegexParsers {
@@ -25,13 +24,13 @@ class GameSettingsParser extends RegexParsers {
   def questionSet: Parser[Argument] =
     arg("question-set", set(arg("repertoire", LITERAL ^^ QuestionSet)))
 
-  def round: Parser[Question => GameRound] = {
+  def round: Parser[Question => QuizRound] = {
     repsep(roundArg, ",") ^^ {
       case List(name: String, time: Option[Int], tries: Option[Int]) => name match {
-        case "Classical" => new ClassicalRound(_, tries.get, 1)
-        case "Individual" => new IndividualRound(_, 2)
-        case "TimedRace" => new TimedRaceRound(_, tries.get, 1, time.get, TimeUnit.SECONDS)
-        case "Poll" => new PollRound(_, tries.get)
+        case "Classical" => new ClassicalRoundFactory().create(_, tries.get, 1)
+        case "Individual" => new IndividualRoundFactory().create(_, 2)
+        case "TimedRace" => new TimedRaceRoundFactory().create(_, tries.get, 1, time.get, TimeUnit.SECONDS)
+        case "Poll" => new PollRoundFactory.create(_, tries.get)
       }
     }
   }
@@ -49,7 +48,7 @@ class GameSettingsParser extends RegexParsers {
   def set[T](parser: Parser[T]): Parser[T] =
     "{" ~> parser <~ "}"
 
-  def unpack(list: List[Option[Int] ~ (Question => GameRound)]): List[Question => GameRound] = {
+  def unpack(list: List[Option[Int] ~ (Question => QuizRound)]): List[Question => QuizRound] = {
     list.flatMap(elem => List.fill(elem._1.getOrElse(1))(elem._2))
   }
 
@@ -63,7 +62,7 @@ class GameSettingsParser extends RegexParsers {
   }
 
   trait Argument
-  case class RoundsArgument(seq: List[Question => GameRound]) extends Argument
+  case class RoundsArgument(seq: List[Question => QuizRound]) extends Argument
   case class ShowAnswer(boolean: Boolean) extends Argument
   case class QuestionSet(repertoire: String) extends Argument
 
