@@ -1,8 +1,8 @@
 package net.starype.quiz.api.parser;
 
 import net.starype.quiz.api.database.ReadableRawMap;
-import net.starype.quiz.api.game.answer.AnswerProcessor;
-import net.starype.quiz.api.game.answer.TrueFalseProcessor;
+import net.starype.quiz.api.answer.AnswerProcessor;
+import net.starype.quiz.api.answer.TrueFalseProcessor;
 
 /**
  * Mapper for the {@link TrueFalseProcessor} object

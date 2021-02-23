@@ -1,14 +1,14 @@
 package net.starype.quiz.api.game;
 
 
-import net.starype.quiz.api.game.answer.*;
-import net.starype.quiz.api.game.event.UpdatableHandler;
-import net.starype.quiz.api.game.event.GameUpdatableHandler;
-import net.starype.quiz.api.game.player.IDHolder;
-import net.starype.quiz.api.game.player.Player;
-import net.starype.quiz.api.game.question.Question;
-import net.starype.quiz.api.game.question.QuestionDifficulty;
-import net.starype.quiz.api.game.question.QuestionTag;
+import net.starype.quiz.api.answer.*;
+import net.starype.quiz.api.event.UpdatableHandler;
+import net.starype.quiz.api.event.GameUpdatableHandler;
+import net.starype.quiz.api.player.IDHolder;
+import net.starype.quiz.api.player.Player;
+import net.starype.quiz.api.question.Question;
+import net.starype.quiz.api.question.QuestionDifficulty;
+import net.starype.quiz.api.question.QuestionTag;
 import org.junit.Assert;
 import org.junit.Test;
 

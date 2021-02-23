@@ -1,7 +1,7 @@
 package net.starype.quiz.api.parser;
 
 import net.starype.quiz.api.database.ReadableRawMap;
-import net.starype.quiz.api.game.question.QuestionDifficulty;
+import net.starype.quiz.api.question.QuestionDifficulty;
 
 public class DifficultyMapper implements ConfigMapper<QuestionDifficulty> {
 

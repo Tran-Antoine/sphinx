@@ -1,8 +1,8 @@
 package net.starype.quiz.api.game;
 
-import net.starype.quiz.api.game.event.GameUpdatable;
-import net.starype.quiz.api.game.round.*;
-import net.starype.quiz.api.game.question.Question;
+import net.starype.quiz.api.event.GameUpdatable;
+import net.starype.quiz.api.round.*;
+import net.starype.quiz.api.question.Question;
 
 import java.util.concurrent.TimeUnit;
 

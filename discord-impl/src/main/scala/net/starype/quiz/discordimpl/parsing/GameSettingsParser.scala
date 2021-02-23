@@ -1,7 +1,7 @@
 package net.starype.quiz.discordimpl.parsing
 
 import net.starype.quiz.api.game._
-import net.starype.quiz.api.game.question.Question
+import net.starype.quiz.api.question.Question
 
 import java.util.concurrent.TimeUnit
 import scala.util.parsing.combinator.RegexParsers

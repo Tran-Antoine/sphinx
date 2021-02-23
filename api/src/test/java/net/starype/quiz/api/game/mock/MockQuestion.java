@@ -1,9 +1,9 @@
 package net.starype.quiz.api.game.mock;
 
-import net.starype.quiz.api.game.answer.Answer;
-import net.starype.quiz.api.game.question.Question;
-import net.starype.quiz.api.game.question.QuestionDifficulty;
-import net.starype.quiz.api.game.question.QuestionTag;
+import net.starype.quiz.api.answer.Answer;
+import net.starype.quiz.api.question.Question;
+import net.starype.quiz.api.question.QuestionDifficulty;
+import net.starype.quiz.api.question.QuestionTag;
 
 import java.util.Optional;
 import java.util.Set;

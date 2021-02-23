@@ -1,6 +1,6 @@
 package net.starype.quiz.api.game;
 
-import net.starype.quiz.api.game.player.Player;
+import net.starype.quiz.api.player.Player;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

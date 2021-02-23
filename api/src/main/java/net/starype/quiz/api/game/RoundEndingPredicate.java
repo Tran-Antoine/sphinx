@@ -1,6 +1,6 @@
 package net.starype.quiz.api.game;
 
-import net.starype.quiz.api.game.round.RoundState;
+import net.starype.quiz.api.round.RoundState;
 
 public abstract class RoundEndingPredicate implements EndingPredicate {
     private RoundState roundState;

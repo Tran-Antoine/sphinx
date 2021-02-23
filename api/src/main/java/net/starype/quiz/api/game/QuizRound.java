@@ -1,8 +1,8 @@
 package net.starype.quiz.api.game;
 
-import net.starype.quiz.api.game.event.UpdatableHandler;
-import net.starype.quiz.api.game.player.Player;
-import net.starype.quiz.api.game.round.GameRound;
+import net.starype.quiz.api.event.UpdatableHandler;
+import net.starype.quiz.api.player.Player;
+import net.starype.quiz.api.round.GameRound;
 
 import java.util.Collection;
 

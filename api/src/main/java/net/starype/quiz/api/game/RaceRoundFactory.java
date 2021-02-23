@@ -1,7 +1,7 @@
 package net.starype.quiz.api.game;
 
-import net.starype.quiz.api.game.round.*;
-import net.starype.quiz.api.game.question.Question;
+import net.starype.quiz.api.round.*;
+import net.starype.quiz.api.question.Question;
 
 public class RaceRoundFactory {
     public QuizRound create(Question question, int maxGuesses, double scoreForWinner) {
