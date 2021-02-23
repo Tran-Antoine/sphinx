@@ -8,9 +8,9 @@ import java.util.Collection;
 
 public class HelpCommand implements QuizCommand {
 
-    private Collection<? extends QuizCommand> commands;
+    private Collection<? extends DisplayableCommand> commands;
 
-    public HelpCommand(Collection<? extends QuizCommand> commands) {
+    public HelpCommand(Collection<? extends DisplayableCommand> commands) {
         this.commands = commands;
     }
 
@@ -23,7 +23,7 @@ public class HelpCommand implements QuizCommand {
         spec.setEmbed(embedSpec -> {
             embedSpec.setColor(Color.GREEN);
             embedSpec.setTitle("List of available commands");
-            for (QuizCommand command : commands) {
+            for (DisplayableCommand command : commands) {
                 String description = command.getDescription() == null
                         ? "No description given for this command"
                         : command.getDescription();
