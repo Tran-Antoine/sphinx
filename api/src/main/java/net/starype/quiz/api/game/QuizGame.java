@@ -1,6 +1,7 @@
 package net.starype.quiz.api.game;
 
 
+import net.starype.quiz.api.game.round.GameRound;
 import net.starype.quiz.api.server.GameServer;
 import net.starype.quiz.api.server.ServerGate;
 
@@ -31,8 +32,8 @@ import java.util.function.Consumer;
  *          By default, when a round terminates, the game will be paused until it is asked to continue.
  *     </li>
  *     <li>
- *         A system that detects whether the current round terminated and performs actions
- *         accordingly (through {@link #checkEndOfRound(GameRound)}.
+ *         A system that performs actions
+ *         accordingly (through {@link #onRoundEnded(GameRound)}).
  *     </li>
  *     <li>
  *         Other minor utility methods that can be useful externally
@@ -102,13 +103,6 @@ public interface QuizGame {
      */
     void onInputReceived(Object playerId, String message);
 
-    /**
-     * Require the game to check whether the current round is over. Even though usually called internally, the method
-     * can also be called when an exterior factor may make the round terminate. Timers are a good example, since they
-     * should usually be handled externally.
-     * @param current the current round
-     */
-    void checkEndOfRound(GameRound current);
 
     /**
      * Main communication gate between the game object and a {@link GameServer}.
@@ -125,4 +119,11 @@ public interface QuizGame {
      * @param playerId the ID of the player that is to be removed
      */
     void removePlayer(Object playerId);
+
+    /**
+     * Prepare the game for the next round. This method is usually used to update the score of each player and
+     * callback the gate.
+     * @param round the current round
+     */
+    void onRoundEnded(GameRound round);
 }

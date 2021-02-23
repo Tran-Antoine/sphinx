@@ -2,14 +2,12 @@ package net.starype.quiz.api.util;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Scanner;
 
 public class CheckSum {
     private ByteBuffer checkSum;

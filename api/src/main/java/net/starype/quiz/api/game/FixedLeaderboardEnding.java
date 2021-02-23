@@ -1,40 +1,40 @@
 package net.starype.quiz.api.game;
 
-import net.starype.quiz.api.game.LeaderboardDistribution.LeaderboardPosition;
+import net.starype.quiz.api.game.round.RoundState;
 
-import java.util.Collection;
+public class FixedLeaderboardEnding extends RoundEndingPredicate {
 
-public class FixedLeaderboardEnding implements RoundEndingPredicate {
-
-    private Collection<? extends LeaderboardPosition> leaderboard;
+    private Leaderboard leaderboard;
     private int playersCount;
 
-    public FixedLeaderboardEnding(LeaderboardDistribution leaderboardDistribution, int playersCount) {
-        this.leaderboard = leaderboardDistribution.getLeaderboard();
-        this.playersCount = playersCount;
+    public FixedLeaderboardEnding(RoundState roundState) {
+        super(roundState);
     }
 
     @Override
     public boolean ends() {
+        this.leaderboard = getRoundState().getLeaderboard();
+        this.playersCount = getRoundState().getPlayers().size();
         return fullAndOneNonGraded() || fullAndOneBelow();
     }
 
     private boolean fullAndOneNonGraded() {
-        if(playersCount - leaderboard.size() != 1) {
+        if(playersCount - leaderboard.getStandings().size() != 1) {
             return false;
         }
-        return leaderboard
+        return leaderboard.getStandings()
                 .stream()
-                .allMatch((seat) -> Math.abs(seat.getScore() - 1) < ScoreDistribution.EPSILON);
+                .allMatch((seat) -> Math.abs(seat.getScoreAcquired() - 1) < ScoreDistribution.EPSILON);
     }
 
     private boolean fullAndOneBelow() {
-        if(playersCount != leaderboard.size()) {
+        if(playersCount != leaderboard.getStandings().size()) {
             return false;
         }
-        return leaderboard
+        return leaderboard.getStandings()
                 .stream()
-                .filter((seat) -> Math.abs(seat.getScore() - 1) > ScoreDistribution.EPSILON)
+                .filter((seat) -> Math.abs(seat.getScoreAcquired() - 1) > ScoreDistribution.EPSILON)
                 .count() == 1;
     }
+
 }

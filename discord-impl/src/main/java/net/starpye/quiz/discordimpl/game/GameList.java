@@ -1,12 +1,10 @@
 package net.starpye.quiz.discordimpl.game;
 
 import discord4j.common.util.Snowflake;
-import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.channel.TextChannel;
 import net.starpye.quiz.discordimpl.user.DiscordPlayer;
-import net.starype.quiz.api.game.GameRound;
-import net.starype.quiz.api.server.GameServer;
+import net.starype.quiz.api.game.QuizRound;
 import net.starype.quiz.api.server.ServerGate;
 import reactor.core.publisher.Flux;
 
@@ -15,7 +13,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 public class GameList {
 
@@ -25,7 +22,7 @@ public class GameList {
         this.ongoingGames = new HashMap<>();
     }
 
-    public void startNewGame(Collection<? extends Snowflake> playersId, Queue<? extends GameRound> rounds, TextChannel channel, Snowflake authorId) {
+    public void startNewGame(Collection<? extends Snowflake> playersId, Queue<? extends QuizRound> rounds, TextChannel channel, Snowflake authorId) {
         Collection<DiscordPlayer> gamePlayers = asGamePlayers(playersId, channel);
         DiscordGameServer server = new DiscordGameServer(channel, this::stopGame);
         ServerGate<DiscordQuizGame> gate = server.createGate();

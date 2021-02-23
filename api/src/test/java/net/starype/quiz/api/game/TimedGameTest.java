@@ -12,9 +12,12 @@ public class TimedGameTest {
 
     public static void main(String[] args) throws InterruptedException {
         MockServer server = new MockServer();
+
+        QuizRound timedRaceRound = new TimedRaceRoundFactory().create(new MockQuestion(),
+                1, 1, 10, TimeUnit.SECONDS);
+
         SimpleGame<QuizGame> game = new SimpleGame<>(
-                new LinkedList<>(Collections.singletonList(
-                        new TimedRaceRound(new MockQuestion(), 1, 1, 10, TimeUnit.SECONDS))),
+                new LinkedList<>(Collections.singletonList(timedRaceRound)),
                 Collections.singletonList(new MockPlayer()));
         game.setGate(server.createGate());
         game.start();

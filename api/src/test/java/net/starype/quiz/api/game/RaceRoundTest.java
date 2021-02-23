@@ -25,19 +25,21 @@ public class RaceRoundTest {
         players.add(new MockPlayer());
         players.add(new MockPlayer());
 
-        GameRound round = new RaceRound.Builder()
-                .withMaxGuessesPerPlayer(1)
-                .withQuestion(new MockQuestion(factory.createCorrectAnswer(Answer.fromString("CORRECT"), new IdentityProcessor())))
-                .build();
+        Question question = new MockQuestion(factory.createCorrectAnswer(Answer.fromString("CORRECT"), new IdentityProcessor()));
 
-        round.start(null, players, updatableHandler);
-        GameRoundContext context = round.getContext();
+        QuizRound round = new RaceRoundFactory()
+                .create(question, 1, 1);
+
+        Queue<QuizRound> rounds = new LinkedList<>();
+        rounds.add(round);
+
+        round.start(new SimpleGame<>(rounds, players), players, updatableHandler);
 
         for(Player<?> player : players) {
             round.onGuessReceived(player, "INCORRECT-ANSWER");
         }
 
-        Assert.assertTrue(context.getEndingCondition().ends());
+        Assert.assertTrue(round.getEndingCondition().ends());
     }
 
     @Test
@@ -45,33 +47,41 @@ public class RaceRoundTest {
         UpdatableHandler updatableHandler = new GameUpdatableHandler();
         MockPlayer player = new MockPlayer();
 
-        GameRound round = new RaceRound.Builder()
-                .withMaxGuessesPerPlayer(3)
-                .withQuestion(new MockQuestion(factory.createCorrectAnswer(Answer.fromString("CORRECT"), new IdentityProcessor())))
-                .build();
-      
-        round.start(null, Collections.singletonList(player), updatableHandler);
-        RoundEndingPredicate endingPredicate = round.getContext().getEndingCondition();
+        QuizRound round = new RaceRoundFactory()
+                .create(new MockQuestion(factory.createCorrectAnswer(Answer.fromString("CORRECT"), new IdentityProcessor())),
+                        3, 1);
 
-        Assert.assertFalse(endingPredicate.ends());
+        Queue<QuizRound> rounds = new LinkedList<>();
+        rounds.add(round);
+
+        round.start(new SimpleGame<>(rounds, Collections.singletonList(player)),
+                Collections.singletonList(player), updatableHandler);
+
+        Assert.assertFalse(round.getEndingCondition().ends());
         round.onGuessReceived(player, "INCORRECT ANSWER");
-        Assert.assertFalse(endingPredicate.ends());
+        Assert.assertFalse(round.getEndingCondition().ends());
         round.onGuessReceived(player, "CORRECT");
-        Assert.assertTrue(endingPredicate.ends());
+        Assert.assertTrue(round.getEndingCondition().ends());
     }
 
     @Test
     public void game_ends_when_players_give_up() {
         UpdatableHandler updatableHandler = new GameUpdatableHandler();
         Player<UUID> player = new MockPlayer();
-        GameRound round = new RaceRound.Builder()
-                .withMaxGuessesPerPlayer(10)
-                .build();
-        round.start(null, Collections.singletonList(player), updatableHandler);
-        RoundEndingPredicate endingCondition = round.getContext().getEndingCondition();
-        Assert.assertFalse(endingCondition.ends());
+
+        QuizRound round = new RaceRoundFactory()
+                .create(new MockQuestion(factory.createCorrectAnswer(Answer.fromString("CORRECT"), new IdentityProcessor())),
+                        10, 1);
+
+        Queue<QuizRound> rounds = new LinkedList<>();
+        rounds.add(round);
+
+        round.start(new SimpleGame<>(rounds, Collections.singletonList(player)),
+                Collections.singletonList(player), updatableHandler);
+
+        Assert.assertFalse(round.getEndingCondition().ends());
         round.onGiveUpReceived(player);
-        Assert.assertTrue(endingCondition.ends());
+        Assert.assertTrue(round.getEndingCondition().ends());
     }
 
     @Test
@@ -81,15 +91,18 @@ public class RaceRoundTest {
         Player<UUID> player1 = new MockPlayer();
         Player<UUID> player2 = new MockPlayer();
 
-        GameRound round = new RaceRound.Builder()
-                .withMaxGuessesPerPlayer(1)
-                .withQuestion(new MockQuestion(factory.createCorrectAnswer(Answer.fromString("CORRECT"), new IdentityProcessor())))
-                .withPointsToAward(pointsToAward)
-                .build();
+        QuizRound round = new RaceRoundFactory()
+                .create(new MockQuestion(factory.createCorrectAnswer(Answer.fromString("CORRECT"), new IdentityProcessor())),
+                        1, pointsToAward);
 
-        round.start(null, Arrays.asList(player1, player2), updatableHandler);
+        Queue<QuizRound> rounds = new LinkedList<>();
+        rounds.add(round);
+
+        round.start(new SimpleGame<>(rounds, Arrays.asList(player1, player2)),
+                Arrays.asList(player1, player2), updatableHandler);
+
         round.onGuessReceived(player1, "CORRECT");
-        ScoreDistribution scoreDistribution = round.getContext().getScoreDistribution();
+        ScoreDistribution scoreDistribution = round.getScoreDistribution();
 
         double score1 = scoreDistribution.apply(player1);
         double score2 = scoreDistribution.apply(player2);

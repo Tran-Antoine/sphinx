@@ -1,9 +1,9 @@
 package net.starpye.quiz.discordimpl.game;
 
 import discord4j.core.object.entity.Guild;
-import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.TextChannel;
 import net.starpye.quiz.discordimpl.util.ImageUtils;
+import net.starpye.quiz.discordimpl.util.MessageUtils;
 import net.starype.quiz.api.game.GameRoundReport;
 import net.starype.quiz.api.game.PlayerGuessContext;
 import net.starype.quiz.api.game.ScoreDistribution.Standing;
@@ -62,9 +62,10 @@ public class DiscordGameServer extends DiscordLogContainer implements GameServer
                 .getGuild()
                 .block();
         InputStream image = ImageUtils.generateLeaderboard(standings, guild);
-        channel.createMessage(spec -> spec.addFile("standings.png", image))
-                .map(Message::getId)
-                .subscribe(this::trackMessage);
+        MessageUtils.sendAndTrack(
+                spec -> spec.addFile("standings.png", image),
+                channel,
+                this);
     }
 
     @Override
@@ -97,15 +98,17 @@ public class DiscordGameServer extends DiscordLogContainer implements GameServer
         Image image = teXFormula.createBufferedImage(TeXFormula.SERIF, 200, Color.BLACK, Color.WHITE);
         BufferedImage bufferedImage = ImageUtils.toBufferedImage(image);
         InputStream inputStream = ImageUtils.toInputStream(bufferedImage);
-        channel
-                .createMessage(spec -> spec.addFile("image.png", inputStream))
-                .map(Message::getId)
-                .subscribe(this::trackMessage);
+        MessageUtils.sendAndTrack(
+                spec -> spec.addFile("image.png", inputStream),
+                channel,
+                this);
     }
 
     private void sendAsText(String message) {
-        channel.createMessage(message)
-                .map(Message::getId)
-                .subscribe(this::trackMessage);
+        MessageUtils.sendAndTrack(
+                message,
+                channel,
+                this
+        );
     }
 }

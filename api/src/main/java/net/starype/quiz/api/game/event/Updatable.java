@@ -8,6 +8,10 @@ package net.starype.quiz.api.game.event;
  */
 public interface Updatable {
 
+    void start(UpdatableHandler updatableHandler);
+
+    void shutDown();
+
     /**
      * Perform a periodic action
      * @param deltaMillis how many milliseconds went by since the last update call
