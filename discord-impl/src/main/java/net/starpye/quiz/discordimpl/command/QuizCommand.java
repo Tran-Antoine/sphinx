@@ -1,9 +1,7 @@
 package net.starpye.quiz.discordimpl.command;
 
-public interface QuizCommand {
+public interface QuizCommand extends DisplayableCommand {
 
     void execute(CommandContext context);
 
-    String getName();
-    String getDescription();
 }

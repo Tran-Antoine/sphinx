@@ -19,7 +19,7 @@ public class SubmitCommand implements QuizCommand {
 
     @Override
     public String getDescription() {
-        return "Submits an answer";
+        return "Submit an answer. The format for answer submission is: `?create ||your answer||`";
     }
 
     @Override

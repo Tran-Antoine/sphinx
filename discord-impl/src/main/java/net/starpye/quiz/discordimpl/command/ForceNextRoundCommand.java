@@ -47,6 +47,6 @@ public class ForceNextRoundCommand implements QuizCommand {
 
     @Override
     public String getDescription() {
-        return "Proceeds to the next round, regardless of whether everyone is ready";
+        return "Proceed to the next round, regardless of whether everyone is ready";
     }
 }

@@ -40,6 +40,6 @@ public class LeaveCommand implements QuizCommand {
 
     @Override
     public String getDescription() {
-        return "Leaves the current game. No coming back!";
+        return "Leave the current game. No coming back!";
     }
 }
