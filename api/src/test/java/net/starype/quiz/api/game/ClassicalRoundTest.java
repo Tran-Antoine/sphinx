@@ -91,22 +91,16 @@ public class ClassicalRoundTest {
 
         List<Standing> standings = scoreDistribution.applyAll(players, (player, score) -> {});
 
-        double score1 = standings.get(0).getScoreAcquired();
-        double score2 = standings.get(1).getScoreAcquired();
-        double score3 = standings.get(2).getScoreAcquired();
-        double score4 = standings.get(3).getScoreAcquired();
-        double score5 = standings.get(4).getScoreAcquired();
-
         Assert.assertEquals(player1, standings.get(0).getPlayer());
         Assert.assertEquals(player3, standings.get(1).getPlayer());
         Assert.assertEquals(player2, standings.get(2).getPlayer());
         Assert.assertEquals(player4, standings.get(3).getPlayer());
         Assert.assertEquals(player5, standings.get(4).getPlayer());
 
-        Assert.assertEquals(4, score1, EPSILON);
-        Assert.assertEquals(3, score2, EPSILON);
-        Assert.assertEquals(2, score3, EPSILON);
-        Assert.assertEquals(0, score4, EPSILON);
-        Assert.assertEquals(0, score5, EPSILON);
+        Assert.assertEquals(4, standings.get(0).getScoreAcquired(), EPSILON);
+        Assert.assertEquals(3, standings.get(1).getScoreAcquired(), EPSILON);
+        Assert.assertEquals(2, standings.get(2).getScoreAcquired(), EPSILON);
+        Assert.assertEquals(0, standings.get(3).getScoreAcquired(), EPSILON);
+        Assert.assertEquals(0, standings.get(4).getScoreAcquired(), EPSILON);
     }
 }

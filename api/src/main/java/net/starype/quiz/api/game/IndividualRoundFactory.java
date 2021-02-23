@@ -19,11 +19,11 @@ public class IndividualRoundFactory {
 
         return new StandardRound.Builder()
                 .withGuessReceivedAction(consumer)
-                .withGiveUpReceivedConsumer(new AddCorrectnessIfNew())
+                .withGiveUpReceivedConsumer(new AddCorrectnessIfNew().followedBy(new ConsumePlayerGuess()))
                 .withRoundState(roundState)
                 .withQuestion(question)
                 .withPlayerEligibility(new MaxGuess(counter))
-                .withScoreDistribution(new OneTryDistribution(maxToAward))
+                .withScoreDistribution(new OneTryDistribution(maxToAward, roundState.getLeaderboard()))
                 .build();
     }
 }
