@@ -42,7 +42,7 @@ public class StandardRound implements QuizRound {
         this.guessReceivedAction = GuessReceivedAction;
         this.giveUpReceivedAction = giveUpReceivedAction;
         this.scoreDistribution = scoreDistribution;
-        this.endingCondition = endingCondition;
+        this.endingCondition = endingCondition.or(() -> !playerEligibility.existsEligible(roundState.getPlayers()));
         this.roundState = roundState;
         this.updatables = updatables;
         this.playerEligibility = playerEligibility;
@@ -90,6 +90,7 @@ public class StandardRound implements QuizRound {
     @Override
     public void checkEndOfRound() {
         synchronized (hasRoundEnded) {
+            boolean bool = endingCondition.ends();
             if(!endingCondition.ends() || hasRoundEnded.get()) {
                 return;
             }
@@ -106,8 +107,7 @@ public class StandardRound implements QuizRound {
 
     @Override
     public EndingPredicate getEndingCondition() {
-        return endingCondition
-                .or(() -> !playerEligibility.existsEligible(roundState.getPlayers()));
+        return endingCondition;
     }
 
     @Override
