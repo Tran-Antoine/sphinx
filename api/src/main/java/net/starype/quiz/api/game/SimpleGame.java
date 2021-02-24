@@ -34,6 +34,7 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
     private final AtomicBoolean paused;
     private boolean waitingForNextRound;
     private UpdatableHandler updatableHandler = new GameUpdatableHandler();
+    private boolean over;
 
     public SimpleGame(Queue<? extends QuizRound> rounds, Collection<? extends Player<?>> players) {
         this(rounds, players, null);
@@ -45,6 +46,7 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
         this.paused = new AtomicBoolean(true);
         this.waitingForNextRound = false;
         this.gate = gate;
+        this.over = false;
     }
 
     /**
@@ -84,6 +86,7 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
         }
 
         if(rounds.isEmpty()) {
+            this.over = true;
             gate.gameCallback((server, game) -> server.onGameOver(sortPlayers(), game));
             return true;
         }
@@ -100,7 +103,7 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
     }
 
     @Override
-    public void onInputReceived(Object playerId, String message) {
+    public void sendInput(Object playerId, String message) {
 
         if(paused.get()) {
             return;
@@ -208,6 +211,11 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
                 .filter(player -> player.getId().equals(playerId))
                 .findAny();
         optPlayer.ifPresent(players::remove);
+    }
+
+    @Override
+    public boolean isGameOver() {
+        return over;
     }
 
     private List<? extends Player<?>> sortPlayers() {

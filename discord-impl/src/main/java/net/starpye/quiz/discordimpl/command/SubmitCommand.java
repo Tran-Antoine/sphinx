@@ -5,7 +5,6 @@ import discord4j.core.object.entity.Message;
 import net.starpye.quiz.discordimpl.game.GameList;
 import net.starype.quiz.api.game.QuizGame;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -37,7 +36,7 @@ public class SubmitCommand implements QuizCommand {
         }
 
         QuizGame game = gameList.getFromPlayer(authorId).get();
-        game.onInputReceived(authorId, args[1].substring(2, args[1].length()-2));
+        game.sendInput(authorId, args[1].substring(2, args[1].length()-2));
         message.delete().block();
     }
 

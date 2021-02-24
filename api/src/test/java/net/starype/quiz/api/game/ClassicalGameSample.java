@@ -4,7 +4,6 @@ import net.starype.quiz.api.game.mock.MockPlayer;
 import net.starype.quiz.api.game.mock.MockServer;
 import net.starype.quiz.api.game.player.Player;
 
-import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
@@ -25,7 +24,7 @@ public class ClassicalGameSample {
             System.out.println("Listening to inputs:");
             String input = scanner.nextLine();
             String[] inputArgs = input.split(" ");
-            game.onInputReceived(players.get(Integer.parseInt(inputArgs[0])), inputArgs[1]);
+            game.sendInput(players.get(Integer.parseInt(inputArgs[0])), inputArgs[1]);
             game.update();
         }
     }

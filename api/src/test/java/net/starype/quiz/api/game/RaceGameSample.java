@@ -21,7 +21,7 @@ public class RaceGameSample {
         while(!server.isGameOver()) {
             System.out.println("Listening to inputs:");
             String answer = scanner.nextLine();
-            game.onInputReceived(me, answer);
+            game.sendInput(me, answer);
             game.update();
         }
 
