@@ -1,8 +1,8 @@
 package net.starype.quiz.discordimpl.game;
 
-import net.starype.quiz.api.game.ClassicalRoundFactory;
-import net.starype.quiz.api.game.QuizRound;
-import net.starype.quiz.api.game.IndividualRoundFactory;
+import net.starype.quiz.api.round.ClassicalRoundFactory;
+import net.starype.quiz.api.round.QuizRound;
+import net.starype.quiz.api.round.IndividualRoundFactory;
 import net.starype.quiz.api.question.Question;
 
 import java.util.Arrays;

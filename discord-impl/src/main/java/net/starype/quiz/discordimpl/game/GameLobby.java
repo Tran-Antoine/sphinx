@@ -13,7 +13,7 @@ import net.starype.quiz.discordimpl.util.MessageUtils;
 import net.starype.quiz.api.database.QuestionQueries;
 import net.starype.quiz.api.database.QuestionQuery;
 import net.starype.quiz.api.database.QuizQueryable;
-import net.starype.quiz.api.game.QuizRound;
+import net.starype.quiz.api.round.QuizRound;
 import net.starype.quiz.api.question.Question;
 
 import javax.imageio.ImageIO;

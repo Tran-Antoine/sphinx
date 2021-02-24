@@ -1,6 +1,6 @@
 package net.starype.quiz.api.server;
 
-import net.starype.quiz.api.game.QuizRound;
+import net.starype.quiz.api.round.QuizRound;
 import net.starype.quiz.api.game.GameRoundReport;
 import net.starype.quiz.api.game.PlayerGuessContext;
 import net.starype.quiz.api.game.MutableGuessContext;

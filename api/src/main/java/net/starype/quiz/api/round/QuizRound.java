@@ -1,6 +1,8 @@
-package net.starype.quiz.api.game;
+package net.starype.quiz.api.round;
 
 import net.starype.quiz.api.event.UpdatableHandler;
+import net.starype.quiz.api.game.PlayerGuessContext;
+import net.starype.quiz.api.game.QuizGame;
 import net.starype.quiz.api.player.Player;
 import net.starype.quiz.api.round.GameRound;
 

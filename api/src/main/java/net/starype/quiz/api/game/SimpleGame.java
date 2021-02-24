@@ -5,6 +5,7 @@ import net.starype.quiz.api.event.GameUpdatableHandler;
 import net.starype.quiz.api.event.UpdatableHandler;
 import net.starype.quiz.api.player.Player;
 import net.starype.quiz.api.round.GameRound;
+import net.starype.quiz.api.round.QuizRound;
 import net.starype.quiz.api.server.GameServer;
 import net.starype.quiz.api.server.ServerGate;
 

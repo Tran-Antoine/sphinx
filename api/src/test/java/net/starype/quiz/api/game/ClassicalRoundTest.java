@@ -7,6 +7,8 @@ import net.starype.quiz.api.event.UpdatableHandler;
 import net.starype.quiz.api.game.mock.MockPlayer;
 import net.starype.quiz.api.game.mock.MockQuestion;
 import net.starype.quiz.api.player.Player;
+import net.starype.quiz.api.round.ClassicalRoundFactory;
+import net.starype.quiz.api.round.QuizRound;
 import org.junit.Assert;
 import org.junit.Test;
 

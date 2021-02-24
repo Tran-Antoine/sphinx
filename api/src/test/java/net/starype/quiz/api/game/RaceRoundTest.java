@@ -9,6 +9,8 @@ import net.starype.quiz.api.player.Player;
 import net.starype.quiz.api.question.Question;
 import net.starype.quiz.api.question.QuestionDifficulty;
 import net.starype.quiz.api.question.QuestionTag;
+import net.starype.quiz.api.round.QuizRound;
+import net.starype.quiz.api.round.RaceRoundFactory;
 import org.junit.Assert;
 import org.junit.Test;
 

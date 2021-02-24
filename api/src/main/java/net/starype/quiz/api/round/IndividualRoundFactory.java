@@ -1,6 +1,8 @@
-package net.starype.quiz.api.game;
+package net.starype.quiz.api.round;
 
-import net.starype.quiz.api.round.*;
+import net.starype.quiz.api.game.GuessCounter;
+import net.starype.quiz.api.game.MaxGuess;
+import net.starype.quiz.api.game.OneTryDistribution;
 import net.starype.quiz.api.question.Question;
 
 public class IndividualRoundFactory {

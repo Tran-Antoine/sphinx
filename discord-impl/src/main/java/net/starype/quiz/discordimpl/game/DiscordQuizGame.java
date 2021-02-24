@@ -1,7 +1,7 @@
 package net.starype.quiz.discordimpl.game;
 
 import discord4j.common.util.Snowflake;
-import net.starype.quiz.api.game.QuizRound;
+import net.starype.quiz.api.round.QuizRound;
 import net.starype.quiz.api.game.SimpleGame;
 import net.starype.quiz.api.player.Player;
 import net.starype.quiz.api.server.ServerGate;
