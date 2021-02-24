@@ -1,6 +1,6 @@
 package net.starype.quiz.api.game.mock;
 
-import net.starype.quiz.api.game.player.Player;
+import net.starype.quiz.api.player.Player;
 
 import java.util.UUID;
 

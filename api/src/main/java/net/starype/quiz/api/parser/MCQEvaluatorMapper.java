@@ -1,8 +1,8 @@
 package net.starype.quiz.api.parser;
 
 import net.starype.quiz.api.database.ReadableRawMap;
-import net.starype.quiz.api.game.answer.MCQEvaluator;
-import net.starype.quiz.api.game.answer.MCQAnswerFactory;
+import net.starype.quiz.api.answer.MCQEvaluator;
+import net.starype.quiz.api.answer.MCQAnswerFactory;
 
 /**
  * Mapper for the {@link MCQEvaluator} object

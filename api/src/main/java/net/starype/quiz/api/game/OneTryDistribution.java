@@ -1,6 +1,6 @@
 package net.starype.quiz.api.game;
 
-import net.starype.quiz.api.game.player.Player;
+import net.starype.quiz.api.player.Player;
 
 public class OneTryDistribution implements ScoreDistribution {
 

@@ -1,8 +1,8 @@
 package net.starype.quiz.api.parser;
 
 import net.starype.quiz.api.database.ReadableRawMap;
-import net.starype.quiz.api.game.answer.BinaryLossFunction;
-import net.starype.quiz.api.game.answer.LossFunction;
+import net.starype.quiz.api.answer.BinaryLossFunction;
+import net.starype.quiz.api.answer.LossFunction;
 import net.starype.quiz.api.util.StringUtils;
 
 /**

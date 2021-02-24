@@ -1,10 +1,10 @@
 package net.starype.quiz.api.parser;
 
 import net.starype.quiz.api.database.ReadableRawMap;
-import net.starype.quiz.api.game.answer.WordAnswerFactory;
+import net.starype.quiz.api.answer.WordAnswerFactory;
 
 /**
- * Mapper for the {@link net.starype.quiz.api.game.answer.WordAnswerEvaluator} object
+ * Mapper for the {@link net.starype.quiz.api.answer.WordAnswerEvaluator} object
  */
 public class WordEvaluatorMapper implements ConfigMapper<PartialEvaluator> {
 
