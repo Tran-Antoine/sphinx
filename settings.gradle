@@ -1,3 +1,5 @@
 rootProject.name = 'quiz'
 include 'api'
 include 'discord-impl'
+include 'samples'
+
