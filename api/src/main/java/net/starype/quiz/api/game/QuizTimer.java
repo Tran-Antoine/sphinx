@@ -1,7 +1,7 @@
 package net.starype.quiz.api.game;
 
-import net.starype.quiz.api.game.event.GameUpdatable;
-import net.starype.quiz.api.game.event.UpdatableHandler;
+import net.starype.quiz.api.event.GameUpdatable;
+import net.starype.quiz.api.event.UpdatableHandler;
 
 import java.time.Duration;
 import java.time.Instant;

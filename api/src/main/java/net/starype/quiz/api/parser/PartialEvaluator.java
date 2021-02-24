@@ -1,8 +1,8 @@
 package net.starype.quiz.api.parser;
 
-import net.starype.quiz.api.game.answer.Answer;
-import net.starype.quiz.api.game.answer.AnswerEvaluator;
-import net.starype.quiz.api.game.answer.AnswerProcessor;
+import net.starype.quiz.api.answer.Answer;
+import net.starype.quiz.api.answer.AnswerEvaluator;
+import net.starype.quiz.api.answer.AnswerProcessor;
 
 import java.util.Set;
 

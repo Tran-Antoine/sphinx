@@ -1,6 +1,6 @@
 package net.starype.quiz.api.database;
 
-import net.starype.quiz.api.game.question.QuestionDifficulty;
+import net.starype.quiz.api.question.QuestionDifficulty;
 
 public final class QuestionQueries {
 

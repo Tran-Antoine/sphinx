@@ -1,8 +1,8 @@
 package net.starype.quiz.api.parser;
 
 import net.starype.quiz.api.database.ReadableRawMap;
-import net.starype.quiz.api.game.answer.AnswerProcessor;
-import net.starype.quiz.api.game.answer.CleanSeparatorProcessor;
+import net.starype.quiz.api.answer.AnswerProcessor;
+import net.starype.quiz.api.answer.CleanSeparatorProcessor;
 
 /**
  * Mapper for the {@link CleanSeparatorProcessor} object

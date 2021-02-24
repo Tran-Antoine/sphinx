@@ -1,6 +1,6 @@
 package net.starype.quiz.api.database;
 
-import net.starype.quiz.api.game.question.Question;
+import net.starype.quiz.api.question.Question;
 
 import java.util.List;
 import java.util.Optional;

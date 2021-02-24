@@ -1,7 +1,7 @@
 package net.starype.quiz.api.game;
 
-import net.starype.quiz.api.game.answer.Answer;
-import net.starype.quiz.api.game.player.Player;
+import net.starype.quiz.api.answer.Answer;
+import net.starype.quiz.api.player.Player;
 
 public class MutableGuessContext implements PlayerGuessContext {
 

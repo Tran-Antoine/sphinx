@@ -1,7 +1,7 @@
 package net.starype.quiz.api.game;
 
-import net.starype.quiz.api.game.player.IDHolder;
-import net.starype.quiz.api.game.player.Player;
+import net.starype.quiz.api.player.IDHolder;
+import net.starype.quiz.api.player.Player;
 
 import java.util.concurrent.atomic.AtomicReference;
 

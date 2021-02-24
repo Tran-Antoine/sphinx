@@ -1,7 +1,7 @@
 package net.starype.quiz.api.parser;
 
 import net.starype.quiz.api.database.ReadableRawMap;
-import net.starype.quiz.api.game.answer.*;
+import net.starype.quiz.api.answer.*;
 import net.starype.quiz.api.util.StringUtils;
 
 import java.util.Arrays;

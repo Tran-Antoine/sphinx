@@ -1,7 +1,7 @@
 package net.starype.quiz.api.parser;
 
 import net.starype.quiz.api.database.ReadableRawMap;
-import net.starype.quiz.api.game.answer.ExactAnswerEvaluator;
+import net.starype.quiz.api.answer.ExactAnswerEvaluator;
 
 /**
  * Mapper for the {@link ExactAnswerEvaluator} object

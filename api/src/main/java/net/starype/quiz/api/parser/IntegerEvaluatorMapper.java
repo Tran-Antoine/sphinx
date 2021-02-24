@@ -1,10 +1,10 @@
 package net.starype.quiz.api.parser;
 
 import net.starype.quiz.api.database.ReadableRawMap;
-import net.starype.quiz.api.game.answer.IntegerAnswerEvaluator;
-import net.starype.quiz.api.game.answer.IntegerAnswerFactory;
-import net.starype.quiz.api.game.answer.LinearLossFunction;
-import net.starype.quiz.api.game.answer.RangedAnswerFactory;
+import net.starype.quiz.api.answer.IntegerAnswerEvaluator;
+import net.starype.quiz.api.answer.IntegerAnswerFactory;
+import net.starype.quiz.api.answer.LinearLossFunction;
+import net.starype.quiz.api.answer.RangedAnswerFactory;
 import net.starype.quiz.api.util.StringUtils;
 
 /**

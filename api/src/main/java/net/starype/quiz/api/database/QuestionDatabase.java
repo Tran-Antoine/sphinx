@@ -1,7 +1,7 @@
 package net.starype.quiz.api.database;
 
 import net.starype.quiz.api.database.QuestionQuery.QueryData;
-import net.starype.quiz.api.game.question.Question;
+import net.starype.quiz.api.question.Question;
 import net.starype.quiz.api.parser.QuestionParser;
 import net.starype.quiz.api.util.RandomComparator;
 import net.starype.quiz.api.util.StringUtils;

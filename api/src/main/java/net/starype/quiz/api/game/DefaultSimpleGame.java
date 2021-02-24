@@ -1,6 +1,7 @@
 package net.starype.quiz.api.game;
 
-import net.starype.quiz.api.game.player.Player;
+import net.starype.quiz.api.player.Player;
+import net.starype.quiz.api.round.QuizRound;
 import net.starype.quiz.api.server.GameServer;
 import net.starype.quiz.api.server.ServerGate;
 
