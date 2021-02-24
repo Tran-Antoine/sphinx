@@ -2,7 +2,7 @@ package net.starype.quiz.api.game;
 
 import net.starype.quiz.api.game.mock.MockPlayer;
 import net.starype.quiz.api.game.mock.MockServer;
-import net.starype.quiz.api.game.player.Player;
+import net.starype.quiz.api.player.Player;
 
 import java.util.Scanner;
 
@@ -21,7 +21,7 @@ public class RaceGameSample {
         while(!server.isGameOver()) {
             System.out.println("Listening to inputs:");
             String answer = scanner.nextLine();
-            game.onInputReceived(me, answer);
+            game.sendInput(me, answer);
             game.update();
         }
 

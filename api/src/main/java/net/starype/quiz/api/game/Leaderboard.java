@@ -1,7 +1,7 @@
 package net.starype.quiz.api.game;
 
 import net.starype.quiz.api.game.ScoreDistribution.Standing;
-import net.starype.quiz.api.game.player.Player;
+import net.starype.quiz.api.player.Player;
 
 import java.util.ArrayList;
 import java.util.List;

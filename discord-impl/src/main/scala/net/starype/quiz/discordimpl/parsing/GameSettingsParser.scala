@@ -1,9 +1,11 @@
 package net.starype.quiz.discordimpl.parsing
 
 import net.starype.quiz.api.game._
-import net.starype.quiz.api.game.question.Question
-
+import net.starype.quiz.api.question.Question
 import java.util.concurrent.TimeUnit
+
+import net.starype.quiz.api.round.{ClassicalRoundFactory, IndividualRoundFactory, PollRoundFactory, QuizRound, TimedRaceRoundFactory}
+
 import scala.util.parsing.combinator.RegexParsers
 
 class GameSettingsParser extends RegexParsers {

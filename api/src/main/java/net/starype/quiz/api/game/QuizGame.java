@@ -1,7 +1,7 @@
 package net.starype.quiz.api.game;
 
 
-import net.starype.quiz.api.game.round.GameRound;
+import net.starype.quiz.api.round.GameRound;
 import net.starype.quiz.api.server.GameServer;
 import net.starype.quiz.api.server.ServerGate;
 
@@ -23,7 +23,7 @@ import java.util.function.Consumer;
  *         Typically, when a question is released, it will ask the game to transmit the information to the server.
  *     </li>
  *     <li>
- *         Support for input reception (through {@link #onInputReceived(Object, String)}.
+ *         Support for input reception (through {@link #sendInput(Object, String)}.
  *         All the game logic depends on the inputs sent by players. When and how input is sent depends on each
  *         implementation.
  *     </li>
@@ -101,7 +101,7 @@ public interface QuizGame {
      * @param playerId the ID of the player who sent a message
      * @param message the message provided
      */
-    void onInputReceived(Object playerId, String message);
+    void sendInput(Object playerId, String message);
 
 
     /**
@@ -126,4 +126,10 @@ public interface QuizGame {
      * @param round the current round
      */
     void onRoundEnded(GameRound round);
+
+    /**
+     * Determine whether the game is still running and accepting inputs
+     * @return whether the game is over or not
+     */
+    boolean isGameOver();
 }

@@ -1,12 +1,14 @@
 package net.starype.quiz.api.game;
 
-import net.starype.quiz.api.game.answer.CorrectAnswerFactory;
-import net.starype.quiz.api.game.answer.WordAnswerFactory;
-import net.starype.quiz.api.game.event.GameUpdatableHandler;
-import net.starype.quiz.api.game.event.UpdatableHandler;
+import net.starype.quiz.api.answer.CorrectAnswerFactory;
+import net.starype.quiz.api.answer.WordAnswerFactory;
+import net.starype.quiz.api.event.GameUpdatableHandler;
+import net.starype.quiz.api.event.UpdatableHandler;
 import net.starype.quiz.api.game.mock.MockPlayer;
 import net.starype.quiz.api.game.mock.MockQuestion;
-import net.starype.quiz.api.game.player.Player;
+import net.starype.quiz.api.player.Player;
+import net.starype.quiz.api.round.ClassicalRoundFactory;
+import net.starype.quiz.api.round.QuizRound;
 import org.junit.Assert;
 import org.junit.Test;
 

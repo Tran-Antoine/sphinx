@@ -1,6 +1,6 @@
 package net.starype.quiz.api.database;
 
-import net.starype.quiz.api.game.player.IDHolder;
+import net.starype.quiz.api.player.IDHolder;
 
 import java.nio.ByteBuffer;
 import java.util.Objects;

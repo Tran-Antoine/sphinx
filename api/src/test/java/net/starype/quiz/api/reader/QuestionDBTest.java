@@ -3,7 +3,7 @@ package net.starype.quiz.api.reader;
 import net.starype.quiz.api.database.QuestionQueries;
 import net.starype.quiz.api.database.QuizQueryable;
 import net.starype.quiz.api.database.QuestionDatabases;
-import net.starype.quiz.api.game.question.Question;
+import net.starype.quiz.api.question.Question;
 
 import java.util.List;
 

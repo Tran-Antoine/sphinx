@@ -1,13 +1,13 @@
 package net.starype.quiz.api.server;
 
-import net.starype.quiz.api.game.QuizRound;
+import net.starype.quiz.api.round.QuizRound;
 import net.starype.quiz.api.game.GameRoundReport;
 import net.starype.quiz.api.game.PlayerGuessContext;
 import net.starype.quiz.api.game.MutableGuessContext;
 import net.starype.quiz.api.game.QuizGame;
-import net.starype.quiz.api.game.event.UpdatableHandler;
-import net.starype.quiz.api.game.player.Player;
-import net.starype.quiz.api.game.question.Question;
+import net.starype.quiz.api.event.UpdatableHandler;
+import net.starype.quiz.api.player.Player;
+import net.starype.quiz.api.question.Question;
 
 import java.util.Collection;
 import java.util.List;
