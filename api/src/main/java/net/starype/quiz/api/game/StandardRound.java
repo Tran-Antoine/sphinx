@@ -90,7 +90,6 @@ public class StandardRound implements QuizRound {
     @Override
     public void checkEndOfRound() {
         synchronized (hasRoundEnded) {
-            boolean bool = endingCondition.ends();
             if(!endingCondition.ends() || hasRoundEnded.get()) {
                 return;
             }
