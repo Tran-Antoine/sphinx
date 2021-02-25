@@ -53,7 +53,13 @@ public class CompiledQuestionSetCommand implements QuizCommand {
 
         SerializedIO serializedIO = new ByteSerializedIO(dbData, new AtomicReference<>());
         QuestionDatabase database = new QuestionDatabase(Collections.emptyList(), serializedIO, true);
-        database.sync();
+        try {
+            database.sync();
+        } catch (Exception ignored) {
+            MessageUtils.makeTemporary(channel, message);
+            MessageUtils.createTemporaryMessage("Invalid file", channel);
+            return;
+        }
         lobby.setQueryObject(database);
 
         lobby.trackMessage(message.getId());

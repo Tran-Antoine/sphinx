@@ -16,8 +16,8 @@ import java.io.IOException;
 
 public class BotMain {
 
-    public static void main(String[] args) throws IOException {
-        GatewayDiscordClient client = DiscordClientBuilder.create(readToken())
+    public static void main(String[] args) {
+        GatewayDiscordClient client = DiscordClientBuilder.create(System.getenv("BOT_TOKEN"))
                 .build()
                 .login()
                 .block();
@@ -35,10 +35,5 @@ public class BotMain {
                 .retry()
                 .subscribe(new MessageInputListener(new LobbyList(reactionListener), new GameList()));
         client.onDisconnect().block();
-    }
-
-    private static String readToken() throws IOException {
-        BufferedReader reader = new BufferedReader(new FileReader("discord-impl/src/main/resources/token.txt"));
-        return reader.readLine();
     }
 }
