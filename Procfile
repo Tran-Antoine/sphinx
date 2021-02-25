@@ -1,1 +1,1 @@
-worker: java -jar "discord-impl/build/libs/discord-impl-all.jar" -Xms1024M
+worker: java -jar -Xms1024M discord-impl/build/libs/discord-impl-all.jar
