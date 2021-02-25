@@ -12,9 +12,6 @@ import java.util.List;
 
 public class HelloServer implements GameServer<QuizGame> {
 
-    private boolean gameOver = false;
-
-
     @Override
     public void onRoundStarting(QuizGame game, boolean firstRound) {
         if(firstRound) {
@@ -38,7 +35,6 @@ public class HelloServer implements GameServer<QuizGame> {
     @Override
     public void onGameOver(List<? extends Player<?>> standings, QuizGame game) {
         System.out.println("All rounds have been played. Game successfully stopped");
-        gameOver = true;
     }
 
     @Override
@@ -68,9 +64,5 @@ public class HelloServer implements GameServer<QuizGame> {
     @Override
     public void onQuestionReleased(Question question) {
         System.out.println(question.getRawQuestion());
-    }
-
-    public boolean isGameOver() {
-        return gameOver;
     }
 }
