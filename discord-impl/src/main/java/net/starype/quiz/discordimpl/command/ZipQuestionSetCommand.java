@@ -47,7 +47,13 @@ public class ZipQuestionSetCommand implements QuizCommand {
 
         GameLobby lobby = lobbyList.findByAuthor(authorId).get();
         QuestionDatabase database = new QuestionDatabase(updaters, serializedIO, false);
-        database.sync();
+        try {
+            database.sync();
+        } catch (Exception ignored) {
+            MessageUtils.makeTemporary(channel, message);
+            MessageUtils.createTemporaryMessage("Invalid file", channel);
+            return;
+        }
 
         lobby.setQueryObject(database);
 
