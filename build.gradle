@@ -1,6 +1,7 @@
 subprojects {
 
     apply plugin: 'java'
+
     targetCompatibility = '1.11'
     sourceCompatibility = '1.11'
 
