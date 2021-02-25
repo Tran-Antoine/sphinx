@@ -17,7 +17,7 @@ import java.io.IOException;
 public class BotMain {
 
     public static void main(String[] args) throws IOException {
-        GatewayDiscordClient client = DiscordClientBuilder.create(readToken())
+        GatewayDiscordClient client = DiscordClientBuilder.create(System.getenv("BOT_TOKEN"))
                 .build()
                 .login()
                 .block();

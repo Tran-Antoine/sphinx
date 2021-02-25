@@ -1,9 +1,8 @@
-/*
 plugins {
-    id 'scala'
-}*/
+    id "com.github.johnrengelman.shadow" version "6.1.0"
+}
 
-group 'net.starype.quiz.api'
+group 'net.starype.quiz.discordimpl'
 
 dependencies {
     implementation 'org.scala-lang:scala-library:2.11.10'
@@ -12,4 +11,10 @@ dependencies {
     compile group: 'org.scilab.forge', name: 'jlatexmath', version: '1.0.7'
     implementation 'org.scala-lang.modules:scala-parser-combinators_2.11:1.0.2'
     implementation "com.discord4j:discord4j-core:3.1.1"
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'net.starype.quiz.discordimpl.core.BotMain'
+    }
 }

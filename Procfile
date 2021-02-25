@@ -1,0 +1,1 @@
+worker: java -jar "discord-impl/build/libs/discord-impl-all.jar"
