@@ -24,7 +24,7 @@ public class ClassicalGameSample {
             System.out.println("Listening to inputs:");
             String input = scanner.nextLine();
             String[] inputArgs = input.split(" ");
-            game.onInputReceived(players.get(Integer.parseInt(inputArgs[0])), inputArgs[1]);
+            game.sendInput(players.get(Integer.parseInt(inputArgs[0])), inputArgs[1]);
             game.update();
         }
     }
