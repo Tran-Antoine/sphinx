@@ -9,6 +9,7 @@ import net.starype.quiz.api.database.QuestionDatabase;
 import net.starype.quiz.api.database.SerializedIO;
 import net.starype.quiz.discordimpl.game.GameLobby;
 import net.starype.quiz.discordimpl.game.LobbyList;
+import net.starype.quiz.discordimpl.util.CounterLimiter;
 import net.starype.quiz.discordimpl.util.InputUtils;
 import net.starype.quiz.discordimpl.util.MessageUtils;
 
@@ -40,7 +41,7 @@ public class ZipQuestionSetCommand implements QuizCommand {
         }
 
         String url = findUrl(message, args);
-        Collection<? extends EntryUpdater> updaters = InputUtils.loadEntryUpdaters(url, channel, context.getDiscordContext().downloadingLimiter());
+        Collection<? extends EntryUpdater> updaters = InputUtils.loadEntryUpdaters(url, channel);
         SerializedIO serializedIO = new ByteSerializedIO(new byte[0], new AtomicReference<>());
 
         GameLobby lobby = lobbyList.findByAuthor(authorId).get();

@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.starype.quiz.discordimpl.game.GameList;
 import net.starype.quiz.discordimpl.game.GameLobby;
 import net.starype.quiz.discordimpl.game.LobbyList;
+import net.starype.quiz.discordimpl.util.CounterLimiter;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -13,10 +14,12 @@ import java.util.function.Supplier;
 
 public class CreateLobbyCommand implements QuizCommand {
 
+    private static final CounterLimiter lobbyLimiter = new CounterLimiter(5, .1);
+
     @Override
     public void execute(CommandContext context) {
 
-        if(!context.getDiscordContext().lobbyLimiter().acquireInstance(Thread.currentThread().getId())) {
+        if(!lobbyLimiter.acquireInstance(Thread.currentThread().getId())) {
             context.getChannel().sendMessage("Error: max lobby limit has been reached").queue();
             return;
         }
@@ -39,7 +42,7 @@ public class CreateLobbyCommand implements QuizCommand {
 
         LobbyList lobbies = context.getLobbyList();
         GameLobby lobby = lobbies.registerLobby(channel, author,
-                () -> context.getDiscordContext().lobbyLimiter().releaseInstance(Thread.currentThread().getId()));
+                () -> lobbyLimiter.releaseInstance(Thread.currentThread().getId()));
         lobby.trackMessage(message.getId());
     }
 

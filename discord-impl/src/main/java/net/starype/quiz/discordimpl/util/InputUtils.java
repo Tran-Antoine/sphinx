@@ -18,12 +18,14 @@ import java.util.zip.ZipInputStream;
 
 public class InputUtils {
 
-    public static Collection<? extends EntryUpdater> loadEntryUpdaters(String urlName, TextChannel channel, DiscordContext.CounterLimiter limiter) {
+    private static final CounterLimiter downloadingLimiter = new CounterLimiter(5, 5.);
+
+    public static Collection<? extends EntryUpdater> loadEntryUpdaters(String urlName, TextChannel channel) {
         Set<EntryUpdater> updaters = new HashSet<>();
 
         try {
             URL url = new URL(urlName);
-            if(!limiter.acquireInstance(Thread.currentThread().getId())) {
+            if(!downloadingLimiter.acquireInstance(Thread.currentThread().getId())) {
                 channel.sendMessage("Error: The limit of downloading zip as been reached").queue();
                 return updaters;
             }
@@ -36,7 +38,7 @@ public class InputUtils {
             }
 
             // Release the instance of the current thread (as we finished the download process)
-            limiter.releaseInstance(Thread.currentThread().getId());
+            downloadingLimiter.releaseInstance(Thread.currentThread().getId());
         } catch (IOException ignored) {
             channel.sendMessage("Error: couldn't load the provided zip archive").queue();
         }

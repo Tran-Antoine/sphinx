@@ -8,7 +8,6 @@ import net.starype.quiz.discordimpl.game.GameList;
 import net.starype.quiz.discordimpl.game.LobbyList;
 import net.starype.quiz.discordimpl.input.MessageInputListener;
 import net.starype.quiz.discordimpl.input.ReactionInputListener;
-import net.starype.quiz.discordimpl.util.DiscordContext;
 
 public class BotMain {
 
@@ -21,7 +20,7 @@ public class BotMain {
                 .build();
 
         ReactionInputListener reactionListener = new ReactionInputListener();
-        jda.addEventListener(new MessageInputListener(new LobbyList(reactionListener), new GameList(), new DiscordContext()));
+        jda.addEventListener(new MessageInputListener(new LobbyList(reactionListener), new GameList()));
         jda.addEventListener(reactionListener);
     }
 }
