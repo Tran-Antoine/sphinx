@@ -1,5 +1,6 @@
 package net.starype.quiz.discordimpl.command;
 
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.starype.quiz.discordimpl.game.GameList;
 import net.starype.quiz.discordimpl.game.LobbyList;
@@ -12,7 +13,8 @@ public class LeaveCommand implements QuizCommand {
 
     @Override
     public void execute(CommandContext context) {
-        String authorId = context.getAuthor().getId();
+        Member author = context.getAuthor();
+        String authorId = author.getId();
         GameList gameList = context.getGameList();
         LobbyList lobbyList = context.getLobbyList();
         TextChannel channel = context.getChannel();
@@ -23,6 +25,7 @@ public class LeaveCommand implements QuizCommand {
             return;
         }
         gameList.getFromPlayer(authorId).ifPresent(game -> game.removePlayer(authorId));
+        lobbyList.findByPlayer(authorId).ifPresent(lobby -> lobby.unregisterPlayer(authorId, author.getEffectiveName()));
         channel.sendMessage("Successfully left the game/lobby").queue();
     }
 
