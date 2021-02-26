@@ -9,7 +9,6 @@ import net.starype.quiz.api.database.QuestionDatabase;
 import net.starype.quiz.api.database.SerializedIO;
 import net.starype.quiz.discordimpl.game.GameLobby;
 import net.starype.quiz.discordimpl.game.LobbyList;
-import net.starype.quiz.discordimpl.util.CounterLimiter;
 import net.starype.quiz.discordimpl.util.InputUtils;
 import net.starype.quiz.discordimpl.util.MessageUtils;
 
