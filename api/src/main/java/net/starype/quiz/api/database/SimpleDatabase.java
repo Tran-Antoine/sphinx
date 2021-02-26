@@ -132,8 +132,7 @@ public class SimpleDatabase implements Database {
         int checkSumSize = data.getInt();
         int rawDataSize = data.getInt();
         if(checkSumSize + rawDataSize + 8 != data.position() + data.remaining()) {
-            System.out.println("ERROR: The given database file was corrupted and cannot be read from");
-            return;
+            throw new IllegalArgumentException("The given database file was corrupted and cannot be read from");
         }
 
         // Read both data

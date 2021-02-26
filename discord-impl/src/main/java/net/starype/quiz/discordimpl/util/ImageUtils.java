@@ -1,6 +1,8 @@
 package net.starype.quiz.discordimpl.util;
 
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
 import net.starype.quiz.api.game.ScoreDistribution.Standing;
 
 import javax.imageio.ImageIO;
@@ -107,8 +109,13 @@ public class ImageUtils {
 
         String avatarUrl = guild
                 .retrieveMemberById((String) id)
-                .map(m -> m.getUser().getEffectiveAvatarUrl())
+                .map(Member::getUser)
+                .map(User::getAvatarUrl)
                 .complete();
+
+        if(avatarUrl == null) {
+            return;
+        }
 
         byte[] data = retrieveData(avatarUrl);
 

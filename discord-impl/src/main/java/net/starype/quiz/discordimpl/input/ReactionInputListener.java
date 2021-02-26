@@ -1,6 +1,7 @@
 package net.starype.quiz.discordimpl.input;
 
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -27,7 +28,13 @@ public class ReactionInputListener extends ListenerAdapter {
         }
 
         String messageId = reactionAddEvent.getMessageId();
-        String rawEmoji = reactionAddEvent.getReactionEmote().getEmoji();
+        ReactionEmote emote = reactionAddEvent.getReactionEmote();
+
+        if(!emote.isEmoji()) {
+            return;
+        }
+
+        String rawEmoji = emote.getEmoji();
 
 
         for (TriggerCondition condition : callBacks.keySet()) {

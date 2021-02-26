@@ -46,7 +46,7 @@ public class MessageUtils {
     private static void delete(String messageId, TextChannel channel) {
         channel
                 .retrieveMessageById(messageId)
-                .map(Message::delete)
+                .flatMap(Message::delete)
                 .queue();
     }
 }

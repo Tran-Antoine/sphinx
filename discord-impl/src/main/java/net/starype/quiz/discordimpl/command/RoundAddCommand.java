@@ -44,7 +44,7 @@ public class RoundAddCommand implements QuizCommand {
         }
 
         GameLobby lobby = lobbyList.findByAuthor(authorId).get();
-        PartialRound matchedRound = ROUND_MATCHER.loadFromValue(args[1], null).get();
+        PartialRound matchedRound = ROUND_MATCHER.loadFromValueOrDefault(args[1], null);
         int count = args.length <= 2
                 ? 1
                 : Integer.parseInt(args[2]);
@@ -55,7 +55,7 @@ public class RoundAddCommand implements QuizCommand {
 
         lobby.trackMessage(context.getMessage().getId());
         MessageUtils.sendAndTrack(
-                "Round successfully added",
+                "Round successfully added (if no known round type matches the query, 'individual' is picked instead)",
                 channel,
                 lobby
         );
@@ -70,10 +70,6 @@ public class RoundAddCommand implements QuizCommand {
         conditions.put(
                 () -> args.length < 2,
                 "You must specify the type of round you wish to queue");
-
-        conditions.put(
-                () -> ROUND_MATCHER.loadFromValue(args[1], null).isEmpty(),
-                "Could not find any round type matching the given argument");
 
         conditions.put(
                 () -> args.length == 3 && (args[2].length() != 1 || !Character.isDigit(args[2].charAt(0))),
