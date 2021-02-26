@@ -7,10 +7,7 @@ import net.starype.quiz.api.game.*;
 import net.starype.quiz.api.player.Player;
 import net.starype.quiz.api.question.Question;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static net.starype.quiz.api.game.ScoreDistribution.Standing;
@@ -50,11 +47,8 @@ public class StandardRound implements QuizRound {
     public void start(QuizGame game, Collection<? extends Player<?>> players,
                       UpdatableHandler updatableHandler) {
         roundState.initPlayers(players);
-        if(game == null) {
-            throw new IllegalStateException("Game cannot be null");
-        }
+        this.game = Objects.requireNonNull(game, "Game cannot be null");
         game.sendInputToServer(server -> server.onQuestionReleased(pickedQuestion));
-        this.game = game;
         updatables.forEach(updatableHandler::registerEvent);
         updatables.forEach(event -> event.start(updatableHandler));
     }
