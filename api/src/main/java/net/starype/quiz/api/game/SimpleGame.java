@@ -164,7 +164,11 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
         current.onGuessReceived(player, message);
     }
 
+    @Override
     public void onGuessContextReceived(PlayerGuessContext context) {
+        if(gate == null) {
+            return;
+        }
         gate.callback(server -> server.onPlayerGuessed(context));
     }
 
