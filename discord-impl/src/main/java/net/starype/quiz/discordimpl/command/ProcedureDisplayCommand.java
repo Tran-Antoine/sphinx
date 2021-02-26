@@ -1,17 +1,32 @@
 package net.starype.quiz.discordimpl.command;
 
+import net.dv8tion.jda.api.EmbedBuilder;
+
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.regex.Pattern;
 
-public class RulesDisplayCommand implements QuizCommand {
+public class ProcedureDisplayCommand implements QuizCommand {
 
     private static final String PATH = "discord-impl/src/main/resources/rules.md";
 
     @Override
     public void execute(CommandContext context) {
         String content = readFromFile();
-        context.getChannel().sendMessage(content).queue();
+        String[] fields = content.split(Pattern.quote("<skip>"));
+
+        EmbedBuilder builder = new EmbedBuilder();
+        builder.setColor(Color.CYAN);
+        builder.setTitle(fields[0]);
+
+        for(int i = 1; i < fields.length; i++) {
+            String field = fields[i];
+            builder.addBlankField(false);
+            builder.addField(":small_orange_diamond: Step " + i, field, false);
+        }
+        context.getChannel().sendMessage(builder.build()).queue();
     }
 
     private String readFromFile() {
@@ -31,7 +46,7 @@ public class RulesDisplayCommand implements QuizCommand {
 
     @Override
     public String getName() {
-        return "rules";
+        return "how-to-play";
     }
 
     @Override

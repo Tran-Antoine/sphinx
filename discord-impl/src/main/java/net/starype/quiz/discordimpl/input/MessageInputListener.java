@@ -76,7 +76,7 @@ public class MessageInputListener extends ListenerAdapter {
                 new LeaveCommand(),
                 new NextRoundCommand(),
                 new ForceNextRoundCommand(),
-                new RulesDisplayCommand(),
+                new ProcedureDisplayCommand(),
                 new GenerateDatabaseCommand(),
                 new CompiledQuestionSetCommand(),
                 new ZipQuestionSetCommand(),

@@ -1,13 +1,33 @@
-**--| Rules of the game |--**
+Procedure to follow to create a game
+<skip>
+**use `?create` to create a new lobby.**
 
-A Quiz game is made of one or more game round(s), and each round can get you a certain amount of points. The score you obtain depends on several factors:
+As the creator, you are the only one who's allowed to configure the game
 
-:small_orange_diamond: The accuracy of your final guess. For instance, if `Albert Einstein` was the correct answer, you might get fewer points if you answer `Einstein` than `Albert Einstein`. If you answered `Chopsticks`, you will obviously not get any points
+<skip>
+**define which question set you want to work with using either `?compiled-question-set` or `?zip-question-set`.**
 
-:small_orange_diamond: Score factors depending on the game round. For instance, some rounds give you more points if you managed to answer before everyone else. Others
-give you more points if only a few people managed to get the answer right, etc.
+For both of them you can either attach a link to the question file or attach it directly
+<skip>
+**add rounds to your game with `?add-round <round-type> <number_of_times>`.**
 
-Whenever a question is released, **there is a specific format you must conform to** if you want your guess to be taken into account. Here is the format:
-`?submit ||my answer||`
+Example:
+```
+?add-round classical 2
+?add-round poll
+?add-round wkejrlkwjerlk
+```
+This will queue 2 classical rounds, 1 poll round (1 is the number by default) and 1 individual round (which is the round by default when the round-type is invalid)
+<skip>
+**add question filters with `?add-query [and-query|or-query] [directory|tag|difficulty] <value>` (optional).**
 
-It is important that you don't forget the spoilers tag, otherwise everyone will be able to read your answer. Even if the bot deletes the answer as soon as it can, the delay makes it easy for other players (even unintentionally) to see what you submitted
+Example:
+ ```
+?add-query and_query tag Matrice
+?add-query or_query tag Eigenvalue
+```
+The first query adds the filter `tag=Matrice`. Since it is the very first query, whether you use `and_query` or `or_query` doesn't matter. The second query adds the filter `tag=Eigenvalue`. Since it is an `or_query`, it means only questions that **either** have the tag `Matrice` or `Eigenvalue` (or both) will be part of the game
+<skip>
+**use `?start` to start the game.**
+
+When a round is finished, use `?next` to vote for continuing, or `?force-next` to enforce continuation.
