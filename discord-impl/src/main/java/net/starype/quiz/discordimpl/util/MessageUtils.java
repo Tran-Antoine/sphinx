@@ -1,52 +1,52 @@
 package net.starype.quiz.discordimpl.util;
 
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.TextChannel;
-import discord4j.core.spec.MessageCreateSpec;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.starype.quiz.discordimpl.game.LogContainer;
 
+import java.io.InputStream;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class MessageUtils {
 
     public static void sendAndTrack(String text, TextChannel channel, LogContainer container) {
-        channel.createMessage(text)
+        channel.sendMessage(text)
                 .map(Message::getId)
-                .subscribe(container::trackMessage);
+                .queue(container::trackMessage);
     }
 
-    public static void sendAndTrack(Consumer<MessageCreateSpec> spec, TextChannel channel, LogContainer container) {
-        channel.createMessage(spec)
-                .map(Message::getId)
-                .subscribe(container::trackMessage);
+    public static void sendAndTrack(InputStream image, String name, TextChannel channel, LogContainer container) {
+        channel
+                .sendFile(image, name)
+                .queue(message -> container.trackMessage(message.getId()));
     }
 
     public static void createTemporaryMessage(String value, TextChannel channel) {
-        Optional<Message> optMessage = channel.createMessage(value).blockOptional();
-        if(optMessage.isEmpty()) {
+        Message message = channel.sendMessage(value).complete();
+        if(message == null) {
             return;
         }
         ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
-        service.schedule(() -> delete(optMessage.get(), channel), 5, TimeUnit.SECONDS);
+        service.schedule(() -> delete(message.getId(), channel), 5, TimeUnit.SECONDS);
     }
 
     public static void makeTemporary(TextChannel channel, Message message) {
         ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
-        service.schedule(() -> delete(message, channel), 5, TimeUnit.SECONDS);
+        service.schedule(() -> delete(message.getId(), channel), 5, TimeUnit.SECONDS);
     }
 
-    private static void delete(Message message, TextChannel channel) {
-        boolean stillExists = channel.getMessageById(message.getId())
-                .map(Objects::nonNull)
-                .blockOptional()
-                .orElse(false);
-        if(stillExists) {
-            message.delete().subscribe();
-        }
+    private static void delete(String messageId, TextChannel channel) {
+        channel
+                .retrieveMessageById(messageId)
+                .flatMap(Message::delete)
+                .queue();
     }
 }

@@ -1,9 +1,8 @@
 package net.starype.quiz.discordimpl.command;
 
-import discord4j.common.util.Snowflake;
-import discord4j.core.object.entity.Message;
-import net.starype.quiz.discordimpl.game.GameList;
+import net.dv8tion.jda.api.entities.Message;
 import net.starype.quiz.api.game.QuizGame;
+import net.starype.quiz.discordimpl.game.GameList;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -24,7 +23,7 @@ public class SubmitCommand implements QuizCommand {
     @Override
     public void execute(CommandContext context) {
 
-        Snowflake authorId = context.getAuthor().getId();
+        String authorId = context.getAuthor().getId();
         GameList gameList = context.getGameList();
         String[] args = context.getArgs();
 
@@ -37,10 +36,10 @@ public class SubmitCommand implements QuizCommand {
 
         QuizGame game = gameList.getFromPlayer(authorId).get();
         game.sendInput(authorId, args[1].substring(2, args[1].length()-2));
-        message.delete().block();
+        message.delete().queue();
     }
 
-    private static Map<Supplier<Boolean>, String> createStopConditions(Snowflake authorId, GameList gameList, String[] args) {
+    private static Map<Supplier<Boolean>, String> createStopConditions(String authorId, GameList gameList, String[] args) {
         Map<Supplier<Boolean>, String> conditions = new LinkedHashMap<>();
         conditions.put(
                 () -> !gameList.isPlaying(authorId),

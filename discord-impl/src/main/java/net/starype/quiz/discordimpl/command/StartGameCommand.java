@@ -1,7 +1,6 @@
 package net.starype.quiz.discordimpl.command;
 
-import discord4j.common.util.Snowflake;
-import discord4j.core.object.entity.Member;
+import net.dv8tion.jda.api.entities.Member;
 import net.starype.quiz.discordimpl.game.GameLobby;
 import net.starype.quiz.discordimpl.game.LobbyList;
 
@@ -25,9 +24,9 @@ public class StartGameCommand implements QuizCommand {
     public void execute(CommandContext context) {
         LobbyList lobbyList = context.getLobbyList();
         Member author = context.getAuthor();
-        Snowflake authorId = author.getId();
+        String authorId = author.getId();
 
-        Map<Supplier<Boolean>, String> conditions = createStopConditions(lobbyList, authorId, author.getDisplayName());
+        Map<Supplier<Boolean>, String> conditions = createStopConditions(lobbyList, authorId, author.getEffectiveName());
 
         if(StopConditions.shouldStop(conditions, context.getChannel(), context.getMessage())) {
             return;
@@ -40,7 +39,7 @@ public class StartGameCommand implements QuizCommand {
         }
     }
 
-    private static Map<Supplier<Boolean>, String> createStopConditions(LobbyList lobbyList, Snowflake playerId,
+    private static Map<Supplier<Boolean>, String> createStopConditions(LobbyList lobbyList, String playerId,
                                                                        String nickName) {
         Map<Supplier<Boolean>, String> conditions = new LinkedHashMap<>();
 

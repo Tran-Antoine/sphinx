@@ -1,8 +1,7 @@
 package net.starype.quiz.discordimpl.game;
 
-import discord4j.common.util.Snowflake;
-import discord4j.core.object.entity.Member;
-import discord4j.core.object.entity.channel.TextChannel;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.starype.quiz.discordimpl.input.ReactionInputListener;
 
 import java.util.HashSet;
@@ -25,7 +24,7 @@ public class LobbyList {
         String id = "lobby" + nextId++;
         GameLobby lobby = new GameLobby(channel, id);
         lobby.sendJoinImage(reactionListener);
-        lobby.registerAuthor(author.getId(), author.getDisplayName());
+        lobby.registerAuthor(author.getId(), author.getEffectiveName());
         lobbies.add(lobby);
         return lobby;
     }
@@ -34,14 +33,14 @@ public class LobbyList {
         lobbies.remove(lobby);
     }
 
-    public Optional<GameLobby> findByPlayer(Snowflake playerId) {
+    public Optional<GameLobby> findByPlayer(String playerId) {
         return lobbies
                 .stream()
                 .filter(lobby -> lobby.containsPlayer(playerId))
                 .findAny();
     }
 
-    public Optional<GameLobby> findByAuthor(Snowflake authorId) {
+    public Optional<GameLobby> findByAuthor(String authorId) {
         return lobbies
                 .stream()
                 .filter(lobby -> lobby.isAuthor(authorId))

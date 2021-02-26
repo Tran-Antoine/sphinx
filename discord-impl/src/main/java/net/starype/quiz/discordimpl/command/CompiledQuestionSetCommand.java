@@ -1,22 +1,25 @@
 package net.starype.quiz.discordimpl.command;
 
-import discord4j.common.util.Snowflake;
-import discord4j.core.object.entity.Attachment;
-import discord4j.core.object.entity.Member;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.TextChannel;
-import net.starype.quiz.discordimpl.game.GameLobby;
-import net.starype.quiz.discordimpl.game.LobbyList;
-import net.starype.quiz.discordimpl.util.MessageUtils;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.Message.Attachment;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.starype.quiz.api.database.ByteSerializedIO;
 import net.starype.quiz.api.database.QuestionDatabase;
 import net.starype.quiz.api.database.SerializedIO;
+import net.starype.quiz.discordimpl.game.GameLobby;
+import net.starype.quiz.discordimpl.game.LobbyList;
+import net.starype.quiz.discordimpl.util.MessageUtils;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
+
 
 public class CompiledQuestionSetCommand implements QuizCommand {
 
@@ -26,7 +29,7 @@ public class CompiledQuestionSetCommand implements QuizCommand {
         Member author = context.getAuthor();
         TextChannel channel = context.getChannel();
         Message message = context.getMessage();
-        Snowflake authorId = author.getId();
+        String authorId = author.getId();
         String[] args = context.getArgs();
 
         Map<Supplier<Boolean>, String> conditions = createStopConditions(
@@ -47,7 +50,7 @@ public class CompiledQuestionSetCommand implements QuizCommand {
                     .openStream()
                     .readAllBytes();
         } catch (IOException e) {
-            channel.createMessage("Error: Couldn't load .sphinx file").subscribe();
+            channel.sendMessage("Error: Couldn't load .sphinx file").queue();
             return;
         }
 
@@ -71,7 +74,7 @@ public class CompiledQuestionSetCommand implements QuizCommand {
     }
 
     private String findUrl(Message message, String[] args) {
-        Set<Attachment> attachments = message.getAttachments();
+        Collection<Attachment> attachments = message.getAttachments();
         if(attachments.size() == 1) {
             return attachments
                     .iterator()
@@ -82,7 +85,7 @@ public class CompiledQuestionSetCommand implements QuizCommand {
     }
 
     private static Map<Supplier<Boolean>, String> createStopConditions(
-            LobbyList lobbyList, Message message, Snowflake authorId, String[] args) {
+            LobbyList lobbyList, Message message, String authorId, String[] args) {
         Map<Supplier<Boolean>, String> conditions = new LinkedHashMap<>();
         conditions.put(
                 () -> lobbyList.findByAuthor(authorId).isEmpty(),

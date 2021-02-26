@@ -1,8 +1,8 @@
 package net.starype.quiz.discordimpl.util;
 
-import discord4j.common.util.Snowflake;
-import discord4j.core.object.entity.Guild;
-import discord4j.core.object.entity.Member;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
 import net.starype.quiz.api.game.ScoreDistribution.Standing;
 
 import javax.imageio.ImageIO;
@@ -12,6 +12,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.List;
 import java.util.Random;
 
@@ -43,13 +44,14 @@ public class ImageUtils {
 
         return ImageUtils.toInputStream(image);
     }
+
     private static void initBackground(int width, int height, Graphics2D graphics) {
         graphics.setBackground(new Color(54, 57, 63));
         graphics.clearRect(0, 0, width, height);
         graphics.setColor(Color.WHITE);
         graphics.addRenderingHints(new RenderingHints(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON));
-        graphics.setFont(new Font("Bowlby One SC", Font.PLAIN, height/9)); // Bowlby One SC
-        graphics.drawString("Results", width/2 - 210, height/7);
+        graphics.setFont(new Font("Bowlby One SC", Font.PLAIN, height / 9)); // Bowlby One SC
+        graphics.drawString("Results", width / 2 - 210, height / 7);
     }
 
     private static void initLeaderboard(int width, int height, Graphics2D graphics, Guild guild, List<Standing> standings) {
@@ -58,7 +60,7 @@ public class ImageUtils {
         int leaderboardSize = Math.min(standings.size(), 10);
         double maxScore = standings.get(0).getScoreAcquired();
 
-        for(Standing standing : standings.subList(0, leaderboardSize)) {
+        for (Standing standing : standings.subList(0, leaderboardSize)) {
             addLine(
                     graphics,
                     guild,
@@ -80,8 +82,8 @@ public class ImageUtils {
                 (int) (standing.getScoreAcquired() / maxScore * width * 0.7) + (int) (1.4 * imageThickness),
                 (int) (width * 0.9));
 
-        int lineCenterY = (index+1) * lineSpace;
-        int lineTopY =  lineCenterY - lineThickness/2;
+        int lineCenterY = (index + 1) * lineSpace;
+        int lineTopY = lineCenterY - lineThickness / 2;
 
         drawLeaderboardLine(graphics, lineTopY, yShift, lineLength, lineThickness);
         drawScore(graphics, height, standing, lineLength, lineCenterY, yShift);
@@ -97,25 +99,44 @@ public class ImageUtils {
 
     private static void drawScore(Graphics2D graphics, int height, Standing standing, int lineLength, int lineCenterY, int yShift) {
         graphics.setColor(Color.WHITE);
-        graphics.setFont(new Font( "SansSerif", Font.BOLD, height/25));
+        graphics.setFont(new Font("SansSerif", Font.BOLD, height / 25));
         graphics.drawString(String.valueOf(standing.getScoreAcquired()), lineLength + 12, lineCenterY + 6 + yShift);
 
     }
 
     private static void drawAvatar(Graphics2D graphics, Guild guild, Standing standing, int imageThickness, int lineLength, int width, int lineCenterY, int yShift) {
         Object id = standing.getPlayer().getId();
-        byte[] data = guild
-                .getMemberById((Snowflake) id)
-                .flatMap(Member::getAvatar)
-                .map(discord4j.rest.util.Image::getData)
-                .blockOptional()
-                .orElse(new byte[]{});
+
+        String avatarUrl = guild
+                .retrieveMemberById((String) id)
+                .map(Member::getUser)
+                .map(User::getAvatarUrl)
+                .complete();
+
+        if(avatarUrl == null) {
+            return;
+        }
+
+        byte[] data = retrieveData(avatarUrl);
+
         InputStream stream = new ByteArrayInputStream(data);
         try {
             Image image = ImageIO.read(stream);
             image = image.getScaledInstance(imageThickness, imageThickness, Image.SCALE_SMOOTH);
-            graphics.drawImage(image, (int) (lineLength - imageThickness - 0.02 * width), lineCenterY - imageThickness/2 + yShift, null);
-        } catch (IOException ignored) { }
+            graphics.drawImage(image, (int) (lineLength - imageThickness - 0.02 * width), lineCenterY - imageThickness / 2 + yShift, null);
+        } catch (IOException ignored) {
+        }
+    }
+
+    private static byte[] retrieveData(String url) {
+        try {
+            URL urlObject = new URL(url);
+            return urlObject
+                    .openStream()
+                    .readAllBytes();
+        } catch (IOException e) {
+            return new byte[]{};
+        }
     }
 
     private static Color randomColor() {

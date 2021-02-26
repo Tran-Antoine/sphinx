@@ -1,15 +1,15 @@
 package net.starype.quiz.discordimpl.game;
 
-import discord4j.core.object.entity.Guild;
-import discord4j.core.object.entity.channel.TextChannel;
-import net.starype.quiz.discordimpl.util.ImageUtils;
-import net.starype.quiz.discordimpl.util.MessageUtils;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.starype.quiz.api.game.GameRoundReport;
 import net.starype.quiz.api.game.PlayerGuessContext;
 import net.starype.quiz.api.game.ScoreDistribution.Standing;
 import net.starype.quiz.api.player.Player;
 import net.starype.quiz.api.question.Question;
 import net.starype.quiz.api.server.GameServer;
+import net.starype.quiz.discordimpl.util.ImageUtils;
+import net.starype.quiz.discordimpl.util.MessageUtils;
 import org.scilab.forge.jlatexmath.TeXFormula;
 
 import java.awt.*;
@@ -58,12 +58,10 @@ public class DiscordGameServer extends DiscordLogContainer implements GameServer
     }
 
     private void sendLeaderboard(List<Standing> standings) {
-        Guild guild = channel
-                .getGuild()
-                .block();
+        Guild guild = channel.getGuild();
         InputStream image = ImageUtils.generateLeaderboard(standings, guild);
         MessageUtils.sendAndTrack(
-                spec -> spec.addFile("standings.png", image),
+                image, "standings.png",
                 channel,
                 this);
     }
@@ -99,7 +97,7 @@ public class DiscordGameServer extends DiscordLogContainer implements GameServer
         BufferedImage bufferedImage = ImageUtils.toBufferedImage(image);
         InputStream inputStream = ImageUtils.toInputStream(bufferedImage);
         MessageUtils.sendAndTrack(
-                spec -> spec.addFile("image.png", inputStream),
+                inputStream, "image.png",
                 channel,
                 this);
     }

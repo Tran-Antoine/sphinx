@@ -1,8 +1,8 @@
 package net.starype.quiz.discordimpl.command;
 
-import discord4j.core.object.entity.Member;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.TextChannel;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.starype.quiz.discordimpl.game.GameList;
 import net.starype.quiz.discordimpl.game.LobbyList;
 

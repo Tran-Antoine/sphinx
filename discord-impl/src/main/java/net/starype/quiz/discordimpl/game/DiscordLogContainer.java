@@ -1,16 +1,14 @@
 package net.starype.quiz.discordimpl.game;
 
-import discord4j.common.util.Snowflake;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.TextChannel;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.TextChannel;
 
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 public class DiscordLogContainer implements LogContainer {
 
-    private final Set<Snowflake> logs;
+    private final Set<String> logs;
     private TextChannel channel;
 
     public DiscordLogContainer(TextChannel channel) {
@@ -19,7 +17,7 @@ public class DiscordLogContainer implements LogContainer {
     }
 
     @Override
-    public void trackMessage(Snowflake id) {
+    public void trackMessage(String id) {
         logs.add(id);
     }
 
@@ -31,11 +29,7 @@ public class DiscordLogContainer implements LogContainer {
         }
     }
 
-    private void deleteLog(Snowflake id) {
-        Optional<Message> optMessage = channel.getMessageById(id).blockOptional();
-        if(optMessage.isEmpty()) {
-            return;
-        }
-        optMessage.get().delete().subscribe();
+    private void deleteLog(String id) {
+        channel.retrieveMessageById(id).flatMap(Message::delete).queue();
     }
 }

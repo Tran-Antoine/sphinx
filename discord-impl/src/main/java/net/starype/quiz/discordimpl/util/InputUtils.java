@@ -1,12 +1,13 @@
 package net.starype.quiz.discordimpl.util;
 
-import discord4j.core.object.entity.channel.TextChannel;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.starype.quiz.api.database.ByteEntryUpdater;
 import net.starype.quiz.api.database.EntryUpdater;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
-import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -29,7 +30,7 @@ public class InputUtils {
             }
 
         } catch (IOException ignored) {
-            channel.createMessage("Error: couldn't load the provided zip archive").subscribe();
+            channel.sendMessage("Error: couldn't load the provided zip archive").queue();
         }
 
         return updaters;

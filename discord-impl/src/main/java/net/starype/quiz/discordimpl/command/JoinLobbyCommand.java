@@ -1,8 +1,7 @@
 package net.starype.quiz.discordimpl.command;
 
-import discord4j.common.util.Snowflake;
-import discord4j.core.object.entity.Member;
-import discord4j.core.object.entity.channel.TextChannel;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.starype.quiz.discordimpl.game.GameList;
 import net.starype.quiz.discordimpl.game.LobbyList;
 
@@ -29,10 +28,11 @@ public class JoinLobbyCommand implements QuizCommand {
 
         Member author = context.getAuthor();
         LobbyList lobbyList = context.getLobbyList();
+        String authorName = author.getEffectiveName();
 
         Map<Supplier<Boolean>, String> stopConditions = createStopConditions(
                 context.getGameList(), lobbyList,
-                author.getId(), author.getDisplayName(),
+                author.getId(), authorName,
                 context.getArgs()
         );
         TextChannel channel = context.getChannel();
@@ -40,12 +40,12 @@ public class JoinLobbyCommand implements QuizCommand {
             return;
         }
         String lobbyName = context.getArgs()[1];
-        lobbyList.findById(lobbyName).get().registerPlayer(author.getId(), author.getDisplayName());
-        channel.createMessage("Successfully joined lobby with ID " + lobbyName).block();
+        lobbyList.findById(lobbyName).get().registerPlayer(author.getId(), authorName);
+        channel.sendMessage("Successfully joined lobby with ID " + lobbyName).queue();
     }
 
     private static Map<Supplier<Boolean>, String> createStopConditions(
-            GameList gameList, LobbyList lobbyList, Snowflake authorId, String nickName, String[] args) {
+            GameList gameList, LobbyList lobbyList, String authorId, String nickName, String[] args) {
 
         Map<Supplier<Boolean>, String> conditions = new LinkedHashMap<>();
         conditions.put(

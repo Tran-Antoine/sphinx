@@ -1,20 +1,19 @@
 package net.starype.quiz.discordimpl.game;
 
-import discord4j.common.util.Snowflake;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.TextChannel;
-import discord4j.core.object.reaction.ReactionEmoji;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.requests.RestAction;
+import net.starype.quiz.api.database.QuestionQueries;
+import net.starype.quiz.api.database.QuestionQuery;
+import net.starype.quiz.api.database.QuizQueryable;
+import net.starype.quiz.api.question.Question;
+import net.starype.quiz.api.round.QuizRound;
 import net.starype.quiz.discordimpl.command.RoundAddCommand.PartialRound;
 import net.starype.quiz.discordimpl.input.ReactionInputListener;
 import net.starype.quiz.discordimpl.input.ReactionInputListener.ReactionContext;
 import net.starype.quiz.discordimpl.input.ReactionInputListener.TriggerCondition;
 import net.starype.quiz.discordimpl.util.ImageUtils;
 import net.starype.quiz.discordimpl.util.MessageUtils;
-import net.starype.quiz.api.database.QuestionQueries;
-import net.starype.quiz.api.database.QuestionQuery;
-import net.starype.quiz.api.database.QuizQueryable;
-import net.starype.quiz.api.round.QuizRound;
-import net.starype.quiz.api.question.Question;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -23,20 +22,21 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class GameLobby extends DiscordLogContainer {
 
     private String name;
     private TextChannel channel;
-    private Set<Snowflake> playersId;
-    private Snowflake authorId;
+    private Set<String> playersId;
+    private String authorId;
 
     private Queue<PartialRound> partialRounds;
     private QuizQueryable queryObject;
     private QuestionQuery query;
 
-    private Snowflake lobbyMessageId;
+    private String lobbyMessageId;
 
     public GameLobby(TextChannel channel, String name) {
         super(channel);
@@ -46,12 +46,12 @@ public class GameLobby extends DiscordLogContainer {
         this.playersId = new HashSet<>();
     }
 
-    public void registerAuthor(Snowflake playerId, String userName) {
+    public void registerAuthor(String playerId, String userName) {
         this.authorId = playerId;
         registerPlayer(playerId, userName);
     }
 
-    public void registerPlayer(Snowflake playerId, String userName) {
+    public void registerPlayer(String playerId, String userName) {
         if(!playersId.add(playerId)) {
             return;
         }
@@ -59,7 +59,7 @@ public class GameLobby extends DiscordLogContainer {
         editLobbyMessage(userName + " joined <:pandaheart:803074085101109319> " + countIndication);
     }
 
-    public void unregisterPlayer(Snowflake playerID, String userName) {
+    public void unregisterPlayer(String playerID, String userName) {
         if(!playersId.remove(playerID)) {
             return;
         }
@@ -68,7 +68,7 @@ public class GameLobby extends DiscordLogContainer {
     }
 
     private void editLobbyMessage(String newContent) {
-        performAction(message -> message.edit(spec -> spec.setContent(newContent)).subscribe());
+        performAction(message -> message.editMessage(newContent));
     }
 
     private String countIndication() {
@@ -79,7 +79,7 @@ public class GameLobby extends DiscordLogContainer {
         return "(" + countIndication + ")";
     }
 
-    public boolean containsPlayer(Snowflake authorId) {
+    public boolean containsPlayer(String authorId) {
         return playersId.contains(authorId);
     }
 
@@ -144,7 +144,7 @@ public class GameLobby extends DiscordLogContainer {
         return false;
     }
 
-    public boolean isAuthor(Snowflake playerId) {
+    public boolean isAuthor(String playerId) {
         return authorId != null && authorId.equals(playerId);
     }
 
@@ -188,23 +188,23 @@ public class GameLobby extends DiscordLogContainer {
         }
 
         InputStream stream = ImageUtils.toInputStream(image);
-        Optional<Message> optMessage = channel
-                .createMessage(spec -> spec.addFile("image.png", stream))
-                .blockOptional();
-        return optMessage;
+        Message optMessage = channel
+                .sendFile(stream, "image.png")
+                .complete();
+        return Optional.ofNullable(optMessage);
     }
 
     private void setUpReaction(Message message, String unicode, Consumer<ReactionContext> action, ReactionInputListener reactionListener) {
-        message.addReaction(ReactionEmoji.unicode(unicode)).block();
+        message.addReaction(unicode).queue();
         TriggerCondition condition = new TriggerCondition(message.getId(), unicode, true);
         reactionListener.addCallBack(condition, action);
     }
 
-    private void performAction(Consumer<Message> action) {
+    private void performAction(Function<Message, RestAction<Message>> action) {
         channel
-                .getMessageById(lobbyMessageId)
-                .blockOptional()
-                .ifPresent(action);
+                .retrieveMessageById(lobbyMessageId)
+                .flatMap(action)
+                .queue();
     }
 
     public void setQueryObject(QuizQueryable queryObject) {
