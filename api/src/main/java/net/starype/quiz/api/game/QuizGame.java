@@ -128,13 +128,6 @@ public interface QuizGame {
     void onRoundEnded(GameRound round);
 
     /**
-     * Perform actions after the guess has been processed by the {@code QuizRound}. This method is usually used to
-     * send the context to the server via the gate
-     * @param context the context returned by the {@code Round}
-     */
-    void onGuessContextReceived(PlayerGuessContext context);
-
-    /**
      * Determine whether the game is still running and accepting inputs
      * @return whether the game is over or not
      */

@@ -12,7 +12,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
 
 import static net.starype.quiz.api.game.ScoreDistribution.Standing;
 
@@ -25,8 +24,7 @@ public class StandardRound implements QuizRound {
     private Collection<Updatable> updatables;
     private EntityEligibility playerEligibility;
     private final AtomicBoolean hasRoundEnded;
-    private Consumer<GameRound> onRoundEndedCallback = round -> {};
-    private Consumer<PlayerGuessContext> onContextReceivedCallback = context -> {};
+    private QuizGame game;
 
     private GuessReceivedAction guessReceivedAction;
     private GuessReceivedAction giveUpReceivedAction;
@@ -56,8 +54,7 @@ public class StandardRound implements QuizRound {
             throw new IllegalStateException("Game cannot be null");
         }
         game.sendInputToServer(server -> server.onQuestionReleased(pickedQuestion));
-        this.onRoundEndedCallback = game::onRoundEnded;
-        this.onContextReceivedCallback = game::onGuessContextReceived;
+        this.game = game;
         updatables.forEach(updatableHandler::registerEvent);
         updatables.forEach(event -> event.start(updatableHandler));
     }
@@ -74,8 +71,7 @@ public class StandardRound implements QuizRound {
         if(optCorrectness.isPresent()) {
             playerGuessContext.setEligibility(playerEligibility.isEligible(source));
         }
-
-        onContextReceivedCallback.accept(playerGuessContext);
+        game.sendInputToServer(server -> server.onPlayerGuessed(playerGuessContext));
         checkEndOfRound();
     }
 
@@ -94,7 +90,7 @@ public class StandardRound implements QuizRound {
             }
             hasRoundEnded.set(true);
             onRoundStopped();
-            onRoundEndedCallback.accept(this);
+            game.onRoundEnded(this);
         }
     }
 
