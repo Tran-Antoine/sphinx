@@ -20,9 +20,9 @@ public class LobbyList {
         this.nextId = 0;
     }
 
-    public GameLobby registerLobby(TextChannel channel, Member author) {
+    public GameLobby registerLobby(TextChannel channel, Member author, Runnable destructLobbyCallback) {
         String id = "lobby" + nextId++;
-        GameLobby lobby = new GameLobby(channel, id);
+        GameLobby lobby = new GameLobby(channel, id, destructLobbyCallback);
         lobby.sendJoinImage(reactionListener);
         lobby.registerAuthor(author.getId(), author.getEffectiveName());
         lobbies.add(lobby);

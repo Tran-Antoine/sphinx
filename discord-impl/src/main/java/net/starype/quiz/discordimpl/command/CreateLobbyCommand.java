@@ -16,6 +16,11 @@ public class CreateLobbyCommand implements QuizCommand {
     @Override
     public void execute(CommandContext context) {
 
+        if(!context.getDiscordContext().lobbyLimiter().acquireInstance(Thread.currentThread().getId())) {
+            context.getChannel().sendMessage("Error: max lobby limit has been reached").queue();
+            return;
+        }
+
         Member author = context.getAuthor();
         String playerId = author.getId();
         TextChannel channel = context.getChannel();
@@ -33,7 +38,8 @@ public class CreateLobbyCommand implements QuizCommand {
         }
 
         LobbyList lobbies = context.getLobbyList();
-        GameLobby lobby = lobbies.registerLobby(channel, author);
+        GameLobby lobby = lobbies.registerLobby(channel, author,
+                () -> context.getDiscordContext().lobbyLimiter().releaseInstance(Thread.currentThread().getId()));
         lobby.trackMessage(message.getId());
     }
 

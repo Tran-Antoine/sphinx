@@ -48,6 +48,9 @@ public class InputUtils {
             }
             if(getFileSize(url) > maxDownloadSize) {
                 channel.sendMessage("Error: The download limit has been reached. Cannot download file over than " + maxDownloadSize + " bytes").queue();
+
+                // Release the instance of the current thread (as we finished the download process)
+                limiter.releaseInstance(Thread.currentThread().getId());
                 return updaters;
             }
 
@@ -59,6 +62,8 @@ public class InputUtils {
                 readEntry(zipStream, current, updaters);
             }
 
+            // Release the instance of the current thread (as we finished the download process)
+            limiter.releaseInstance(Thread.currentThread().getId());
         } catch (IOException ignored) {
             channel.sendMessage("Error: couldn't load the provided zip archive").queue();
         }

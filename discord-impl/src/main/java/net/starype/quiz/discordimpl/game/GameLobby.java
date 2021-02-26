@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 public class GameLobby extends DiscordLogContainer {
 
+    private final Runnable destructLobbyCallback;
     private String name;
     private TextChannel channel;
     private Set<String> playersId;
@@ -38,10 +39,11 @@ public class GameLobby extends DiscordLogContainer {
 
     private String lobbyMessageId;
 
-    public GameLobby(TextChannel channel, String name) {
+    public GameLobby(TextChannel channel, String name, Runnable destructLobbyCallback) {
         super(channel);
         this.channel = channel;
         this.name = name;
+        this.destructLobbyCallback = destructLobbyCallback;
         this.partialRounds = new LinkedList<>();
         this.playersId = new HashSet<>();
     }
@@ -111,6 +113,7 @@ public class GameLobby extends DiscordLogContainer {
         
         deleteMessages();
         gameList.startNewGame(playersId, rounds, channel, authorId);
+        destructLobbyCallback.run();
         return true;
     }
 

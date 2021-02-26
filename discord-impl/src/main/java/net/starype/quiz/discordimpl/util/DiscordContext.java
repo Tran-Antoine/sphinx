@@ -7,6 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public final class DiscordContext {
 
     private final CounterLimiter downloadingLimiter;
+    private final CounterLimiter lobbyLimiter;
 
     public static class CounterLimiter {
         private final AtomicInteger counter;
@@ -54,10 +55,14 @@ public final class DiscordContext {
 
     public DiscordContext() {
         downloadingLimiter = new CounterLimiter(5);
+        lobbyLimiter = new CounterLimiter(10);
     }
 
     public final CounterLimiter downloadingLimiter() {
         return downloadingLimiter;
     }
 
+    public CounterLimiter lobbyLimiter() {
+        return lobbyLimiter;
+    }
 }
