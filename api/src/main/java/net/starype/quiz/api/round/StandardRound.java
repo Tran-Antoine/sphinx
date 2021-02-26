@@ -25,7 +25,8 @@ public class StandardRound implements QuizRound {
     private Collection<Updatable> updatables;
     private EntityEligibility playerEligibility;
     private final AtomicBoolean hasRoundEnded;
-    private Consumer<GameRound> callback = context -> {};
+    private Consumer<GameRound> onRoundEndedCallback = round -> {};
+    private Consumer<PlayerGuessContext> onContextReceivedCallback = context -> {};
 
     private GuessReceivedAction guessReceivedAction;
     private GuessReceivedAction giveUpReceivedAction;
@@ -55,13 +56,14 @@ public class StandardRound implements QuizRound {
             throw new IllegalStateException("Game cannot be null");
         }
         game.sendInputToServer(server -> server.onQuestionReleased(pickedQuestion));
-        this.callback = game::onRoundEnded;
+        this.onRoundEndedCallback = game::onRoundEnded;
+        this.onContextReceivedCallback = game::onGuessContextReceived;
         updatables.forEach(updatableHandler::registerEvent);
         updatables.forEach(event -> event.start(updatableHandler));
     }
 
     @Override
-    public PlayerGuessContext onGuessReceived(Player<?> source, String message) {
+    public void onGuessReceived(Player<?> source, String message) {
         Optional<Double> optCorrectness = pickedQuestion.evaluateAnswer(Answer.fromString(message));
 
         MutableGuessContext playerGuessContext = new MutableGuessContext(source, optCorrectness.orElse(0.0),
@@ -73,9 +75,8 @@ public class StandardRound implements QuizRound {
             playerGuessContext.setEligibility(playerEligibility.isEligible(source));
         }
 
+        onContextReceivedCallback.accept(playerGuessContext);
         checkEndOfRound();
-
-        return playerGuessContext;
     }
 
     @Override
@@ -93,7 +94,7 @@ public class StandardRound implements QuizRound {
             }
             hasRoundEnded.set(true);
             onRoundStopped();
-            callback.accept(this);
+            onRoundEndedCallback.accept(this);
         }
     }
 
