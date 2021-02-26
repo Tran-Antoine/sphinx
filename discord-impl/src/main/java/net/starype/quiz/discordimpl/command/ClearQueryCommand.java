@@ -1,7 +1,6 @@
 package net.starype.quiz.discordimpl.command;
 
-import discord4j.common.util.Snowflake;
-import discord4j.core.object.entity.channel.TextChannel;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.starype.quiz.discordimpl.game.GameLobby;
 import net.starype.quiz.discordimpl.game.LobbyList;
 import net.starype.quiz.discordimpl.util.MessageUtils;
@@ -15,7 +14,7 @@ public class ClearQueryCommand implements QuizCommand {
     public void execute(CommandContext context) {
 
         LobbyList lobbyList = context.getLobbyList();
-        Snowflake authorId = context.getAuthor().getId();
+        String authorId = context.getAuthor().getId();
         TextChannel channel = context.getChannel();
 
         Map<Supplier<Boolean>, String> conditions = createStopConditions(lobbyList, authorId);
@@ -34,7 +33,7 @@ public class ClearQueryCommand implements QuizCommand {
     }
 
     private static Map<Supplier<Boolean>, String> createStopConditions(
-            LobbyList lobbyList, Snowflake authorId) {
+            LobbyList lobbyList, String authorId) {
         Map<Supplier<Boolean>, String> conditions = new LinkedHashMap<>();
         conditions.put(() -> lobbyList.findByAuthor(authorId).isEmpty(),
                 "You must be the creator of the lobby to use this");

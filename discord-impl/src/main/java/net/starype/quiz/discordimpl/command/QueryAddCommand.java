@@ -1,12 +1,11 @@
 package net.starype.quiz.discordimpl.command;
 
-import discord4j.common.util.Snowflake;
-import discord4j.core.object.entity.channel.TextChannel;
-import net.starype.quiz.discordimpl.game.GameLobby;
-import net.starype.quiz.discordimpl.game.LobbyList;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.starype.quiz.api.database.QuestionQueries;
 import net.starype.quiz.api.database.QuestionQuery;
 import net.starype.quiz.api.question.QuestionDifficulty;
+import net.starype.quiz.discordimpl.game.GameLobby;
+import net.starype.quiz.discordimpl.game.LobbyList;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -20,7 +19,7 @@ public class QueryAddCommand implements QuizCommand {
     public void execute(CommandContext context) {
 
         LobbyList lobbyList = context.getLobbyList();
-        Snowflake authorId = context.getAuthor().getId();
+        String authorId = context.getAuthor().getId();
         String[] args = context.getArgs();
         TextChannel channel = context.getChannel();
 
@@ -35,7 +34,7 @@ public class QueryAddCommand implements QuizCommand {
         Function<String, QuestionQuery> queryType = findQueryType(args[2]);
 
         queryAction.accept(lobby, queryType.apply(args[3])); // both guaranteed non-null
-        channel.createMessage("Successfully added query").subscribe();
+        channel.sendMessage("Successfully added query").queue();
     }
 
     private static BiConsumer<GameLobby, QuestionQuery> findQueryAction(String arg) {
@@ -56,7 +55,7 @@ public class QueryAddCommand implements QuizCommand {
     }
 
     private static Map<Supplier<Boolean>, String> createStopConditions(
-            LobbyList lobbyList, Snowflake authorId, String[] args) {
+            LobbyList lobbyList, String authorId, String[] args) {
         Map<Supplier<Boolean>, String> conditions = new LinkedHashMap<>();
         String syntax = "Syntax: ?add-query [and-query|or-query] [directory|tag|difficulty] <value>";
         conditions.put(

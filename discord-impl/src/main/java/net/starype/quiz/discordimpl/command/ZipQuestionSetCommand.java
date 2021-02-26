@@ -1,22 +1,20 @@
 package net.starype.quiz.discordimpl.command;
 
-import discord4j.common.util.Snowflake;
-import discord4j.core.object.entity.Attachment;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.TextChannel;
-import net.starype.quiz.discordimpl.game.GameLobby;
-import net.starype.quiz.discordimpl.game.LobbyList;
-import net.starype.quiz.discordimpl.util.InputUtils;
-import net.starype.quiz.discordimpl.util.MessageUtils;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.Message.Attachment;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.starype.quiz.api.database.ByteSerializedIO;
 import net.starype.quiz.api.database.EntryUpdater;
 import net.starype.quiz.api.database.QuestionDatabase;
 import net.starype.quiz.api.database.SerializedIO;
+import net.starype.quiz.discordimpl.game.GameLobby;
+import net.starype.quiz.discordimpl.game.LobbyList;
+import net.starype.quiz.discordimpl.util.InputUtils;
+import net.starype.quiz.discordimpl.util.MessageUtils;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
@@ -27,7 +25,7 @@ public class ZipQuestionSetCommand implements QuizCommand {
 
         LobbyList lobbyList = context.getLobbyList();
         Message message = context.getMessage();
-        Snowflake authorId = context.getAuthor().getId();
+        String authorId = context.getAuthor().getId();
         TextChannel channel = context.getChannel();
         String[] args = context.getArgs();
 
@@ -66,7 +64,7 @@ public class ZipQuestionSetCommand implements QuizCommand {
     }
 
     private String findUrl(Message message, String[] args) {
-        Set<Attachment> attachments = message.getAttachments();
+        Collection<Attachment> attachments = message.getAttachments();
         if(attachments.size() == 1) {
             return attachments
                     .iterator()
@@ -77,7 +75,7 @@ public class ZipQuestionSetCommand implements QuizCommand {
     }
 
     private static Map<Supplier<Boolean>, String> createStopConditions(
-            LobbyList lobbyList, Message message, Snowflake authorId, String[] args) {
+            LobbyList lobbyList, Message message, String authorId, String[] args) {
         Map<Supplier<Boolean>, String> conditions = new LinkedHashMap<>();
         conditions.put(
                 () -> lobbyList.findByAuthor(authorId).isEmpty(),

@@ -1,8 +1,6 @@
 package net.starype.quiz.discordimpl.command;
 
-import discord4j.common.util.Snowflake;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.reaction.ReactionEmoji;
+import net.dv8tion.jda.api.entities.Message;
 import net.starype.quiz.discordimpl.game.DiscordQuizGame;
 import net.starype.quiz.discordimpl.game.GameList;
 
@@ -14,7 +12,7 @@ public class ForceNextRoundCommand implements QuizCommand {
     @Override
     public void execute(CommandContext context) {
         GameList gameList = context.getGameList();
-        Snowflake playerId = context.getAuthor().getId();
+        String playerId = context.getAuthor().getId();
         Message message = context.getMessage();
 
         Map<Supplier<Boolean>, String> conditions = createStopConditions(gameList, playerId);
@@ -26,10 +24,10 @@ public class ForceNextRoundCommand implements QuizCommand {
         DiscordQuizGame game = gameList.getFromPlayer(playerId).get();
         game.addLog(message.getId());
         game.nextRound();
-        message.addReaction(ReactionEmoji.unicode("\uD83D\uDC4D")).block();
+        message.addReaction("\uD83D\uDC4D").queue();
     }
 
-    public static Map<Supplier<Boolean>, String> createStopConditions(GameList gameList, Snowflake authorId) {
+    public static Map<Supplier<Boolean>, String> createStopConditions(GameList gameList, String authorId) {
         Map<Supplier<Boolean>, String> conditions = NextRoundCommand.createStopConditions(
                 gameList,
                 authorId

@@ -1,15 +1,14 @@
 package net.starype.quiz.discordimpl.command;
 
-import discord4j.common.util.Snowflake;
-import discord4j.core.object.entity.channel.TextChannel;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.starype.quiz.api.database.ReadableRawMap;
+import net.starype.quiz.api.parser.ConfigMapper;
+import net.starype.quiz.api.parser.ConfigMatcher;
+import net.starype.quiz.api.question.Question;
 import net.starype.quiz.api.round.*;
 import net.starype.quiz.discordimpl.game.GameLobby;
 import net.starype.quiz.discordimpl.game.LobbyList;
 import net.starype.quiz.discordimpl.util.MessageUtils;
-import net.starype.quiz.api.database.ReadableRawMap;
-import net.starype.quiz.api.question.Question;
-import net.starype.quiz.api.parser.ConfigMapper;
-import net.starype.quiz.api.parser.ConfigMatcher;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -32,7 +31,7 @@ public class RoundAddCommand implements QuizCommand {
     @Override
     public void execute(CommandContext context) {
         LobbyList lobbyList = context.getLobbyList();
-        Snowflake authorId = context.getAuthor().getId();
+        String authorId = context.getAuthor().getId();
         String[] args = context.getArgs();
         TextChannel channel = context.getChannel();
 
@@ -62,7 +61,7 @@ public class RoundAddCommand implements QuizCommand {
         );
     }
 
-    private static Map<Supplier<Boolean>, String> createStopConditions(LobbyList lobbyList, Snowflake authorId, String[] args) {
+    private static Map<Supplier<Boolean>, String> createStopConditions(LobbyList lobbyList, String authorId, String[] args) {
         Map<Supplier<Boolean>, String> conditions = new LinkedHashMap<>();
         conditions.put(
                 () -> lobbyList.findByAuthor(authorId).isEmpty(),

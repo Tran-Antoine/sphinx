@@ -4,13 +4,17 @@ plugins {
 
 group 'net.starype.quiz.discordimpl'
 
+repositories {
+    jcenter()
+}
+
 dependencies {
     implementation 'org.scala-lang:scala-library:2.11.10'
 
     compile project(':api')
     compile group: 'org.scilab.forge', name: 'jlatexmath', version: '1.0.7'
+    implementation 'net.dv8tion:JDA:4.2.0_228'
     implementation 'org.scala-lang.modules:scala-parser-combinators_2.11:1.0.2'
-    implementation "com.discord4j:discord4j-core:3.1.1"
 }
 
 jar {

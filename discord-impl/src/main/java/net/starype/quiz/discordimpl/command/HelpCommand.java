@@ -1,8 +1,9 @@
 package net.starype.quiz.discordimpl.command;
 
-import discord4j.core.spec.MessageCreateSpec;
-import discord4j.rest.util.Color;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 
+import java.awt.*;
 import java.util.Collection;
 
 public class HelpCommand implements QuizCommand {
@@ -15,21 +16,22 @@ public class HelpCommand implements QuizCommand {
 
     @Override
     public void execute(CommandContext context) {
-        context.getChannel().createMessage(this::createMessage).subscribe();
+        context.getChannel().sendMessage(createMessage()).queue();
     }
 
-    private void createMessage(MessageCreateSpec spec) {
-        spec.setEmbed(embedSpec -> {
-            embedSpec.setColor(Color.GREEN);
-            embedSpec.setTitle("List of available commands");
-            for (DisplayableCommand command : commands) {
-                String description = command.getDescription() == null
-                        ? "No description given for this command"
-                        : command.getDescription();
-                String nonNullDescription = description;
-                embedSpec.addField(command.getName(), nonNullDescription, false);
-            }
-        });
+    private MessageEmbed createMessage() {
+        EmbedBuilder builder = new EmbedBuilder();
+        builder.setColor(Color.GREEN);
+        builder.setTitle("List of available commands");
+
+        for (DisplayableCommand command : commands) {
+            String description = command.getDescription();
+            String nonNullDescription = description == null
+                    ? "No description given for this command"
+                    : description;
+            builder.addField(command.getName(), nonNullDescription, false);
+        }
+        return builder.build();
     }
 
     @Override

@@ -1,7 +1,6 @@
 package net.starype.quiz.discordimpl.command;
 
-import discord4j.common.util.Snowflake;
-import discord4j.core.object.entity.channel.TextChannel;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.starype.quiz.discordimpl.game.GameList;
 
 import java.util.HashMap;
@@ -12,7 +11,7 @@ public class LeaveCommand implements QuizCommand {
 
     @Override
     public void execute(CommandContext context) {
-        Snowflake authorId = context.getAuthor().getId();
+        String authorId = context.getAuthor().getId();
         GameList gameList = context.getGameList();
         TextChannel channel = context.getChannel();
 
@@ -22,10 +21,10 @@ public class LeaveCommand implements QuizCommand {
             return;
         }
         gameList.getFromPlayer(authorId).get().removePlayer(authorId);
-        channel.createMessage("Successfully left the game").block();
+        channel.sendMessage("Successfully left the game").queue();
     }
 
-    private static Map<Supplier<Boolean>, String> createStopConditions(GameList gameList, Snowflake authorId) {
+    private static Map<Supplier<Boolean>, String> createStopConditions(GameList gameList, String authorId) {
         Map<Supplier<Boolean>, String> conditions = new HashMap<>();
         conditions.put(
                 () -> !gameList.isPlaying(authorId),

@@ -1,22 +1,22 @@
 package net.starype.quiz.discordimpl.input;
 
-import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.object.entity.Member;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.TextChannel;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.starype.quiz.discordimpl.command.*;
 import net.starype.quiz.discordimpl.command.CommandContext.MessageContext;
 import net.starype.quiz.discordimpl.game.GameList;
 import net.starype.quiz.discordimpl.game.LobbyList;
-import net.starype.quiz.discordimpl.command.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 
-public class MessageInputListener implements Consumer<MessageCreateEvent> {
+public class MessageInputListener extends ListenerAdapter {
 
     public static final String PREFIX = "?";
 
@@ -32,10 +32,14 @@ public class MessageInputListener implements Consumer<MessageCreateEvent> {
     }
 
     @Override
-    public void accept(MessageCreateEvent event) {
+    public void onMessageReceived(@NotNull MessageReceivedEvent event) {
+
+        if(event.getAuthor().isBot()) {
+            return;
+        }
 
         Message message = event.getMessage();
-        String content = message.getContent();
+        String content = message.getContentDisplay();
         if(!content.startsWith(PREFIX)) {
             return;
         }
@@ -45,9 +49,9 @@ public class MessageInputListener implements Consumer<MessageCreateEvent> {
         Optional<? extends QuizCommand> optCommand = findByName(args[0].replace(PREFIX, ""));
         optCommand.ifPresent(command -> processCommand(
                 command,
-                message.getChannel().cast(TextChannel.class).block(),
+                message.getTextChannel(),
                 message,
-                event.getMember().get(), // Optional guaranteed to be present because of the filter
+                event.getMember(), // Optional guaranteed to be present because of the filter
                 args));
     }
 
@@ -80,9 +84,5 @@ public class MessageInputListener implements Consumer<MessageCreateEvent> {
                 new ClearQueryCommand(),
                 new RoundAddCommand()
         ));
-    }
-
-    public static Predicate<MessageCreateEvent> createFilter() {
-        return (event) -> event.getMember().map(member -> !member.isBot()).orElse(false);
     }
 }

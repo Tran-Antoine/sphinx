@@ -1,18 +1,18 @@
 package net.starype.quiz.discordimpl.game;
 
-import discord4j.common.util.Snowflake;
-import discord4j.core.object.entity.Member;
-import discord4j.core.object.entity.channel.TextChannel;
-import net.starype.quiz.discordimpl.user.DiscordPlayer;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.starype.quiz.api.round.QuizRound;
 import net.starype.quiz.api.server.ServerGate;
-import reactor.core.publisher.Flux;
+import net.starype.quiz.discordimpl.user.DiscordPlayer;
 
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class GameList {
 
@@ -22,7 +22,7 @@ public class GameList {
         this.ongoingGames = new HashMap<>();
     }
 
-    public void startNewGame(Collection<? extends Snowflake> playersId, Queue<? extends QuizRound> rounds, TextChannel channel, Snowflake authorId) {
+    public void startNewGame(Collection<? extends String> playersId, Queue<? extends QuizRound> rounds, TextChannel channel, String authorId) {
         Collection<DiscordPlayer> gamePlayers = asGamePlayers(playersId, channel);
         DiscordGameServer server = new DiscordGameServer(channel, this::stopGame);
         ServerGate<DiscordQuizGame> gate = server.createGate();
@@ -33,22 +33,23 @@ public class GameList {
         ongoingGames.put(game, future);
     }
 
-    private Collection<DiscordPlayer> asGamePlayers(Collection<? extends Snowflake> playersId, TextChannel channel) {
-        return Flux.fromIterable(playersId)
-                .flatMap(id -> channel.getGuild().flatMap(guild -> guild.getMemberById(id)))
+    private Collection<DiscordPlayer> asGamePlayers(Collection<? extends String> playersId, TextChannel channel) {
+        Guild guild = channel.getGuild();
+        return playersId
+                .stream()
+                .map(id -> guild.retrieveMemberById(id).complete())
                 .map(this::asPlayer)
-                .collectList()
-                .block();
+                .collect(Collectors.toList());
     }
 
-    public boolean isPlaying(Snowflake playerId) {
+    public boolean isPlaying(String playerId) {
         return ongoingGames
                 .keySet()
                 .stream()
                 .anyMatch((game) -> game.containsPlayerId(playerId));
     }
 
-    public Optional<DiscordQuizGame> getFromPlayer(Snowflake playerId) {
+    public Optional<DiscordQuizGame> getFromPlayer(String playerId) {
         return ongoingGames
                 .keySet()
                 .stream()
@@ -65,9 +66,9 @@ public class GameList {
     }
 
     private DiscordPlayer asPlayer(Member member) {
-        String userName = member.getUsername();
-        String nickName = member.getDisplayName();
-        Snowflake id = member.getId();
+        String userName = member.getUser().getName();
+        String nickName = member.getEffectiveName();
+        String id = member.getId();
         return new DiscordPlayer(id, userName, nickName);
     }
 }

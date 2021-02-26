@@ -1,9 +1,7 @@
 package net.starype.quiz.discordimpl.command;
 
-import discord4j.common.util.Snowflake;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.TextChannel;
-import discord4j.core.object.reaction.ReactionEmoji;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.starype.quiz.discordimpl.game.DiscordQuizGame;
 import net.starype.quiz.discordimpl.game.GameList;
 
@@ -17,7 +15,7 @@ public class NextRoundCommand implements QuizCommand {
     public void execute(CommandContext context) {
 
         GameList gameList = context.getGameList();
-        Snowflake playerId = context.getAuthor().getId();
+        String playerId = context.getAuthor().getId();
         TextChannel channel = context.getChannel();
         Message message = context.getMessage();
 
@@ -29,11 +27,11 @@ public class NextRoundCommand implements QuizCommand {
         DiscordQuizGame game = gameList.getFromPlayer(playerId).get(); // value guaranteed to be present in our case
 
         game.addLog(message.getId());
-        message.addReaction(ReactionEmoji.unicode("\uD83D\uDC4D")).subscribe();
+        message.addReaction("\uD83D\uDC4D").queue();
         game.addVote(playerId, null);
     }
 
-    public static Map<Supplier<Boolean>, String> createStopConditions(GameList gameList, Snowflake playerId) {
+    public static Map<Supplier<Boolean>, String> createStopConditions(GameList gameList, String playerId) {
         Map<Supplier<Boolean>, String> conditions = new LinkedHashMap<>();
         conditions.put(
                 () -> gameList.getFromPlayer(playerId).isEmpty(),

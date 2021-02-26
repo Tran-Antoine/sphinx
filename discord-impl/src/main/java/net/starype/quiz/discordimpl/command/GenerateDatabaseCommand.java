@@ -1,15 +1,19 @@
 
 package net.starype.quiz.discordimpl.command;
 
-import discord4j.core.object.entity.Attachment;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.TextChannel;
-import net.starype.quiz.discordimpl.util.InputUtils;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.Message.Attachment;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.starype.quiz.api.database.*;
+import net.starype.quiz.discordimpl.util.InputUtils;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
@@ -18,7 +22,7 @@ public class GenerateDatabaseCommand implements QuizCommand {
     @Override
     public void execute(CommandContext context) {
         Message message = context.getMessage();
-        Set<Attachment> files = message.getAttachments();
+        Collection<Attachment> files = message.getAttachments();
         Map<Supplier<Boolean>, String> conditions = createStopConditions(message);
         TextChannel channel = context.getChannel();
 
@@ -36,10 +40,9 @@ public class GenerateDatabaseCommand implements QuizCommand {
             return;
         }
         channel
-                .createMessage(spec -> spec
-                        .addFile(fileName + ".sphinx", database.get())
-                        .setContent("Here is your output!"))
-                .subscribe();
+                .sendMessage("Here is your output!")
+                .addFile(database.get(), fileName + ".sphinx")
+                .queue();
     }
 
     private static Optional<InputStream> generateFile(String urlName, TextChannel channel) {
@@ -50,7 +53,7 @@ public class GenerateDatabaseCommand implements QuizCommand {
         try {
             db.sync();
         } catch(RuntimeException ignored) {
-            channel.createMessage("Error: couldn't parse the given zip archive").subscribe();
+            channel.sendMessage("Error: couldn't parse the given zip archive").queue();
             return Optional.empty();
         }
         return Optional.of(new ByteArrayInputStream(output.get().array()));
