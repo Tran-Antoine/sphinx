@@ -5,9 +5,7 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.starype.quiz.api.database.ByteEntryUpdater;
 import net.starype.quiz.api.database.EntryUpdater;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URL;
@@ -20,23 +18,6 @@ import java.util.zip.ZipInputStream;
 
 public class InputUtils {
 
-    public static final int maxDownloadSize = 1048576;
-
-    public static long getFileSize(URL url) {
-        HttpURLConnection conn = null;
-        try {
-            conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("HEAD");
-            return conn.getContentLengthLong();
-        } catch (IOException e) {
-            return maxDownloadSize + 1;
-        } finally {
-            if (conn != null) {
-                conn.disconnect();
-            }
-        }
-    }
-
     public static Collection<? extends EntryUpdater> loadEntryUpdaters(String urlName, TextChannel channel, DiscordContext.CounterLimiter limiter) {
         Set<EntryUpdater> updaters = new HashSet<>();
 
@@ -46,16 +27,8 @@ public class InputUtils {
                 channel.sendMessage("Error: The limit of downloading zip as been reached").queue();
                 return updaters;
             }
-            if(getFileSize(url) > maxDownloadSize) {
-                channel.sendMessage("Error: The download limit has been reached. Cannot download file over than " + maxDownloadSize + " bytes").queue();
 
-                // Release the instance of the current thread (as we finished the download process)
-                limiter.releaseInstance(Thread.currentThread().getId());
-                return updaters;
-            }
-
-            InputStream fileStream = new BufferedInputStream(url.openStream(), 1024);
-            ZipInputStream zipStream = new ZipInputStream(fileStream);
+            ZipInputStream zipStream = new ZipInputStream(url.openStream());
 
             ZipEntry current;
             while ((current = zipStream.getNextEntry()) != null) {

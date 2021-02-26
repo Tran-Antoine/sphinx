@@ -54,7 +54,7 @@ public final class DiscordContext {
     }
 
     public DiscordContext() {
-        downloadingLimiter = new CounterLimiter(5);
+        downloadingLimiter = new CounterLimiter(2);
         lobbyLimiter = new CounterLimiter(10);
     }
 
