@@ -88,6 +88,7 @@ public class ClassicalRoundTest {
         round.onGuessReceived(player1, "correct");
         round.onGuessReceived(player2, "kinda-correct");
         round.onGuessReceived(player3, "pretty-correct");
+        round.onGuessReceived(player4, "incorrect");
 
         ScoreDistribution scoreDistribution = round.getScoreDistribution();
 
