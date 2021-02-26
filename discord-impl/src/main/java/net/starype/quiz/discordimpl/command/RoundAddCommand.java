@@ -72,7 +72,7 @@ public class RoundAddCommand implements QuizCommand {
                 "You must specify the type of round you wish to queue");
 
         conditions.put(
-                () -> args.length == 3 && (args[2].length() != 1 || !Character.isDigit(args[2].charAt(0))),
+                () -> args.length >= 3 && (args[2].length() != 1 || !Character.isDigit(args[2].charAt(0))),
                 "Second argument must be a number between 0 and 9");
 
         return conditions;

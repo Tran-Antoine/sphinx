@@ -27,8 +27,11 @@ public class GameList {
         DiscordGameServer server = new DiscordGameServer(channel, this::stopGame);
         ServerGate<DiscordQuizGame> gate = server.createGate();
         DiscordQuizGame game = new DiscordQuizGame(rounds, gamePlayers, gate, authorId, server);
-        ScheduledExecutorService task = Executors.newScheduledThreadPool(1);
-        ScheduledFuture<?> future = task.scheduleAtFixedRate(game::update, 0, 250, TimeUnit.MILLISECONDS);
+        ScheduledExecutorService autoCancel = Executors.newScheduledThreadPool(1);
+        autoCancel.schedule(() -> stopGame(game, true, channel), 60, TimeUnit.MINUTES);
+
+        ScheduledExecutorService autoUpdate = Executors.newScheduledThreadPool(1);
+        ScheduledFuture<?> future = autoUpdate.scheduleAtFixedRate(game::update, 0, 250, TimeUnit.MILLISECONDS);
         game.start();
         ongoingGames.put(game, future);
     }
@@ -58,11 +61,19 @@ public class GameList {
     }
 
     public void stopGame(DiscordQuizGame game) {
+        stopGame(game, false, null);
+    }
+
+    public void stopGame(DiscordQuizGame game, boolean forced, TextChannel channel) {
         ScheduledFuture<?> future = ongoingGames.remove(game);
         if(future == null) {
             return;
         }
         future.cancel(true);
+        if(forced) {
+            game.deleteLogs();
+            channel.sendMessage("Game lasted too long, I had to stop it <:pandasad:805105368505384970>").queue();
+        }
     }
 
     private DiscordPlayer asPlayer(Member member) {
