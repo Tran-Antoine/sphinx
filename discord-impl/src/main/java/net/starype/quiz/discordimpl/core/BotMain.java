@@ -12,7 +12,7 @@ import net.starype.quiz.discordimpl.input.ReactionInputListener;
 public class BotMain {
 
     public static void main(String[] args) throws Exception {
-        JDABuilder builder = JDABuilder.createDefault("Nzc4MDAwOTU0NjI0MzExMzc2.X7Ln2g.JzBc4Qet8jpgFuAM-ZhPNBZ_c-k");
+        JDABuilder builder = JDABuilder.createDefault("");
         JDA jda = builder.disableCache(CacheFlag.MEMBER_OVERRIDES, CacheFlag.VOICE_STATE)
                 .setBulkDeleteSplittingEnabled(false)
                 .setActivity(Activity.playing("supervising the quiz world championship"))
