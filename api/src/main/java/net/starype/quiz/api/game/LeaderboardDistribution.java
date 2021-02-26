@@ -26,8 +26,9 @@ public class LeaderboardDistribution implements ScoreDistribution {
 
     @Override
     public Double apply(Player<?> player) {
-        if(leaderboard.getPosition(player).isEmpty()) {
-            return 0.0;
+        double score = leaderboard.getByPlayer(player).orElse(0.0);
+        if(score == 0.0) {
+            return score;
         }
 
         int position = leaderboard.getPosition(player).get();
