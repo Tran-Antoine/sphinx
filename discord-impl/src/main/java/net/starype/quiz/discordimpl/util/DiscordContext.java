@@ -12,13 +12,18 @@ public final class DiscordContext {
     public static class CounterLimiter {
         private final AtomicInteger counter;
         private final List<Integer> instances;
-        private static final double maxAwaitingTime = 5.0;
+        private final double maxAwaitingTime;
         private final int maxCount;
 
-        public CounterLimiter(int maxCount) {
+        public CounterLimiter(int maxCount, double maxAwaitingTime) {
             this.maxCount = maxCount;
+            this.maxAwaitingTime = maxAwaitingTime;
             counter = new AtomicInteger(0);
             instances = new LinkedList<>();
+        }
+
+        public CounterLimiter(int maxCount) {
+            this(maxCount, 5.0);
         }
 
         public synchronized boolean acquireInstance(Object instance) {
@@ -55,7 +60,7 @@ public final class DiscordContext {
 
     public DiscordContext() {
         downloadingLimiter = new CounterLimiter(2);
-        lobbyLimiter = new CounterLimiter(10);
+        lobbyLimiter = new CounterLimiter(10, .1);
     }
 
     public final CounterLimiter downloadingLimiter() {
