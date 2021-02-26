@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.starype.quiz.discordimpl.command.*;
 import net.starype.quiz.discordimpl.command.CommandContext.MessageContext;
+import net.starype.quiz.discordimpl.core.DiscordContext;
 import net.starype.quiz.discordimpl.game.GameList;
 import net.starype.quiz.discordimpl.game.LobbyList;
 import org.jetbrains.annotations.NotNull;
@@ -19,13 +20,15 @@ import java.util.Optional;
 public class MessageInputListener extends ListenerAdapter {
 
     public static final String PREFIX = "?";
+    private final DiscordContext discordContext;
 
     private Collection<QuizCommand> commands;
     private LobbyList lobbyList;
     private GameList gameList;
 
-    public MessageInputListener(LobbyList lobbyList, GameList gameList) {
+    public MessageInputListener(LobbyList lobbyList, GameList gameList, DiscordContext discordContext) {
         this.lobbyList = lobbyList;
+        this.discordContext = discordContext;
         this.gameList = gameList;
         this.commands = initCommands();
         this.commands.add(new HelpCommand(this.commands));
@@ -57,7 +60,7 @@ public class MessageInputListener extends ListenerAdapter {
 
     private void processCommand(QuizCommand command, TextChannel channel, Message message, Member member, String... args) {
         MessageContext messageContext = new MessageContext(channel, message, member, args);
-        CommandContext context = new CommandContext(messageContext, gameList, lobbyList);
+        CommandContext context = new CommandContext(messageContext, gameList, lobbyList, discordContext);
         command.execute(context);
     }
 

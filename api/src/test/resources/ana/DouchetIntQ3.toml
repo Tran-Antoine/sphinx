@@ -1,0 +1,19 @@
+difficulty = "HARD"
+tags = ["Analysis", "Math", "Intégral", "BA1"]
+
+[question]
+
+title = "Intégral 6.3"
+text = '''
+\text{QCM: } \int^x \frac{\sinh t}{e^t + 1} dt \\
+\text{A: }  \\
+'''
+
+[answer]
+
+processors = ["clean-string", "clean-separator"]
+correct = ["A"]
+
+[answer.evaluator]
+name = "mcq"
+

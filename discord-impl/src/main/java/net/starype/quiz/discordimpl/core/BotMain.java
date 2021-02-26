@@ -20,7 +20,7 @@ public class BotMain {
                 .build();
 
         ReactionInputListener reactionListener = new ReactionInputListener();
-        jda.addEventListener(new MessageInputListener(new LobbyList(reactionListener), new GameList()));
+        jda.addEventListener(new MessageInputListener(new LobbyList(reactionListener), new GameList(), new DiscordContext()));
         jda.addEventListener(reactionListener);
     }
 }

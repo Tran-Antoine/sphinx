@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.starype.quiz.api.database.*;
+import net.starype.quiz.discordimpl.core.DiscordContext;
 import net.starype.quiz.discordimpl.util.InputUtils;
 
 import java.io.ByteArrayInputStream;
@@ -35,7 +36,7 @@ public class GenerateDatabaseCommand implements QuizCommand {
                 ? args[1]
                 : "database";
 
-        Optional<InputStream> database = generateFile(files.iterator().next().getUrl(), channel);
+        Optional<InputStream> database = generateFile(files.iterator().next().getUrl(), channel, context.getDiscordContext());
         if(database.isEmpty()) {
             return;
         }
@@ -45,8 +46,8 @@ public class GenerateDatabaseCommand implements QuizCommand {
                 .queue();
     }
 
-    private static Optional<InputStream> generateFile(String urlName, TextChannel channel) {
-        Collection<? extends EntryUpdater> updaters = InputUtils.loadEntryUpdaters(urlName, channel);
+    private static Optional<InputStream> generateFile(String urlName, TextChannel channel, DiscordContext discordContext) {
+        Collection<? extends EntryUpdater> updaters = InputUtils.loadEntryUpdaters(urlName, channel, discordContext.zipDownloadingLimiter());
         AtomicReference<ByteBuffer> output = new AtomicReference<>();
         SerializedIO serializedIO = new ByteSerializedIO(new byte[0], output);
         TrackedDatabase db = new QuestionDatabase(updaters, serializedIO, false);
