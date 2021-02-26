@@ -85,7 +85,7 @@ public class GameLobby extends DiscordLogContainer {
         return playersId.contains(authorId);
     }
 
-    public boolean start(GameList gameList) {
+    public boolean start(GameList gameList, Runnable onGameEndedCallback) {
 
         if(noQueryObject()) {
             return false;
@@ -112,7 +112,7 @@ public class GameLobby extends DiscordLogContainer {
 
         
         deleteMessages();
-        gameList.startNewGame(playersId, rounds, channel, authorId);
+        gameList.startNewGame(playersId, rounds, channel, authorId, onGameEndedCallback);
         destructLobbyCallback.run();
         return true;
     }

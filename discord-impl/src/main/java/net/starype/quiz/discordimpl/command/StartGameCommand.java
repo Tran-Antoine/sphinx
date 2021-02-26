@@ -3,12 +3,15 @@ package net.starype.quiz.discordimpl.command;
 import net.dv8tion.jda.api.entities.Member;
 import net.starype.quiz.discordimpl.game.GameLobby;
 import net.starype.quiz.discordimpl.game.LobbyList;
+import net.starype.quiz.discordimpl.util.CounterLimiter;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
 public class StartGameCommand implements QuizCommand {
+
+    private final CounterLimiter gameLimiter = new CounterLimiter(5, .1);
 
     @Override
     public String getName() {
@@ -22,6 +25,11 @@ public class StartGameCommand implements QuizCommand {
 
     @Override
     public void execute(CommandContext context) {
+        if(!gameLimiter.acquireInstance(Thread.currentThread().getId())) {
+            context.getChannel().sendMessage("Error: max game number of "+ gameLimiter.maxCount() +" has been reached").queue();
+            return;
+        }
+
         LobbyList lobbyList = context.getLobbyList();
         Member author = context.getAuthor();
         String authorId = author.getId();
@@ -29,12 +37,13 @@ public class StartGameCommand implements QuizCommand {
         Map<Supplier<Boolean>, String> conditions = createStopConditions(lobbyList, authorId, author.getEffectiveName());
 
         if(StopConditions.shouldStop(conditions, context.getChannel(), context.getMessage())) {
+            gameLimiter.releaseInstance(Thread.currentThread().getId());
             return;
         }
 
         GameLobby lobby = lobbyList.findByAuthor(authorId).get();
         lobby.trackMessage(context.getMessage().getId());
-        if(lobby.start(context.getGameList())) {
+        if(lobby.start(context.getGameList(), () -> gameLimiter.releaseInstance(Thread.currentThread().getId()))) {
             lobbyList.unregisterLobby(lobby);
         }
     }

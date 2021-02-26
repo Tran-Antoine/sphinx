@@ -16,13 +16,16 @@ import java.util.stream.Collectors;
 
 public class GameList {
 
-    private Map<DiscordQuizGame, ScheduledFuture<?>> ongoingGames;
+    private final Map<DiscordQuizGame, ScheduledFuture<?>> ongoingGames;
+    private final Map<DiscordQuizGame, Runnable> ongoingGamesCallback;
 
     public GameList() {
         this.ongoingGames = new HashMap<>();
+        this.ongoingGamesCallback = new HashMap<>();
     }
 
-    public void startNewGame(Collection<? extends String> playersId, Queue<? extends QuizRound> rounds, TextChannel channel, String authorId) {
+    public void startNewGame(Collection<? extends String> playersId, Queue<? extends QuizRound> rounds, TextChannel channel, String authorId,
+                             Runnable onGameEndedCallback) {
         Collection<DiscordPlayer> gamePlayers = asGamePlayers(playersId, channel);
         DiscordGameServer server = new DiscordGameServer(channel, this::stopGame);
         ServerGate<DiscordQuizGame> gate = server.createGate();
@@ -30,6 +33,7 @@ public class GameList {
         ScheduledExecutorService task = Executors.newScheduledThreadPool(1);
         ScheduledFuture<?> future = task.scheduleAtFixedRate(game::update, 0, 250, TimeUnit.MILLISECONDS);
         game.start();
+        ongoingGamesCallback.put(game, onGameEndedCallback);
         ongoingGames.put(game, future);
     }
 
@@ -59,10 +63,12 @@ public class GameList {
 
     public void stopGame(DiscordQuizGame game) {
         ScheduledFuture<?> future = ongoingGames.remove(game);
-        if(future == null) {
+        Runnable runnable = ongoingGamesCallback.remove(game);
+        if(future == null || runnable == null) {
             return;
         }
         future.cancel(true);
+        runnable.run();
     }
 
     private DiscordPlayer asPlayer(Member member) {

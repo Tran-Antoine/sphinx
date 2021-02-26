@@ -18,6 +18,8 @@ import java.util.zip.ZipInputStream;
 
 public class InputUtils {
 
+    private static final long maxFileSize = 1024;
+
     private static final CounterLimiter downloadingLimiter = new CounterLimiter(5, 5.);
 
     public static Collection<? extends EntryUpdater> loadEntryUpdaters(String urlName, TextChannel channel) {
@@ -36,13 +38,12 @@ public class InputUtils {
             while ((current = zipStream.getNextEntry()) != null) {
                 readEntry(zipStream, current, updaters);
             }
-
-            // Release the instance of the current thread (as we finished the download process)
-            downloadingLimiter.releaseInstance(Thread.currentThread().getId());
         } catch (IOException ignored) {
             channel.sendMessage("Error: couldn't load the provided zip archive").queue();
         }
 
+        // Release the instance of the current thread (as we finished the download process)
+        downloadingLimiter.releaseInstance(Thread.currentThread().getId());
         return updaters;
     }
 

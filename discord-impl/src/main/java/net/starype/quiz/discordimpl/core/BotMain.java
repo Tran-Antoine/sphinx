@@ -12,7 +12,6 @@ import net.starype.quiz.discordimpl.input.ReactionInputListener;
 public class BotMain {
 
     public static void main(String[] args) throws Exception {
-
         JDABuilder builder = JDABuilder.createDefault(System.getenv("BOT_TOKEN"));
         JDA jda = builder.disableCache(CacheFlag.MEMBER_OVERRIDES, CacheFlag.VOICE_STATE)
                 .setBulkDeleteSplittingEnabled(false)

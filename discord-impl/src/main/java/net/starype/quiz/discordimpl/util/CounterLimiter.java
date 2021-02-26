@@ -51,4 +51,8 @@ public class CounterLimiter {
             throw new IllegalThreadStateException();
         }
     }
+
+    public int maxCount() {
+        return maxCount;
+    }
 }
