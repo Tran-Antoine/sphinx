@@ -1,4 +1,4 @@
-package net.starype.quiz.discordimpl.core;
+package net.starype.quiz.discordimpl.util;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public final class DiscordContext {
 
-    private final CounterLimiter zipDownloadingLimiter;
+    private final CounterLimiter downloadingLimiter;
 
     public static class CounterLimiter {
         private final AtomicInteger counter;
@@ -53,11 +53,11 @@ public final class DiscordContext {
     }
 
     public DiscordContext() {
-        zipDownloadingLimiter = new CounterLimiter(5);
+        downloadingLimiter = new CounterLimiter(5);
     }
 
-    public final CounterLimiter zipDownloadingLimiter() {
-        return zipDownloadingLimiter;
+    public final CounterLimiter downloadingLimiter() {
+        return downloadingLimiter;
     }
 
 }

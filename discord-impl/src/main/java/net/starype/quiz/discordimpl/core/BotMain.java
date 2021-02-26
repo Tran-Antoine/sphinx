@@ -8,6 +8,7 @@ import net.starype.quiz.discordimpl.game.GameList;
 import net.starype.quiz.discordimpl.game.LobbyList;
 import net.starype.quiz.discordimpl.input.MessageInputListener;
 import net.starype.quiz.discordimpl.input.ReactionInputListener;
+import net.starype.quiz.discordimpl.util.DiscordContext;
 
 public class BotMain {
 

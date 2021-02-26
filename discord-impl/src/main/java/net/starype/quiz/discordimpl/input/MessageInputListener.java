@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.starype.quiz.discordimpl.command.*;
 import net.starype.quiz.discordimpl.command.CommandContext.MessageContext;
-import net.starype.quiz.discordimpl.core.DiscordContext;
+import net.starype.quiz.discordimpl.util.DiscordContext;
 import net.starype.quiz.discordimpl.game.GameList;
 import net.starype.quiz.discordimpl.game.LobbyList;
 import org.jetbrains.annotations.NotNull;

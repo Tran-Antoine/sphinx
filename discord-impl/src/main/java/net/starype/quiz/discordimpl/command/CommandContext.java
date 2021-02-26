@@ -3,7 +3,7 @@ package net.starype.quiz.discordimpl.command;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.starype.quiz.discordimpl.core.DiscordContext;
+import net.starype.quiz.discordimpl.util.DiscordContext;
 import net.starype.quiz.discordimpl.game.GameList;
 import net.starype.quiz.discordimpl.game.LobbyList;
 
