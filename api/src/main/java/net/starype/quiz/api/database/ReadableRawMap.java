@@ -2,7 +2,6 @@ package net.starype.quiz.api.database;
 
 import net.starype.quiz.api.util.StringUtils;
 
-import java.awt.geom.Line2D;
 import java.util.Optional;
 
 public interface ReadableRawMap {
