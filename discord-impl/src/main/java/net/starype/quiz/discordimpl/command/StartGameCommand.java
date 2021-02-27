@@ -30,15 +30,10 @@ public class StartGameCommand implements QuizCommand {
         Member author = context.getAuthor();
         String authorId = author.getId();
 
-        Map<Supplier<Boolean>, String> conditions = createStopConditions(lobbyList, authorId, author.getEffectiveName());
+        long uniqueId = lobbyList.findByAuthor(authorId).map(name -> name.getName().hashCode()).orElse(0);
+        Map<Supplier<Boolean>, String> conditions = createStopConditions(lobbyList, authorId, author.getEffectiveName(), uniqueId);
 
         if(StopConditions.shouldStop(conditions, context.getChannel(), context.getMessage())) {
-            return;
-        }
-
-        long uniqueId = lobbyList.findByAuthor(authorId).orElseThrow().getName().hashCode();
-        if(!gameLimiter.acquireInstance(uniqueId)) {
-            context.getChannel().sendMessage("Error: Cannot create a new game as the maximum number of game as been reached").queue();
             return;
         }
 
@@ -50,7 +45,7 @@ public class StartGameCommand implements QuizCommand {
     }
 
     private static Map<Supplier<Boolean>, String> createStopConditions(LobbyList lobbyList, String playerId,
-                                                                       String nickName) {
+                                                                       String nickName, long uniqueId) {
         Map<Supplier<Boolean>, String> conditions = new LinkedHashMap<>();
 
         conditions.put(
@@ -60,6 +55,10 @@ public class StartGameCommand implements QuizCommand {
         conditions.put(
                 () -> lobbyList.findByAuthor(playerId).isEmpty(),
                 nickName + ", only the owner of the lobby can start the game");
+
+        conditions.put(
+                () -> !gameLimiter.acquireInstance(uniqueId),
+                "Error: Cannot create a new game as the maximum number of game as been reached");
 
         return conditions;
     }
