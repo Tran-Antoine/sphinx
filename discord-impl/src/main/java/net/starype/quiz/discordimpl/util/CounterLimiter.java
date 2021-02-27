@@ -1,25 +1,24 @@
 package net.starype.quiz.discordimpl.util;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class CounterLimiter {
-    private final AtomicInteger counter;
     private final List<Long> instances;
     private final int maxCount;
 
     public CounterLimiter(int maxCount) {
         this.maxCount = maxCount;
-        counter = new AtomicInteger(0);
-        instances = new LinkedList<>();
+        instances = Collections.synchronizedList(new LinkedList<>());
     }
 
     public synchronized boolean register(long uniqueId) {
         if(instances.contains(uniqueId)) {
             return true;
         }
-        if(counter.getAndUpdate(i -> i < maxCount ? (i + 1) : (i)) < maxCount) {
+        if(instances.size() + 1 < maxCount) {
             instances.add(uniqueId);
             return true;
         }
@@ -31,9 +30,6 @@ public class CounterLimiter {
             throw new RuntimeException("Cannot release an non acquire instance");
         }
         instances.removeIf(i -> i.equals(Thread.currentThread().getId()));
-        if(counter.decrementAndGet() < 0) {
-            throw new IllegalThreadStateException();
-        }
     }
 
     public int maxCount() {
