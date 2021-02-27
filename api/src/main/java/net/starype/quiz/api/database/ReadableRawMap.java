@@ -25,7 +25,7 @@ public interface ReadableRawMap {
         return get(key).orElse(defaultValue);
     }
 
-    default String getOrEmptyString(String key) {
-        return this.<String>getOrDefault(key, "");
+    default String getOrEmpty(String key) {
+        return this.getOrDefault(key, "");
     }
 }

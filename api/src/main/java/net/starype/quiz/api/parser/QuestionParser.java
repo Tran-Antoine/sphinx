@@ -51,11 +51,11 @@ public class QuestionParser {
 
     public static Question parse(ReadableRawMap config) {
 
-        String rawText = config.getOrEmptyString("text");
-        List<String> rawAnswers = StringUtils.unpack(config.getOrEmptyString("answers"));
+        String rawText = config.getOrEmpty("text");
+        List<String> rawAnswers = StringUtils.unpack(config.getOrEmpty("answers"));
         AnswerProcessor processor = loadProcessor(config);
         AnswerEvaluator evaluator = loadEvaluator(config, processor, rawAnswers);
-        Set<QuestionTag> tags = new HashSet<>(StringUtils.unpack(config.getOrEmptyString("tags"), QuestionTag::new));
+        Set<QuestionTag> tags = new HashSet<>(StringUtils.unpack(config.getOrEmpty("tags"), QuestionTag::new));
         QuestionDifficulty difficulty = QuestionDifficulty.valueOf(config.getOrDefault("difficulty", "NORMAL"));
 
         return new DefaultQuestion.Builder()
