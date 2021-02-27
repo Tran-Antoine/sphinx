@@ -24,7 +24,8 @@ public class InputUtils {
         try {
             URL url = new URL(urlName);
             if(!downloadingLimiter.register(urlName.hashCode())) {
-                channel.sendMessage("Error: The limit of downloading zip as been reached").queue();
+                channel.sendMessage("Error: The limit of downloading zip has been reached").queue();
+
                 return updaters;
             }
 
