@@ -1,6 +1,5 @@
 package net.starype.quiz.discordimpl.util;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,7 +26,7 @@ public class CounterLimiter {
 
     public synchronized void unregister(long uniqueId) {
         if(!instances.contains(uniqueId)) {
-            throw new RuntimeException("Cannot release an non acquire instance");
+            throw new RuntimeException("Cannot unregister a non-registered id");
         }
         instances.removeIf(i -> i.equals(Thread.currentThread().getId()));
     }
@@ -36,7 +35,7 @@ public class CounterLimiter {
         return maxCount;
     }
 
-    public synchronized void unregisterIfNotPresent(long uniqueId) {
+    public synchronized void unregisterIfPresent(long uniqueId) {
         if(instances.contains(uniqueId)) {
             unregister(uniqueId);
         }

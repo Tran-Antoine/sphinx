@@ -32,7 +32,7 @@ public class CreateLobbyCommand implements QuizCommand {
         Message message = context.getMessage();
 
         if(StopConditions.shouldStop(stopConditions, channel, message)) {
-            lobbyLimiter.unregisterIfNotPresent(context.getAuthor().getIdLong());
+            lobbyLimiter.unregisterIfPresent(context.getAuthor().getIdLong());
             return;
         }
 
