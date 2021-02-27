@@ -16,6 +16,7 @@ import net.starype.quiz.api.util.StringUtils;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -86,9 +87,14 @@ public class QuestionParser {
     public static Set<DatabaseEntry> getDatabaseEntries(String content, DatabaseEntryFactory factory) {
         CommentedConfig config = NightConfigParserUtils.loadConfigFromString(content);
         Set<String> inlineEntriesSet = getKeysBySubPath("", config.entrySet());
-        Map<String, String> argMap = inlineEntriesSet.stream()
-                .collect(Collectors.toMap(path -> path, path -> (config.get(path) instanceof List<?>) ?
-                        StringUtils.pack(config.get(path)) : config.get(path)));
+
+        Function<String, String> func = path -> (config.get(path) instanceof List<?>)
+                ? StringUtils.pack(config.get(path))
+                : config.get(path);
+
+        Map<String, String> argMap = inlineEntriesSet
+                .stream()
+                .collect(Collectors.toMap(path -> path, func));
 
         String rawText = config.get("question.text");
         String inlineTags = StringUtils.pack(config.get("tags"));
