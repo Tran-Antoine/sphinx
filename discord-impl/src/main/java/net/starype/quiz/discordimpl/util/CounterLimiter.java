@@ -21,14 +21,14 @@ public class CounterLimiter {
         this(maxCount, 5.0);
     }
 
-    public synchronized boolean acquireInstance() {
+    public synchronized boolean acquireInstance(long uniqueId) {
         double awaitingTime = .0;
-        if(instances.contains(Thread.currentThread().getId())) {
+        if(instances.contains(uniqueId)) {
             return true;
         }
         while(true) {
             if(counter.getAndUpdate(i -> i < maxCount ? (i + 1) : (i)) < maxCount) {
-                instances.add(Thread.currentThread().getId());
+                instances.add(uniqueId);
                 return true;
             }
             try {
@@ -42,8 +42,8 @@ public class CounterLimiter {
         }
     }
 
-    public synchronized void releaseInstance() {
-        if(!instances.contains(Thread.currentThread().getId())) {
+    public synchronized void releaseInstance(long uniqueId) {
+        if(!instances.contains(uniqueId)) {
             throw new RuntimeException("Cannot release an non acquire instance");
         }
         instances.removeIf(i -> i.equals(Thread.currentThread().getId()));
@@ -56,9 +56,9 @@ public class CounterLimiter {
         return maxCount;
     }
 
-    public synchronized void releaseInstanceIfNotPresent() {
-        if(instances.contains(Thread.currentThread().getId())) {
-            releaseInstance();
+    public synchronized void releaseInstanceIfNotPresent(long uniqueId) {
+        if(instances.contains(uniqueId)) {
+            releaseInstance(uniqueId);
         }
     }
 }

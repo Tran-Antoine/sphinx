@@ -155,6 +155,10 @@ public class GameLobby extends DiscordLogContainer {
         return this.name.equals(name);
     }
 
+    public String getName() {
+        return name;
+    }
+
     public void sendJoinImage(ReactionInputListener reactionListener) {
 
         Optional<Message> optMessage = sendImage();

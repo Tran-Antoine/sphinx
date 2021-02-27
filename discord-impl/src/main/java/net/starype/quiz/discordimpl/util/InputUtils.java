@@ -27,7 +27,7 @@ public class InputUtils {
 
         try {
             URL url = new URL(urlName);
-            if(!downloadingLimiter.acquireInstance()) {
+            if(!downloadingLimiter.acquireInstance(urlName.hashCode())) {
                 channel.sendMessage("Error: The limit of downloading zip as been reached").queue();
                 return updaters;
             }
@@ -43,7 +43,7 @@ public class InputUtils {
         }
 
         // Release the instance of the current thread (as we finished the download process)
-        downloadingLimiter.releaseInstance();
+        downloadingLimiter.releaseInstance(urlName.hashCode());
         return updaters;
     }
 

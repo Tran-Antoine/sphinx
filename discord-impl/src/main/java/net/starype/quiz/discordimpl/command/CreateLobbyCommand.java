@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 
 public class CreateLobbyCommand implements QuizCommand {
 
-    private static final CounterLimiter lobbyLimiter = new CounterLimiter(5, .1);
+    private static final CounterLimiter lobbyLimiter = new CounterLimiter(1, .1);
 
     @Override
     public void execute(CommandContext context) {
@@ -32,12 +32,12 @@ public class CreateLobbyCommand implements QuizCommand {
         Message message = context.getMessage();
 
         if(StopConditions.shouldStop(stopConditions, channel, message)) {
-            lobbyLimiter.releaseInstanceIfNotPresent();
+            lobbyLimiter.releaseInstanceIfNotPresent(context.getAuthor().getIdLong());
             return;
         }
 
         LobbyList lobbies = context.getLobbyList();
-        GameLobby lobby = lobbies.registerLobby(channel, author, lobbyLimiter::releaseInstance);
+        GameLobby lobby = lobbies.registerLobby(channel, author, () -> lobbyLimiter.releaseInstance(playerId.hashCode()));
         lobby.trackMessage(message.getId());
     }
 
@@ -54,8 +54,8 @@ public class CreateLobbyCommand implements QuizCommand {
                 nickName + ", you are already playing a game");
 
         conditions.put(
-                () -> !lobbyLimiter.acquireInstance(),
-                "max lobby limit has been reached");
+               () -> !lobbyLimiter.acquireInstance(authorId.hashCode()),
+               "max lobby limit has been reached");
 
         return conditions;
     }

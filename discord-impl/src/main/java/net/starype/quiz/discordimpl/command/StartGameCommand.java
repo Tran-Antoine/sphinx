@@ -7,6 +7,7 @@ import net.starype.quiz.discordimpl.util.CounterLimiter;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.function.Supplier;
 
 public class StartGameCommand implements QuizCommand {
@@ -29,16 +30,22 @@ public class StartGameCommand implements QuizCommand {
         Member author = context.getAuthor();
         String authorId = author.getId();
 
+        // Note: This code work as long as
         Map<Supplier<Boolean>, String> conditions = createStopConditions(lobbyList, authorId, author.getEffectiveName());
 
         if(StopConditions.shouldStop(conditions, context.getChannel(), context.getMessage())) {
-            gameLimiter.releaseInstanceIfNotPresent();
+            return;
+        }
+
+        long uniqueId = lobbyList.findByAuthor(authorId).orElseThrow().getName().hashCode();
+        if(!gameLimiter.acquireInstance(uniqueId)) {
+            context.getChannel().sendMessage("Error: Cannot create a new game as the maximum number of game as been reached").queue();
             return;
         }
 
         GameLobby lobby = lobbyList.findByAuthor(authorId).get();
         lobby.trackMessage(context.getMessage().getId());
-        if(lobby.start(context.getGameList(), gameLimiter::releaseInstance)) {
+        if(lobby.start(context.getGameList(), () -> gameLimiter.releaseInstance(uniqueId))) {
             lobbyList.unregisterLobby(lobby);
         }
     }
@@ -54,10 +61,6 @@ public class StartGameCommand implements QuizCommand {
         conditions.put(
                 () -> lobbyList.findByAuthor(playerId).isEmpty(),
                 nickName + ", only the owner of the lobby can start the game");
-
-        conditions.put(
-                () -> !gameLimiter.acquireInstance(),
-                "max game number of "+ gameLimiter.maxCount() +" has been reached");
 
         return conditions;
     }
