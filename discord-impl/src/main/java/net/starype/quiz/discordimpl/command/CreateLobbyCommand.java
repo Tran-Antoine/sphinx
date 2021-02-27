@@ -19,11 +19,6 @@ public class CreateLobbyCommand implements QuizCommand {
     @Override
     public void execute(CommandContext context) {
 
-        if(!lobbyLimiter.acquireInstance(Thread.currentThread().getId())) {
-            context.getChannel().sendMessage("Error: max lobby limit has been reached").queue();
-            return;
-        }
-
         Member author = context.getAuthor();
         String playerId = author.getId();
         TextChannel channel = context.getChannel();
@@ -37,12 +32,12 @@ public class CreateLobbyCommand implements QuizCommand {
         Message message = context.getMessage();
 
         if(StopConditions.shouldStop(stopConditions, channel, message)) {
+            lobbyLimiter.releaseInstanceIfNotPresent();
             return;
         }
 
         LobbyList lobbies = context.getLobbyList();
-        GameLobby lobby = lobbies.registerLobby(channel, author,
-                () -> lobbyLimiter.releaseInstance(Thread.currentThread().getId()));
+        GameLobby lobby = lobbies.registerLobby(channel, author, lobbyLimiter::releaseInstance);
         lobby.trackMessage(message.getId());
     }
 
@@ -57,6 +52,11 @@ public class CreateLobbyCommand implements QuizCommand {
         conditions.put(
                 () -> gameList.isPlaying(authorId),
                 nickName + ", you are already playing a game");
+
+        conditions.put(
+                () -> !lobbyLimiter.acquireInstance(),
+                "max lobby limit has been reached");
+
         return conditions;
     }
 

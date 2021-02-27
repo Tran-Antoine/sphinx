@@ -112,8 +112,8 @@ public class GameLobby extends DiscordLogContainer {
 
         
         deleteMessages();
-        gameList.startNewGame(playersId, rounds, channel, authorId, onGameEndedCallback);
         destructLobbyCallback.run();
+        gameList.startNewGame(playersId, rounds, channel, authorId, onGameEndedCallback);
         return true;
     }
 

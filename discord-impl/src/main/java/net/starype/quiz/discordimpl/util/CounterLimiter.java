@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class CounterLimiter {
     private final AtomicInteger counter;
-    private final List<Integer> instances;
+    private final List<Long> instances;
     private final double maxAwaitingTime;
     private final int maxCount;
 
@@ -21,14 +21,14 @@ public class CounterLimiter {
         this(maxCount, 5.0);
     }
 
-    public synchronized boolean acquireInstance(Object instance) {
+    public synchronized boolean acquireInstance() {
         double awaitingTime = .0;
-        if(instances.contains(instance.hashCode())) {
+        if(instances.contains(Thread.currentThread().getId())) {
             return true;
         }
         while(true) {
             if(counter.getAndUpdate(i -> i < maxCount ? (i + 1) : (i)) < maxCount) {
-                instances.add(instance.hashCode());
+                instances.add(Thread.currentThread().getId());
                 return true;
             }
             try {
@@ -42,11 +42,11 @@ public class CounterLimiter {
         }
     }
 
-    public synchronized void releaseInstance(Object instance) {
-        if(!instances.contains(instance.hashCode())) {
+    public synchronized void releaseInstance() {
+        if(!instances.contains(Thread.currentThread().getId())) {
             throw new RuntimeException("Cannot release an non acquire instance");
         }
-        instances.removeIf(i -> i.equals(instance.hashCode()));
+        instances.removeIf(i -> i.equals(Thread.currentThread().getId()));
         if(counter.decrementAndGet() < 0) {
             throw new IllegalThreadStateException();
         }
@@ -54,5 +54,11 @@ public class CounterLimiter {
 
     public int maxCount() {
         return maxCount;
+    }
+
+    public synchronized void releaseInstanceIfNotPresent() {
+        if(instances.contains(Thread.currentThread().getId())) {
+            releaseInstance();
+        }
     }
 }

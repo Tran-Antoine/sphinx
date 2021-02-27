@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 
 public class StartGameCommand implements QuizCommand {
 
-    private final CounterLimiter gameLimiter = new CounterLimiter(5, .1);
+    private final static CounterLimiter gameLimiter = new CounterLimiter(5, .1);
 
     @Override
     public String getName() {
@@ -25,11 +25,6 @@ public class StartGameCommand implements QuizCommand {
 
     @Override
     public void execute(CommandContext context) {
-        if(!gameLimiter.acquireInstance(Thread.currentThread().getId())) {
-            context.getChannel().sendMessage("Error: max game number of "+ gameLimiter.maxCount() +" has been reached").queue();
-            return;
-        }
-
         LobbyList lobbyList = context.getLobbyList();
         Member author = context.getAuthor();
         String authorId = author.getId();
@@ -37,13 +32,13 @@ public class StartGameCommand implements QuizCommand {
         Map<Supplier<Boolean>, String> conditions = createStopConditions(lobbyList, authorId, author.getEffectiveName());
 
         if(StopConditions.shouldStop(conditions, context.getChannel(), context.getMessage())) {
-            gameLimiter.releaseInstance(Thread.currentThread().getId());
+            gameLimiter.releaseInstanceIfNotPresent();
             return;
         }
 
         GameLobby lobby = lobbyList.findByAuthor(authorId).get();
         lobby.trackMessage(context.getMessage().getId());
-        if(lobby.start(context.getGameList(), () -> gameLimiter.releaseInstance(Thread.currentThread().getId()))) {
+        if(lobby.start(context.getGameList(), gameLimiter::releaseInstance)) {
             lobbyList.unregisterLobby(lobby);
         }
     }
@@ -55,9 +50,14 @@ public class StartGameCommand implements QuizCommand {
         conditions.put(
                 () -> lobbyList.findByPlayer(playerId).isEmpty(),
                 nickName + ", you are not in any lobby");
+
         conditions.put(
                 () -> lobbyList.findByAuthor(playerId).isEmpty(),
                 nickName + ", only the owner of the lobby can start the game");
+
+        conditions.put(
+                () -> !gameLimiter.acquireInstance(),
+                "max game number of "+ gameLimiter.maxCount() +" has been reached");
 
         return conditions;
     }
