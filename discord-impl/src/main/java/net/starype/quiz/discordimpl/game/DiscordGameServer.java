@@ -88,7 +88,12 @@ public class DiscordGameServer extends DiscordLogContainer implements GameServer
 
     @Override
     public void onQuestionReleased(Question question) {
-        sendAsLatexFile(question.getRawQuestion());
+        String rawQuestion = question.getRawQuestion();
+        if(question.isTagAttached("Math")) {
+            sendAsLatexFile(rawQuestion);
+        } else {
+            sendAsText(rawQuestion);
+        }
     }
 
     private void sendAsLatexFile(String message) {

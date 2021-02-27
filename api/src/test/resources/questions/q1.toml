@@ -1,18 +1,30 @@
-difficulty = "NORMAL"
-tags = ["Linear Algebra", "Math", "BA1"]
+difficulty = "EASY"
+tags = ["Programming", "Java", "Functional", "Stream", "Lambda", "Method referencing"]
+
 
 [question]
 
-title = "Image de matrices équivalentes"
-text = "\text{Vrai ou Faux: \\
-        Soient A et B deux matrices à coefficients réels colonne-équivalentes. \\
-        Alors} Im(A) = Im(B)"
+title = "Flat map into reduction"
+text = '''
+Determine the output of the following code (if the program should raise an error, answer with "error").
+
+```java
+Collection<Integer> numbers = List.of(3,2,9,0);
+int result = numbers
+    .stream()
+    .map(x -> x+1)
+    .flatMap(x -> Arrays.asList(x, x).stream())
+    .distinct()
+    .reduce((a, b) -> a+b)
+    .orElse(0);
+```
+'''
 
 [answer]
 
-processors = ["clean-string", "true-false"]
-correct = ["True"]
+processors = ["clean-string"]
+correct = ["18"]
 
 [answer.evaluator]
-name = "exact-answer"
-
+name = "integer"
+range = 0

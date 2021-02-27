@@ -20,13 +20,13 @@ public class MessageUtils {
     public static void sendAndTrack(String text, TextChannel channel, LogContainer container) {
         channel.sendMessage(text)
                 .map(Message::getId)
-                .queue(container::trackMessage);
+                .queue(container::trackMessage, null);
     }
 
     public static void sendAndTrack(InputStream image, String name, TextChannel channel, LogContainer container) {
         channel
                 .sendFile(image, name)
-                .queue(message -> container.trackMessage(message.getId()));
+                .queue(message -> container.trackMessage(message.getId()), null);
     }
 
     public static void createTemporaryMessage(String value, TextChannel channel) {

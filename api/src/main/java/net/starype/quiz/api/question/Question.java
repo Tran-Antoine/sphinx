@@ -11,8 +11,11 @@ public interface Question extends IDHolder<UUID> {
 
     Set<QuestionTag> getTags();
 
-    default boolean isTagAttached(QuestionTag tag) {
-        return getTags().contains(tag);
+    default boolean isTagAttached(String tag) {
+        return getTags()
+                .stream()
+                .map(QuestionTag::getTag)
+                .anyMatch(t -> t.equals(tag));
     }
 
     void registerTag(QuestionTag tag);
