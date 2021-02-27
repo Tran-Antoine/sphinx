@@ -7,12 +7,8 @@ import net.starype.quiz.api.game.*;
 import net.starype.quiz.api.player.Player;
 import net.starype.quiz.api.question.Question;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
 
 import static net.starype.quiz.api.game.ScoreDistribution.Standing;
 
@@ -25,7 +21,7 @@ public class StandardRound implements QuizRound {
     private Collection<Updatable> updatables;
     private EntityEligibility playerEligibility;
     private final AtomicBoolean hasRoundEnded;
-    private Consumer<GameRound> callback = context -> {};
+    private QuizGame game;
 
     private GuessReceivedAction guessReceivedAction;
     private GuessReceivedAction giveUpReceivedAction;
@@ -51,17 +47,14 @@ public class StandardRound implements QuizRound {
     public void start(QuizGame game, Collection<? extends Player<?>> players,
                       UpdatableHandler updatableHandler) {
         roundState.initPlayers(players);
-        if(game == null) {
-            throw new IllegalStateException("Game cannot be null");
-        }
+        this.game = Objects.requireNonNull(game, "Game cannot be null");
         game.sendInputToServer(server -> server.onQuestionReleased(pickedQuestion));
-        this.callback = game::onRoundEnded;
         updatables.forEach(updatableHandler::registerEvent);
         updatables.forEach(event -> event.start(updatableHandler));
     }
 
     @Override
-    public PlayerGuessContext onGuessReceived(Player<?> source, String message) {
+    public void onGuessReceived(Player<?> source, String message) {
         Optional<Double> optCorrectness = pickedQuestion.evaluateAnswer(Answer.fromString(message));
 
         MutableGuessContext playerGuessContext = new MutableGuessContext(source, optCorrectness.orElse(0.0),
@@ -72,10 +65,8 @@ public class StandardRound implements QuizRound {
         if(optCorrectness.isPresent()) {
             playerGuessContext.setEligibility(playerEligibility.isEligible(source));
         }
-
+        game.sendInputToServer(server -> server.onPlayerGuessed(playerGuessContext));
         checkEndOfRound();
-
-        return playerGuessContext;
     }
 
     @Override
@@ -93,7 +84,7 @@ public class StandardRound implements QuizRound {
             }
             hasRoundEnded.set(true);
             onRoundStopped();
-            callback.accept(this);
+            game.onRoundEnded(this);
         }
     }
 

@@ -235,6 +235,8 @@ public class GameLobby extends DiscordLogContainer {
     }
 
     public void queueRound(PartialRound round) {
-        partialRounds.add(round);
+        if(partialRounds.size() < 100) {
+            partialRounds.add(round);
+        }
     }
 }
