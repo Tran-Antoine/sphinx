@@ -55,7 +55,8 @@ public class CreateLobbyCommand implements QuizCommand {
 
         conditions.put(
                () -> !lobbyLimiter.acquireInstance(authorId.hashCode()),
-               "max lobby limit has been reached");
+               "Error: Cannot create new lobby as the maximum number of lobbies has been reached");
+
 
         return conditions;
     }
