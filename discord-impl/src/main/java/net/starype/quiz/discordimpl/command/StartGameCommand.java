@@ -62,7 +62,7 @@ public class StartGameCommand implements QuizCommand {
 
         conditions.put(
                 () -> !gameLimiter.register(uniqueId),
-                "Error: Cannot create a new game as the maximum number of game has been reached");
+                "Error: Cannot create a new game as the maximum number of games has been reached");
 
 
         return conditions;

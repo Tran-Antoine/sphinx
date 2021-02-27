@@ -18,7 +18,7 @@ public class CounterLimiter {
         if(instances.contains(uniqueId)) {
             return true;
         }
-        if(instances.size() + 1 < maxCount) {
+        if(instances.size() + 1 <= maxCount) {
             instances.add(uniqueId);
             return true;
         }
