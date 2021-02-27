@@ -3,43 +3,28 @@ package net.starype.quiz.discordimpl.util;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class CounterLimiter {
     private final AtomicInteger counter;
     private final List<Long> instances;
-    private final double maxAwaitingTime;
     private final int maxCount;
 
-    public CounterLimiter(int maxCount, double maxAwaitingTime) {
+    public CounterLimiter(int maxCount) {
         this.maxCount = maxCount;
-        this.maxAwaitingTime = maxAwaitingTime;
         counter = new AtomicInteger(0);
         instances = new LinkedList<>();
     }
 
-    public CounterLimiter(int maxCount) {
-        this(maxCount, 5.0);
-    }
-
     public synchronized boolean acquireInstance(long uniqueId) {
-        double awaitingTime = .0;
         if(instances.contains(uniqueId)) {
             return true;
         }
-        while(true) {
-            if(counter.getAndUpdate(i -> i < maxCount ? (i + 1) : (i)) < maxCount) {
-                instances.add(uniqueId);
-                return true;
-            }
-            try {
-                Thread.sleep(500);
-                awaitingTime += .5;
-            }
-            catch (InterruptedException ignored) { return false; }
-            if(awaitingTime > maxAwaitingTime) {
-                return false;
-            }
+        if(counter.getAndUpdate(i -> i < maxCount ? (i + 1) : (i)) < maxCount) {
+            instances.add(uniqueId);
+            return true;
         }
+        return false;
     }
 
     public synchronized void releaseInstance(long uniqueId) {

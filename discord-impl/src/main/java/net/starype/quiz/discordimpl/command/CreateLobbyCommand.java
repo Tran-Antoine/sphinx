@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 
 public class CreateLobbyCommand implements QuizCommand {
 
-    private static final CounterLimiter lobbyLimiter = new CounterLimiter(5, .1);
+    private static final CounterLimiter lobbyLimiter = new CounterLimiter(5);
 
     @Override
     public void execute(CommandContext context) {

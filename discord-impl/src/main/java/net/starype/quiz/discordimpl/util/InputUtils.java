@@ -20,7 +20,7 @@ public class InputUtils {
 
     private static final long maxFileSize = 1024;
 
-    private static final CounterLimiter downloadingLimiter = new CounterLimiter(5, 5.);
+    private static final CounterLimiter downloadingLimiter = new CounterLimiter(5);
 
     public static Collection<? extends EntryUpdater> loadEntryUpdaters(String urlName, TextChannel channel) {
         Set<EntryUpdater> updaters = new HashSet<>();

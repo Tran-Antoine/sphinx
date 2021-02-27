@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 
 public class StartGameCommand implements QuizCommand {
 
-    private final static CounterLimiter gameLimiter = new CounterLimiter(5, .1);
+    private final static CounterLimiter gameLimiter = new CounterLimiter(5);
 
     @Override
     public String getName() {
