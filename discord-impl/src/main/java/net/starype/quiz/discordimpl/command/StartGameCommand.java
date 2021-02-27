@@ -30,7 +30,6 @@ public class StartGameCommand implements QuizCommand {
         Member author = context.getAuthor();
         String authorId = author.getId();
 
-        // Note: This code work as long as
         Map<Supplier<Boolean>, String> conditions = createStopConditions(lobbyList, authorId, author.getEffectiveName());
 
         if(StopConditions.shouldStop(conditions, context.getChannel(), context.getMessage())) {
