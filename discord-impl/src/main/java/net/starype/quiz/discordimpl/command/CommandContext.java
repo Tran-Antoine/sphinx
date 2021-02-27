@@ -12,7 +12,6 @@ public class CommandContext {
     private GameList gameList;
     private LobbyList lobbyList;
 
-
     public CommandContext(MessageContext messageContext, GameList gameList, LobbyList lobbyList) {
         this.messageContext = messageContext;
         this.gameList = gameList;

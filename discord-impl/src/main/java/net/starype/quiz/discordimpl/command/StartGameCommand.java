@@ -1,6 +1,7 @@
 package net.starype.quiz.discordimpl.command;
 
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
 import net.starype.quiz.discordimpl.game.GameLobby;
 import net.starype.quiz.discordimpl.game.LobbyList;
 import net.starype.quiz.discordimpl.util.CounterLimiter;
@@ -28,16 +29,20 @@ public class StartGameCommand implements QuizCommand {
         LobbyList lobbyList = context.getLobbyList();
         Member author = context.getAuthor();
         String authorId = author.getId();
+        Message message = context.getMessage();
 
-        long uniqueId = lobbyList.findByAuthor(authorId).map(name -> name.getName().hashCode()).orElse(0);
+        long uniqueId = lobbyList
+                .findByAuthor(authorId)
+                .map(name -> name.getName().hashCode())
+                .orElse(0);
         Map<Supplier<Boolean>, String> conditions = createStopConditions(lobbyList, authorId, author.getEffectiveName(), uniqueId);
 
-        if(StopConditions.shouldStop(conditions, context.getChannel(), context.getMessage())) {
+        if(StopConditions.shouldStop(conditions, context.getChannel(), message)) {
             return;
         }
 
         GameLobby lobby = lobbyList.findByAuthor(authorId).get();
-        lobby.trackMessage(context.getMessage().getId());
+        lobby.trackMessage(message.getId());
         if(lobby.start(context.getGameList(), () -> gameLimiter.unregister(uniqueId))) {
             lobbyList.unregisterLobby(lobby);
         }
