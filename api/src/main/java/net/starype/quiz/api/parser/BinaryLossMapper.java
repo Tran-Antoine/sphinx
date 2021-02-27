@@ -17,7 +17,7 @@ public class BinaryLossMapper implements ConfigMapper<LossFunction> {
 
     @Override
     public LossFunction map(ReadableRawMap config) {
-        return new BinaryLossFunction(StringUtils.mapOptionalNoThrow(config.get("answer.evaluator.threshold"), Double::parseDouble)
+        return new BinaryLossFunction(config.getDouble("answer.evaluator.threshold")
                 .orElse(0.1));
     }
 }

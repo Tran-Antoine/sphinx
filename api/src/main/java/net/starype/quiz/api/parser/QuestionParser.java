@@ -51,11 +51,11 @@ public class QuestionParser {
 
     public static Question parse(ReadableRawMap config) {
 
-        String rawText = config.getOrEmpty("text");
-        List<String> rawAnswers = StringUtils.unpack(config.getOrEmpty("answers"));
+        String rawText = config.getOrEmptyString("text");
+        List<String> rawAnswers = StringUtils.unpack(config.getOrEmptyString("answers"));
         AnswerProcessor processor = loadProcessor(config);
         AnswerEvaluator evaluator = loadEvaluator(config, processor, rawAnswers);
-        Set<QuestionTag> tags = new HashSet<>(StringUtils.unpack(config.getOrEmpty("tags"), QuestionTag::new));
+        Set<QuestionTag> tags = new HashSet<>(StringUtils.unpack(config.getOrEmptyString("tags"), QuestionTag::new));
         QuestionDifficulty difficulty = QuestionDifficulty.valueOf(config.getOrDefault("difficulty", "NORMAL"));
 
         return new DefaultQuestion.Builder()
@@ -132,13 +132,13 @@ public class QuestionParser {
 
     private static QuestionDifficulty loadDifficulty(CommentedConfig config) {
         return DIFFICULTY_MATCHER
-                .loadFromKey(DIFFICULTY, config::get)
+                .loadFromKey(DIFFICULTY, ReadableConfig.of(config))
                 .orElse(QuestionDifficulty.NORMAL);
     }
 
     private static AnswerProcessor loadProcessor(CommentedConfig config) {
         return PROCESSOR_MATCHER
-                .loadList(PROCESSORS, config::get)
+                .loadList(PROCESSORS, ReadableConfig.of(config))
                 .stream()
                 .reduce(AnswerProcessor::combine)
                 .orElse(IdentityProcessor.INSTANCE);
@@ -154,7 +154,7 @@ public class QuestionParser {
 
     private static AnswerEvaluator loadEvaluator(CommentedConfig config, AnswerProcessor processor, List<String> rawAnswers) {
         return EVALUATOR_MATCHER
-                .loadFromKeyOrDefault(EVALUATOR_NAME, config::get)
+                .loadFromKeyOrDefault(EVALUATOR_NAME, ReadableConfig.of(config))
                 .create(StringUtils.map(rawAnswers, Answer::fromString), processor);
     }
 
@@ -164,4 +164,5 @@ public class QuestionParser {
                 .loadFromValueOrDefault(rawData.get("answer.evaluator.name"), config)
                 .create(StringUtils.map(rawAnswers, Answer::fromString), processor);
     }
+
 }
