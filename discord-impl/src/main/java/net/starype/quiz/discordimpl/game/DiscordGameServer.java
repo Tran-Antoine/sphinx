@@ -93,13 +93,15 @@ public class DiscordGameServer extends DiscordLogContainer implements GameServer
 
     private void sendAsLatexFile(String message) {
         TeXFormula teXFormula = new TeXFormula(message);
-        Image image = teXFormula.createBufferedImage(TeXFormula.SERIF, 200, Color.BLACK, Color.WHITE);
+        Image image = teXFormula.createBufferedImage(TeXFormula.SERIF, 30, Color.BLACK, Color.WHITE);
         BufferedImage bufferedImage = ImageUtils.toBufferedImage(image);
+        image.flush();
         InputStream inputStream = ImageUtils.toInputStream(bufferedImage);
         MessageUtils.sendAndTrack(
                 inputStream, "image.png",
                 channel,
                 this);
+        bufferedImage.flush();
     }
 
     private void sendAsText(String message) {
