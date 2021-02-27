@@ -1,15 +1,11 @@
 package net.starype.quiz.discordimpl.util;
 
-import com.neovisionaries.ws.client.ProxySettings;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.starype.quiz.api.database.ByteEntryUpdater;
 import net.starype.quiz.api.database.EntryUpdater;
 
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.Proxy;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -27,7 +23,7 @@ public class InputUtils {
 
         try {
             URL url = new URL(urlName);
-            if(!downloadingLimiter.acquireInstance(urlName.hashCode())) {
+            if(!downloadingLimiter.register(urlName.hashCode())) {
                 channel.sendMessage("Error: The limit of downloading zip as been reached").queue();
                 return updaters;
             }
@@ -43,7 +39,7 @@ public class InputUtils {
         }
 
         // Release the instance of the current thread (as we finished the download process)
-        downloadingLimiter.releaseInstance(urlName.hashCode());
+        downloadingLimiter.unregister(urlName.hashCode());
         return updaters;
     }
 

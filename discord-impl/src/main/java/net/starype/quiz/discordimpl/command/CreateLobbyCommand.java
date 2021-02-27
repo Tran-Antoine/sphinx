@@ -32,12 +32,12 @@ public class CreateLobbyCommand implements QuizCommand {
         Message message = context.getMessage();
 
         if(StopConditions.shouldStop(stopConditions, channel, message)) {
-            lobbyLimiter.releaseInstanceIfNotPresent(context.getAuthor().getIdLong());
+            lobbyLimiter.unregisterIfNotPresent(context.getAuthor().getIdLong());
             return;
         }
 
         LobbyList lobbies = context.getLobbyList();
-        GameLobby lobby = lobbies.registerLobby(channel, author, () -> lobbyLimiter.releaseInstance(playerId.hashCode()));
+        GameLobby lobby = lobbies.registerLobby(channel, author, () -> lobbyLimiter.unregister(playerId.hashCode()));
         lobby.trackMessage(message.getId());
     }
 
@@ -54,7 +54,7 @@ public class CreateLobbyCommand implements QuizCommand {
                 nickName + ", you are already playing a game");
 
         conditions.put(
-               () -> !lobbyLimiter.acquireInstance(authorId.hashCode()),
+               () -> !lobbyLimiter.register(authorId.hashCode()),
                "Error: Cannot create new lobby as the maximum number of lobbies has been reached");
 
 

@@ -7,7 +7,6 @@ import net.starype.quiz.discordimpl.util.CounterLimiter;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.function.Supplier;
 
 public class StartGameCommand implements QuizCommand {
@@ -39,7 +38,7 @@ public class StartGameCommand implements QuizCommand {
 
         GameLobby lobby = lobbyList.findByAuthor(authorId).get();
         lobby.trackMessage(context.getMessage().getId());
-        if(lobby.start(context.getGameList(), () -> gameLimiter.releaseInstance(uniqueId))) {
+        if(lobby.start(context.getGameList(), () -> gameLimiter.unregister(uniqueId))) {
             lobbyList.unregisterLobby(lobby);
         }
     }
@@ -57,7 +56,7 @@ public class StartGameCommand implements QuizCommand {
                 nickName + ", only the owner of the lobby can start the game");
 
         conditions.put(
-                () -> !gameLimiter.acquireInstance(uniqueId),
+                () -> !gameLimiter.register(uniqueId),
                 "Error: Cannot create a new game as the maximum number of game has been reached");
 
 

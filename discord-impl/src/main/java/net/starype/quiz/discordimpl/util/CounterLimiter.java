@@ -3,7 +3,6 @@ package net.starype.quiz.discordimpl.util;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class CounterLimiter {
     private final AtomicInteger counter;
@@ -16,7 +15,7 @@ public class CounterLimiter {
         instances = new LinkedList<>();
     }
 
-    public synchronized boolean acquireInstance(long uniqueId) {
+    public synchronized boolean register(long uniqueId) {
         if(instances.contains(uniqueId)) {
             return true;
         }
@@ -27,7 +26,7 @@ public class CounterLimiter {
         return false;
     }
 
-    public synchronized void releaseInstance(long uniqueId) {
+    public synchronized void unregister(long uniqueId) {
         if(!instances.contains(uniqueId)) {
             throw new RuntimeException("Cannot release an non acquire instance");
         }
@@ -41,9 +40,9 @@ public class CounterLimiter {
         return maxCount;
     }
 
-    public synchronized void releaseInstanceIfNotPresent(long uniqueId) {
+    public synchronized void unregisterIfNotPresent(long uniqueId) {
         if(instances.contains(uniqueId)) {
-            releaseInstance(uniqueId);
+            unregister(uniqueId);
         }
     }
 }
