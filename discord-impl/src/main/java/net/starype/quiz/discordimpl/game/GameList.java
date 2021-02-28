@@ -72,7 +72,7 @@ public class GameList {
         future.cancel(true);
         if(forced) {
             game.deleteLogs();
-            channel.sendMessage("Game lasted too long, I had to stop it <:pandasad:805105368505384970>").queue();
+            channel.sendMessage("Game lasted too long, I had to stop it <:pandasad:805105368505384970>").queue(null, null);
         }
     }
 

@@ -30,7 +30,7 @@ public class InputUtils {
             }
 
         } catch (IOException ignored) {
-            channel.sendMessage("Error: couldn't load the provided zip archive").queue();
+            channel.sendMessage("Error: couldn't load the provided zip archive").queue(null, null);
         }
 
         return updaters;

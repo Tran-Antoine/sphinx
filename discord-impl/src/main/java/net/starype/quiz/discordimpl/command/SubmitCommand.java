@@ -37,7 +37,7 @@ public class SubmitCommand implements QuizCommand {
 
         QuizGame game = gameList.getFromPlayer(authorId).get();
         game.sendInput(authorId, args[1].substring(2, args[1].length()-2));
-        message.delete().queue();
+        message.delete().queue(null, null);
     }
 
     private static String[] reconstructArgs(String[] args) {

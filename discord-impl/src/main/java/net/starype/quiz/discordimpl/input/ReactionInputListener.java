@@ -64,7 +64,7 @@ public class ReactionInputListener extends ListenerAdapter {
             reactionAddEvent
                     .retrieveMessage()
                     .flatMap(message -> message.removeReaction(reactionAddEvent.getReactionEmote().getEmoji(), member.getUser()))
-                    .queue();
+                    .queue( null, null);
         }
     }
 
