@@ -74,7 +74,7 @@ public class RoundAddCommand implements QuizCommand {
 
         conditions.put(
                 () -> args.length >= 3 && asRoundCount(args[2]).isEmpty(),
-                "Second argument must be a number between 0 and 9");
+                "Second argument must be a number between 1 and 20");
 
         return conditions;
     }
