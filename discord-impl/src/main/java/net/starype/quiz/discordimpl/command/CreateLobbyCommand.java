@@ -6,12 +6,15 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.starype.quiz.discordimpl.game.GameList;
 import net.starype.quiz.discordimpl.game.GameLobby;
 import net.starype.quiz.discordimpl.game.LobbyList;
+import net.starype.quiz.discordimpl.util.CounterLimiter;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
 public class CreateLobbyCommand implements QuizCommand {
+
+    private static final CounterLimiter lobbyLimiter = new CounterLimiter(5);
 
     @Override
     public void execute(CommandContext context) {
@@ -29,11 +32,12 @@ public class CreateLobbyCommand implements QuizCommand {
         Message message = context.getMessage();
 
         if(StopConditions.shouldStop(stopConditions, channel, message)) {
+            lobbyLimiter.unregisterIfPresent(context.getAuthor().getIdLong());
             return;
         }
 
         LobbyList lobbies = context.getLobbyList();
-        GameLobby lobby = lobbies.registerLobby(channel, author);
+        GameLobby lobby = lobbies.registerLobby(channel, author, () -> lobbyLimiter.unregister(playerId.hashCode()));
         lobby.trackMessage(message.getId());
     }
 
@@ -48,6 +52,12 @@ public class CreateLobbyCommand implements QuizCommand {
         conditions.put(
                 () -> gameList.isPlaying(authorId),
                 nickName + ", you are already playing a game");
+
+        conditions.put(
+               () -> !lobbyLimiter.register(authorId.hashCode()),
+               "Error: Cannot create a new lobby as the maximum number of lobbies has been reached");
+
+
         return conditions;
     }
 

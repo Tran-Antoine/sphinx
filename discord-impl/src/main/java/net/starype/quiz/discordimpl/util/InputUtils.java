@@ -4,9 +4,7 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.starype.quiz.api.database.ByteEntryUpdater;
 import net.starype.quiz.api.database.EntryUpdater;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.util.Collection;
 import java.util.HashSet;
@@ -16,23 +14,33 @@ import java.util.zip.ZipInputStream;
 
 public class InputUtils {
 
+    private static final long maxFileSize = 1024;
+
+    private static final CounterLimiter downloadingLimiter = new CounterLimiter(5);
+
     public static Collection<? extends EntryUpdater> loadEntryUpdaters(String urlName, TextChannel channel) {
         Set<EntryUpdater> updaters = new HashSet<>();
 
         try {
             URL url = new URL(urlName);
-            InputStream fileStream = new BufferedInputStream(url.openStream(), 1024);
-            ZipInputStream zipStream = new ZipInputStream(fileStream);
+            if(!downloadingLimiter.register(urlName.hashCode())) {
+                channel.sendMessage("Error: The limit of downloading zip has been reached").queue();
 
-            ZipEntry current;
-            while((current = zipStream.getNextEntry()) != null) {
-                readEntry(zipStream, current, updaters);
+                return updaters;
             }
 
+            ZipInputStream zipStream = new ZipInputStream(url.openStream());
+
+            ZipEntry current;
+            while ((current = zipStream.getNextEntry()) != null) {
+                readEntry(zipStream, current, updaters);
+            }
         } catch (IOException ignored) {
             channel.sendMessage("Error: couldn't load the provided zip archive").queue();
         }
 
+        // Release the instance of the current thread (as we finished the download process)
+        downloadingLimiter.unregister(urlName.hashCode());
         return updaters;
     }
 

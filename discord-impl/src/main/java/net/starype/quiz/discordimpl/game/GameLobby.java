@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 public class GameLobby extends DiscordLogContainer {
 
+    private final Runnable destructLobbyCallback;
     private String name;
     private TextChannel channel;
     private Set<String> playersId;
@@ -38,10 +39,11 @@ public class GameLobby extends DiscordLogContainer {
 
     private String lobbyMessageId;
 
-    public GameLobby(TextChannel channel, String name) {
+    public GameLobby(TextChannel channel, String name, Runnable destructLobbyCallback) {
         super(channel);
         this.channel = channel;
         this.name = name;
+        this.destructLobbyCallback = destructLobbyCallback;
         this.partialRounds = new LinkedList<>();
         this.playersId = new HashSet<>();
     }
@@ -83,7 +85,7 @@ public class GameLobby extends DiscordLogContainer {
         return playersId.contains(authorId);
     }
 
-    public boolean start(GameList gameList) {
+    public boolean start(GameList gameList, Runnable onGameEndedCallback) {
 
         if(noQueryObject()) {
             return false;
@@ -110,7 +112,8 @@ public class GameLobby extends DiscordLogContainer {
 
         
         deleteMessages();
-        gameList.startNewGame(playersId, rounds, channel, authorId);
+        destructLobbyCallback.run();
+        gameList.startNewGame(playersId, rounds, channel, authorId, onGameEndedCallback);
         return true;
     }
 
@@ -150,6 +153,10 @@ public class GameLobby extends DiscordLogContainer {
 
     public boolean isName(String name) {
         return this.name.equals(name);
+    }
+
+    public String getName() {
+        return name;
     }
 
     public void sendJoinImage(ReactionInputListener reactionListener) {

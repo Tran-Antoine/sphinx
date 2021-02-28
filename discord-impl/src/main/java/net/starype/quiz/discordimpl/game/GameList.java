@@ -12,23 +12,37 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class GameList {
 
-    private Map<DiscordQuizGame, ScheduledFuture<?>> ongoingGames;
+    private final Map<DiscordQuizGame, ScheduledFuture<?>> ongoingGames;
 
     public GameList() {
         this.ongoingGames = new HashMap<>();
     }
 
-    public void startNewGame(Collection<? extends String> playersId, Queue<? extends QuizRound> rounds, TextChannel channel, String authorId) {
+    public void startNewGame(Collection<? extends String> playersId, Queue<? extends QuizRound> rounds, TextChannel channel, String authorId,
+                             Runnable onGameEndedCallback) {
+
+        Consumer<DiscordQuizGame> naturalEndAction = game -> {
+            this.stopGame(game);
+            onGameEndedCallback.run();
+        };
+
         Collection<DiscordPlayer> gamePlayers = asGamePlayers(playersId, channel);
-        DiscordGameServer server = new DiscordGameServer(channel, this::stopGame);
+        DiscordGameServer server = new DiscordGameServer(channel, naturalEndAction);
         ServerGate<DiscordQuizGame> gate = server.createGate();
         DiscordQuizGame game = new DiscordQuizGame(rounds, gamePlayers, gate, authorId, server);
+
+        Runnable forcedEndAction = () -> {
+            stopGame(game, true, channel);
+            onGameEndedCallback.run();
+        };
+
         ScheduledExecutorService autoCancel = Executors.newScheduledThreadPool(1);
-        autoCancel.schedule(() -> stopGame(game, true, channel), 60, TimeUnit.MINUTES);
+        autoCancel.schedule(forcedEndAction, 60, TimeUnit.MINUTES);
 
         ScheduledExecutorService autoUpdate = Executors.newScheduledThreadPool(1);
         ScheduledFuture<?> future = autoUpdate.scheduleAtFixedRate(game::update, 0, 250, TimeUnit.MILLISECONDS);
@@ -70,6 +84,7 @@ public class GameList {
             return;
         }
         future.cancel(true);
+
         if(forced) {
             game.deleteLogs();
             channel.sendMessage("Game lasted too long, I had to stop it <:pandasad:805105368505384970>").queue();
