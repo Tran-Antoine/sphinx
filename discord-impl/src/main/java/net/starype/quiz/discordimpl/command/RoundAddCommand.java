@@ -19,6 +19,8 @@ import java.util.function.Supplier;
 
 public class RoundAddCommand implements QuizCommand {
 
+    private static final int MAX_ROUNDS_AT_ONCE = 20;
+
     private static final ConfigMapper<PartialRound> DEFAULT =
             new RoundMapper((q) -> new IndividualRoundFactory().create(q, 1), "individual");
 
@@ -82,7 +84,7 @@ public class RoundAddCommand implements QuizCommand {
     private static Optional<Integer> asRoundCount(String arg) {
         try {
             int value = Integer.parseInt(arg);
-            if(value > 0 && value < 21) {
+            if(value > 0 && value <= MAX_ROUNDS_AT_ONCE) {
                 return Optional.of(value);
             }
             return Optional.empty();
