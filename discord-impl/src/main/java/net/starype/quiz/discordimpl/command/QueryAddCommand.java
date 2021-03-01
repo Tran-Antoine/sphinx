@@ -34,7 +34,7 @@ public class QueryAddCommand implements QuizCommand {
         Function<String, QuestionQuery> queryType = findQueryType(args[2]);
 
         queryAction.accept(lobby, queryType.apply(args[3])); // both guaranteed non-null
-        channel.sendMessage("Successfully added query").queue(null, null);
+        channel.sendMessage("Successfully added query").queue();
     }
 
     private static BiConsumer<GameLobby, QuestionQuery> findQueryAction(String arg) {
@@ -74,6 +74,6 @@ public class QueryAddCommand implements QuizCommand {
 
     @Override
     public String getDescription() {
-        return "Add a query filtering the questions. Syntax: ?add-query [and-query|or-query] [directory|tag|difficulty] <value>";
+        return "Add a query filtering the questions";
     }
 }

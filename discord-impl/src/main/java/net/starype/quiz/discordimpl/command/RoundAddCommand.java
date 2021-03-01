@@ -13,13 +13,10 @@ import net.starype.quiz.discordimpl.util.MessageUtils;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class RoundAddCommand implements QuizCommand {
-
-    private static final int MAX_ROUNDS_AT_ONCE = 20;
 
     private static final ConfigMapper<PartialRound> DEFAULT =
             new RoundMapper((q) -> new IndividualRoundFactory().create(q, 1), "individual");
@@ -50,7 +47,7 @@ public class RoundAddCommand implements QuizCommand {
         PartialRound matchedRound = ROUND_MATCHER.loadFromValueOrDefault(args[1], null);
         int count = args.length <= 2
                 ? 1
-                : asRoundCount(args[2]).get();
+                : Integer.parseInt(args[2]);
 
         for(int i = 0; i < count; i++) {
             lobby.queueRound(matchedRound);
@@ -72,25 +69,13 @@ public class RoundAddCommand implements QuizCommand {
 
         conditions.put(
                 () -> args.length < 2,
-                "You must specify the type of round you wish to queue (either race, classical or individual)");
+                "You must specify the type of round you wish to queue");
 
         conditions.put(
-                () -> args.length >= 3 && asRoundCount(args[2]).isEmpty(),
-                "Second argument must be a number between 1 and 20");
+                () -> args.length >= 3 && (args[2].length() != 1 || !Character.isDigit(args[2].charAt(0))),
+                "Second argument must be a number between 0 and 9");
 
         return conditions;
-    }
-
-    private static Optional<Integer> asRoundCount(String arg) {
-        try {
-            int value = Integer.parseInt(arg);
-            if(value > 0 && value <= MAX_ROUNDS_AT_ONCE) {
-                return Optional.of(value);
-            }
-            return Optional.empty();
-        } catch (NumberFormatException exception) {
-            return Optional.empty();
-        }
     }
 
     @Override
@@ -100,7 +85,7 @@ public class RoundAddCommand implements QuizCommand {
 
     @Override
     public String getDescription() {
-        return "Add a round to the list. Syntax: ?add-round <race|classical|individual> [count]";
+        return "Add a round to the list";
     }
 
     private static class RoundMapper implements ConfigMapper<PartialRound> {

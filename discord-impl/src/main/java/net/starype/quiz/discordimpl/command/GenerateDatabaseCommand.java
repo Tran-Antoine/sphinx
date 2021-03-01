@@ -42,7 +42,7 @@ public class GenerateDatabaseCommand implements QuizCommand {
         channel
                 .sendMessage("Here is your output!")
                 .addFile(database.get(), fileName + ".sphinx")
-                .queue(null, null);
+                .queue();
     }
 
     private static Optional<InputStream> generateFile(String urlName, TextChannel channel) {
@@ -53,7 +53,7 @@ public class GenerateDatabaseCommand implements QuizCommand {
         try {
             db.sync();
         } catch(RuntimeException ignored) {
-            channel.sendMessage("Error: couldn't parse the given zip archive").queue(null, null);
+            channel.sendMessage("Error: couldn't parse the given zip archive").queue();
             return Optional.empty();
         }
         return Optional.of(new ByteArrayInputStream(output.get().array()));

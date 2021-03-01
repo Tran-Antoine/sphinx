@@ -68,10 +68,7 @@ public class DiscordGameServer extends DiscordLogContainer implements GameServer
 
     @Override
     public void onPlayerGuessed(PlayerGuessContext context) {
-        String message = context.isAnswerValid()
-                ? ", your answer has been registered!"
-                : ", this answer is invalid. You may send another guess";
-        sendAsText(context.getPlayer().getNickname() + message);
+        sendAsText(context.getPlayer().getNickname()+", your answer has been registered!");
     }
 
     @Override
@@ -91,12 +88,7 @@ public class DiscordGameServer extends DiscordLogContainer implements GameServer
 
     @Override
     public void onQuestionReleased(Question question) {
-        String rawQuestion = question.getRawQuestion();
-        if(question.isTagAttached("Math")) {
-            sendAsLatexFile(rawQuestion);
-        } else {
-            sendAsText(rawQuestion);
-        }
+        sendAsLatexFile(question.getRawQuestion());
     }
 
     private void sendAsLatexFile(String message) {

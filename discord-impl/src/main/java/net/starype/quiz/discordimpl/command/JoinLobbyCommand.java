@@ -41,7 +41,7 @@ public class JoinLobbyCommand implements QuizCommand {
         }
         String lobbyName = context.getArgs()[1];
         lobbyList.findById(lobbyName).get().registerPlayer(author.getId(), authorName);
-        channel.sendMessage("Successfully joined lobby with ID " + lobbyName).queue(null, null);
+        channel.sendMessage("Successfully joined lobby with ID " + lobbyName).queue();
     }
 
     private static Map<Supplier<Boolean>, String> createStopConditions(

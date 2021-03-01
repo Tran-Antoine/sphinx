@@ -26,7 +26,7 @@ public class LeaveCommand implements QuizCommand {
         }
         gameList.getFromPlayer(authorId).ifPresent(game -> game.removePlayer(authorId));
         lobbyList.findByPlayer(authorId).ifPresent(lobby -> lobby.unregisterPlayer(authorId, author.getEffectiveName()));
-        channel.sendMessage("Successfully left the game/lobby").queue(null, null);
+        channel.sendMessage("Successfully left the game/lobby").queue();
     }
 
     private static Map<Supplier<Boolean>, String> createStopConditions(GameList gameList, LobbyList lobbyList, String authorId) {

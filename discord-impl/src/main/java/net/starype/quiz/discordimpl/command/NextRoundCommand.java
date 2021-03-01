@@ -27,7 +27,7 @@ public class NextRoundCommand implements QuizCommand {
         DiscordQuizGame game = gameList.getFromPlayer(playerId).get(); // value guaranteed to be present in our case
 
         game.addLog(message.getId());
-        message.addReaction("\uD83D\uDC4D").queue(null, null);
+        message.addReaction("\uD83D\uDC4D").queue();
         game.addVote(playerId, null);
     }
 

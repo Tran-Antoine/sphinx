@@ -202,7 +202,7 @@ public class GameLobby extends DiscordLogContainer {
     }
 
     private void setUpReaction(Message message, String unicode, Consumer<ReactionContext> action, ReactionInputListener reactionListener) {
-        message.addReaction(unicode).queue(null, null);
+        message.addReaction(unicode).queue();
         TriggerCondition condition = new TriggerCondition(message.getId(), unicode, true);
         reactionListener.addCallBack(condition, action);
     }
@@ -211,7 +211,7 @@ public class GameLobby extends DiscordLogContainer {
         channel
                 .retrieveMessageById(lobbyMessageId)
                 .flatMap(action)
-                .queue(null, null);
+                .queue();
     }
 
     public void setQueryObject(QuizQueryable queryObject) {

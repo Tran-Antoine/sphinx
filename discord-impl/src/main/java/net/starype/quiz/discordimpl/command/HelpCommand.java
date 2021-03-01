@@ -16,7 +16,7 @@ public class HelpCommand implements QuizCommand {
 
     @Override
     public void execute(CommandContext context) {
-        context.getChannel().sendMessage(createMessage()).queue(null, null);
+        context.getChannel().sendMessage(createMessage()).queue();
     }
 
     private MessageEmbed createMessage() {
