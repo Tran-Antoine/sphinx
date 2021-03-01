@@ -1,5 +1,6 @@
 package net.starype.quiz.discordimpl.input;
 
+import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -35,6 +36,10 @@ public class MessageInputListener extends ListenerAdapter {
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
 
         if(event.getAuthor().isBot()) {
+            return;
+        }
+
+        if(event.getChannelType() != ChannelType.TEXT) {
             return;
         }
 

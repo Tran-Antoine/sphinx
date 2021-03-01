@@ -36,7 +36,7 @@ public class InputUtils {
                 readEntry(zipStream, current, updaters);
             }
         } catch (IOException ignored) {
-            channel.sendMessage("Error: couldn't load the provided zip archive").queue();
+            channel.sendMessage("Error: couldn't load the provided zip archive").queue(null, null);
         }
 
         // Release the instance of the current thread (as we finished the download process)

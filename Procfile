@@ -1,1 +1,1 @@
-worker: java -jar -Xms128M -Xmx256M discord-impl/build/libs/discord-impl-all.jar
+worker: java -jar discord-impl/build/libs/discord-impl-all.jar
