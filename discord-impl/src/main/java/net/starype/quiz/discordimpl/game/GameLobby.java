@@ -1,6 +1,7 @@
 package net.starype.quiz.discordimpl.game;
 
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.starype.quiz.api.database.QuestionQueries;
@@ -28,8 +29,9 @@ import java.util.stream.Collectors;
 public class GameLobby extends DiscordLogContainer {
 
     private final Runnable destructLobbyCallback;
+    private final String guildId;
     private String name;
-    private TextChannel channel;
+    private MessageChannel channel;
     private Set<String> playersId;
     private String authorId;
 
@@ -39,11 +41,12 @@ public class GameLobby extends DiscordLogContainer {
 
     private String lobbyMessageId;
 
-    public GameLobby(TextChannel channel, String name, Runnable destructLobbyCallback) {
+    public GameLobby(MessageChannel channel, String name, Runnable destructLobbyCallback, String guildId) {
         super(channel);
         this.channel = channel;
         this.name = name;
         this.destructLobbyCallback = destructLobbyCallback;
+        this.guildId = guildId;
         this.partialRounds = new LinkedList<>();
         this.playersId = new HashSet<>();
     }
@@ -113,7 +116,7 @@ public class GameLobby extends DiscordLogContainer {
         
         deleteMessages();
         destructLobbyCallback.run();
-        gameList.startNewGame(playersId, rounds, channel, authorId, onGameEndedCallback);
+        gameList.startNewGame(playersId, rounds, channel, authorId, onGameEndedCallback, guildId);
         return true;
     }
 

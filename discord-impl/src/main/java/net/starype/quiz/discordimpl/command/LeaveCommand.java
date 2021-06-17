@@ -1,7 +1,9 @@
 package net.starype.quiz.discordimpl.command;
 
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.starype.quiz.discordimpl.game.GameList;
 import net.starype.quiz.discordimpl.game.LobbyList;
 
@@ -17,11 +19,11 @@ public class LeaveCommand implements QuizCommand {
         String authorId = author.getId();
         GameList gameList = context.getGameList();
         LobbyList lobbyList = context.getLobbyList();
-        TextChannel channel = context.getChannel();
+        MessageChannel channel = context.getChannel();
 
         Map<Supplier<Boolean>, String> stopConditions = createStopConditions(gameList, lobbyList, authorId);
 
-        if(StopConditions.shouldStop(stopConditions, channel, context.getMessage())) {
+        if(StopConditions.shouldStop(stopConditions, channel)) {
             return;
         }
         gameList.getFromPlayer(authorId).ifPresent(game -> game.removePlayer(authorId));
@@ -45,5 +47,10 @@ public class LeaveCommand implements QuizCommand {
     @Override
     public String getDescription() {
         return "Leave the current game or lobby. If it's a game, there is no coming back!";
+    }
+
+    @Override
+    public CommandData getData() {
+        return dataTemplate();
     }
 }

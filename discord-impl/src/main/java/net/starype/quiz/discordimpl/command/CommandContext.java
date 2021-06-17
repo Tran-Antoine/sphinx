@@ -2,32 +2,30 @@ package net.starype.quiz.discordimpl.command;
 
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import net.starype.quiz.discordimpl.game.GameList;
 import net.starype.quiz.discordimpl.game.LobbyList;
 
 public class CommandContext {
 
-    private MessageContext messageContext;
-    private GameList gameList;
-    private LobbyList lobbyList;
+    private final CommandInteraction interaction;
+    private final GameList gameList;
+    private final LobbyList lobbyList;
 
-    public CommandContext(MessageContext messageContext, GameList gameList, LobbyList lobbyList) {
-        this.messageContext = messageContext;
+    public CommandContext(CommandInteraction interaction, GameList gameList, LobbyList lobbyList) {
+        this.interaction = interaction;
         this.gameList = gameList;
         this.lobbyList = lobbyList;
     }
 
-    public TextChannel getChannel() {
-        return messageContext.textChannel;
+    public MessageChannel getChannel() {
+        return interaction.getChannel();
     }
 
     public Member getAuthor() {
-        return messageContext.author;
-    }
-
-    public String[] getArgs() {
-        return messageContext.args;
+        return interaction.getMember();
     }
 
     public GameList getGameList() {
@@ -38,22 +36,7 @@ public class CommandContext {
         return lobbyList;
     }
 
-    public Message getMessage() {
-        return messageContext.message;
-    }
-
-    public static class MessageContext {
-
-        private TextChannel textChannel;
-        private Message message;
-        private Member author;
-        private String[] args;
-
-        public MessageContext(TextChannel textChannel, Message message, Member author, String[] args) {
-            this.textChannel = textChannel;
-            this.message = message;
-            this.author = author;
-            this.args = args;
-        }
+    public CommandInteraction getInteraction() {
+        return interaction;
     }
 }

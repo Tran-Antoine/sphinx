@@ -1,5 +1,6 @@
 package net.starype.quiz.discordimpl.util;
 
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.starype.quiz.api.database.ByteEntryUpdater;
 import net.starype.quiz.api.database.EntryUpdater;
@@ -18,7 +19,7 @@ public class InputUtils {
 
     private static final CounterLimiter downloadingLimiter = new CounterLimiter(5);
 
-    public static Collection<? extends EntryUpdater> loadEntryUpdaters(String urlName, TextChannel channel) {
+    public static Collection<? extends EntryUpdater> loadEntryUpdaters(String urlName, MessageChannel channel) {
         Set<EntryUpdater> updaters = new HashSet<>();
 
         try {

@@ -2,6 +2,7 @@ package net.starype.quiz.discordimpl.game;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.starype.quiz.api.round.QuizRound;
 import net.starype.quiz.api.server.ServerGate;
@@ -23,16 +24,16 @@ public class GameList {
         this.ongoingGames = new HashMap<>();
     }
 
-    public void startNewGame(Collection<? extends String> playersId, Queue<? extends QuizRound> rounds, TextChannel channel, String authorId,
-                             Runnable onGameEndedCallback) {
+    public void startNewGame(Collection<? extends String> playersId, Queue<? extends QuizRound> rounds, MessageChannel channel, String authorId,
+                             Runnable onGameEndedCallback, String guildId) {
 
         Consumer<DiscordQuizGame> naturalEndAction = game -> {
             this.stopGame(game);
             onGameEndedCallback.run();
         };
 
-        Collection<DiscordPlayer> gamePlayers = asGamePlayers(playersId, channel);
-        DiscordGameServer server = new DiscordGameServer(channel, naturalEndAction);
+        Collection<DiscordPlayer> gamePlayers = asGamePlayers(playersId, channel, guildId);
+        DiscordGameServer server = new DiscordGameServer(channel, naturalEndAction, guildId);
         ServerGate<DiscordQuizGame> gate = server.createGate();
         DiscordQuizGame game = new DiscordQuizGame(rounds, gamePlayers, gate, authorId, server);
 
@@ -50,8 +51,8 @@ public class GameList {
         ongoingGames.put(game, future);
     }
 
-    private Collection<DiscordPlayer> asGamePlayers(Collection<? extends String> playersId, TextChannel channel) {
-        Guild guild = channel.getGuild();
+    private Collection<DiscordPlayer> asGamePlayers(Collection<? extends String> playersId, MessageChannel channel, String guildId) {
+        Guild guild = channel.getJDA().getGuildById(guildId);
         return playersId
                 .stream()
                 .map(id -> guild.retrieveMemberById(id).complete())
@@ -78,7 +79,7 @@ public class GameList {
         stopGame(game, false, null);
     }
 
-    public void stopGame(DiscordQuizGame game, boolean forced, TextChannel channel) {
+    public void stopGame(DiscordQuizGame game, boolean forced, MessageChannel channel) {
         ScheduledFuture<?> future = ongoingGames.remove(game);
         if(future == null) {
             return;

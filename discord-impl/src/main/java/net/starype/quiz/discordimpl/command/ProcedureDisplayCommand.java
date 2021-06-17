@@ -1,6 +1,7 @@
 package net.starype.quiz.discordimpl.command;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.awt.*;
 import java.io.BufferedReader;
@@ -52,5 +53,10 @@ public class ProcedureDisplayCommand implements QuizCommand {
     @Override
     public String getDescription() {
         return "Read the rules of the game!";
+    }
+
+    @Override
+    public CommandData getData() {
+        return dataTemplate();
     }
 }

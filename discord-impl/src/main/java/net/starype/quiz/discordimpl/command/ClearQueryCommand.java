@@ -1,6 +1,8 @@
 package net.starype.quiz.discordimpl.command;
 
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.starype.quiz.discordimpl.game.GameLobby;
 import net.starype.quiz.discordimpl.game.LobbyList;
 import net.starype.quiz.discordimpl.util.MessageUtils;
@@ -10,22 +12,22 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 public class ClearQueryCommand implements QuizCommand {
+
     @Override
     public void execute(CommandContext context) {
 
         LobbyList lobbyList = context.getLobbyList();
         String authorId = context.getAuthor().getId();
-        TextChannel channel = context.getChannel();
+        MessageChannel channel = context.getChannel();
 
         Map<Supplier<Boolean>, String> conditions = createStopConditions(lobbyList, authorId);
-        if(StopConditions.shouldStop(conditions, channel, context.getMessage())) {
+        if(StopConditions.shouldStop(conditions, channel)) {
             return;
         }
 
         GameLobby lobby = lobbyList.findByAuthor(authorId).get();
         lobby.resetQuery();
 
-        lobby.trackMessage(context.getMessage().getId());
         MessageUtils.sendAndTrack(
                 "Successfully reset the current query",
                 channel,
@@ -47,6 +49,11 @@ public class ClearQueryCommand implements QuizCommand {
 
     @Override
     public String getDescription() {
-        return "Clear all the previous queries added";
+        return "Clear all the previous queries";
+    }
+
+    @Override
+    public CommandData getData() {
+        return dataTemplate();
     }
 }

@@ -1,6 +1,13 @@
 package net.starype.quiz.discordimpl.command;
 
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.starype.quiz.api.database.ReadableRawMap;
 import net.starype.quiz.api.parser.ConfigMapper;
 import net.starype.quiz.api.parser.ConfigMatcher;
@@ -35,28 +42,31 @@ public class RoundAddCommand implements QuizCommand {
     public void execute(CommandContext context) {
         LobbyList lobbyList = context.getLobbyList();
         String authorId = context.getAuthor().getId();
-        String[] args = context.getArgs();
-        TextChannel channel = context.getChannel();
+        MessageChannel channel = context.getChannel();
+        CommandInteraction interaction = context.getInteraction();
 
-        Map<Supplier<Boolean>, String> conditions = createStopConditions(lobbyList, authorId, args);
-        if(StopConditions.shouldStop(
-                conditions,
-                channel,
-                context.getMessage())) {
+        Map<Supplier<Boolean>, String> conditions = createStopConditions(lobbyList, authorId);
+        if(StopConditions.shouldStop(conditions, channel)) {
             return;
         }
 
         GameLobby lobby = lobbyList.findByAuthor(authorId).get();
-        PartialRound matchedRound = ROUND_MATCHER.loadFromValueOrDefault(args[1], null);
-        int count = args.length <= 2
-                ? 1
-                : asRoundCount(args[2]).get();
+        String roundName = Optional.ofNullable(interaction.getOption("round-type"))
+                .map(OptionMapping::getAsString)
+                .orElse("individual");
+
+        PartialRound matchedRound = ROUND_MATCHER.loadFromValueOrDefault(roundName, null);
+
+        int count = Optional.ofNullable(interaction.getOption("count"))
+                .map(OptionMapping::getAsLong)
+                .map(x -> Math.min(20, x))
+                .orElse(1L)
+                .intValue();
 
         for(int i = 0; i < count; i++) {
             lobby.queueRound(matchedRound);
         }
 
-        lobby.trackMessage(context.getMessage().getId());
         MessageUtils.sendAndTrack(
                 "Round successfully added (if no known round type matches the query, 'individual' is picked instead)",
                 channel,
@@ -64,33 +74,13 @@ public class RoundAddCommand implements QuizCommand {
         );
     }
 
-    private static Map<Supplier<Boolean>, String> createStopConditions(LobbyList lobbyList, String authorId, String[] args) {
+    private static Map<Supplier<Boolean>, String> createStopConditions(LobbyList lobbyList, String authorId) {
         Map<Supplier<Boolean>, String> conditions = new LinkedHashMap<>();
         conditions.put(
                 () -> lobbyList.findByAuthor(authorId).isEmpty(),
                 "You must be the creator of the lobby to use this");
 
-        conditions.put(
-                () -> args.length < 2,
-                "You must specify the type of round you wish to queue (either race, classical or individual)");
-
-        conditions.put(
-                () -> args.length >= 3 && asRoundCount(args[2]).isEmpty(),
-                "Second argument must be a number between 1 and 20");
-
         return conditions;
-    }
-
-    private static Optional<Integer> asRoundCount(String arg) {
-        try {
-            int value = Integer.parseInt(arg);
-            if(value > 0 && value <= MAX_ROUNDS_AT_ONCE) {
-                return Optional.of(value);
-            }
-            return Optional.empty();
-        } catch (NumberFormatException exception) {
-            return Optional.empty();
-        }
     }
 
     @Override
@@ -105,8 +95,8 @@ public class RoundAddCommand implements QuizCommand {
 
     private static class RoundMapper implements ConfigMapper<PartialRound> {
 
-        private PartialRound supplier;
-        private String name;
+        private final PartialRound supplier;
+        private final String name;
 
         RoundMapper(PartialRound supplier, String name) {
             this.supplier = supplier;
@@ -125,4 +115,16 @@ public class RoundAddCommand implements QuizCommand {
     }
 
     public interface PartialRound extends Function<Question, QuizRound> { }
+
+    @Override
+    public CommandData getData() {
+        return dataTemplate()
+                .addOptions(
+                        new OptionData(OptionType.STRING, "round-type", "type of round to queue", false).addChoices(
+                                new Command.Choice("race", "race"),
+                                new Command.Choice("race", "classical"),
+                                new Command.Choice("race", "individual")),
+                        new OptionData(OptionType.INTEGER, "count", "how many rounds of the type to add", false)
+                );
+    }
 }

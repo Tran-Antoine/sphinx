@@ -2,7 +2,11 @@ package net.starype.quiz.discordimpl.command;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.starype.quiz.api.database.ByteSerializedIO;
 import net.starype.quiz.api.database.EntryUpdater;
 import net.starype.quiz.api.database.QuestionDatabase;
@@ -24,22 +28,20 @@ public class ZipQuestionSetCommand implements QuizCommand {
     public void execute(CommandContext context) {
 
         LobbyList lobbyList = context.getLobbyList();
-        Message message = context.getMessage();
         String authorId = context.getAuthor().getId();
-        TextChannel channel = context.getChannel();
-        String[] args = context.getArgs();
+        MessageChannel channel = context.getChannel();
+        CommandInteraction interaction = context.getInteraction();
 
         Map<Supplier<Boolean>, String> conditions = createStopConditions(
                 lobbyList,
-                message,
-                authorId,
-                args);
+                authorId
+        );
 
-        if(StopConditions.shouldStop(conditions, channel, message)) {
+        if(StopConditions.shouldStop(conditions, channel)) {
             return;
         }
 
-        String url = findUrl(message, args);
+        String url = interaction.getOption("link").getAsString();
         Collection<? extends EntryUpdater> updaters = InputUtils.loadEntryUpdaters(url, channel);
         SerializedIO serializedIO = new ByteSerializedIO(new byte[0], new AtomicReference<>());
 
@@ -48,14 +50,12 @@ public class ZipQuestionSetCommand implements QuizCommand {
         try {
             database.sync();
         } catch (Exception ignored) {
-            MessageUtils.makeTemporary(channel, message);
             MessageUtils.createTemporaryMessage("Invalid file", channel);
             return;
         }
 
         lobby.setQueryObject(database);
 
-        lobby.trackMessage(message.getId());
         MessageUtils.sendAndTrack(
                 "Successfully registered the database",
                 channel,
@@ -63,26 +63,12 @@ public class ZipQuestionSetCommand implements QuizCommand {
         );
     }
 
-    private String findUrl(Message message, String[] args) {
-        Collection<Attachment> attachments = message.getAttachments();
-        if(attachments.size() == 1) {
-            return attachments
-                    .iterator()
-                    .next()
-                    .getUrl();
-        }
-        return args[1];
-    }
-
     private static Map<Supplier<Boolean>, String> createStopConditions(
-            LobbyList lobbyList, Message message, String authorId, String[] args) {
+            LobbyList lobbyList, String authorId) {
         Map<Supplier<Boolean>, String> conditions = new LinkedHashMap<>();
         conditions.put(
                 () -> lobbyList.findByAuthor(authorId).isEmpty(),
                 "You are not the author of any lobby");
-
-        conditions.put(() -> message.getAttachments().size() != 1 && args.length != 2,
-                "You need to attach a single .zip file or a link to the file as second argument");
 
         return conditions;
     }
@@ -95,5 +81,11 @@ public class ZipQuestionSetCommand implements QuizCommand {
     @Override
     public String getDescription() {
         return "Set the set of questions used for the game from a .zip file";
+    }
+
+    @Override
+    public CommandData getData() {
+        return dataTemplate()
+                .addOptions(new OptionData(OptionType.STRING, "link", "link to download the file").setRequired(true));
     }
 }

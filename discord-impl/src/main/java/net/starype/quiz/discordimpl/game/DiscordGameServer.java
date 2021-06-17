@@ -1,6 +1,7 @@
 package net.starype.quiz.discordimpl.game;
 
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.starype.quiz.api.game.GameRoundReport;
 import net.starype.quiz.api.game.PlayerGuessContext;
@@ -21,13 +22,15 @@ import java.util.stream.Collectors;
 
 public class DiscordGameServer extends DiscordLogContainer implements GameServer<DiscordQuizGame> {
 
-    private TextChannel channel;
-    private Consumer<DiscordQuizGame> endAction;
+    private final MessageChannel channel;
+    private final Consumer<DiscordQuizGame> endAction;
+    private final String guildId;
 
-    public DiscordGameServer(TextChannel channel, Consumer<DiscordQuizGame> endAction) {
+    public DiscordGameServer(MessageChannel channel, Consumer<DiscordQuizGame> endAction, String guildId) {
         super(channel);
         this.channel = channel;
         this.endAction = endAction;
+        this.guildId = guildId;
     }
 
     @Override
@@ -58,7 +61,7 @@ public class DiscordGameServer extends DiscordLogContainer implements GameServer
     }
 
     private void sendLeaderboard(List<Standing> standings) {
-        Guild guild = channel.getGuild();
+        Guild guild = channel.getJDA().getGuildById(guildId);
         InputStream image = ImageUtils.generateLeaderboard(standings, guild);
         MessageUtils.sendAndTrack(
                 image, "standings.png",
