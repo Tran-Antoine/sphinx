@@ -42,11 +42,10 @@ public class RoundAddCommand implements QuizCommand {
     public void execute(CommandContext context) {
         LobbyList lobbyList = context.getLobbyList();
         String authorId = context.getAuthor().getId();
-        MessageChannel channel = context.getChannel();
         CommandInteraction interaction = context.getInteraction();
 
         Map<Supplier<Boolean>, String> conditions = createStopConditions(lobbyList, authorId);
-        if(StopConditions.shouldStop(conditions, channel)) {
+        if(StopConditions.shouldStop(conditions, interaction)) {
             return;
         }
 
@@ -69,7 +68,7 @@ public class RoundAddCommand implements QuizCommand {
 
         MessageUtils.sendAndTrack(
                 "Round successfully added (if no known round type matches the query, 'individual' is picked instead)",
-                channel,
+                interaction,
                 lobby
         );
     }
@@ -122,8 +121,8 @@ public class RoundAddCommand implements QuizCommand {
                 .addOptions(
                         new OptionData(OptionType.STRING, "round-type", "type of round to queue", false).addChoices(
                                 new Command.Choice("race", "race"),
-                                new Command.Choice("race", "classical"),
-                                new Command.Choice("race", "individual")),
+                                new Command.Choice("classical", "classical"),
+                                new Command.Choice("individual", "individual")),
                         new OptionData(OptionType.INTEGER, "count", "how many rounds of the type to add", false)
                 );
     }

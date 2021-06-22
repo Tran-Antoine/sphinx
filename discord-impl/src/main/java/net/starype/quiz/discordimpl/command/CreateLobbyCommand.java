@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.starype.quiz.discordimpl.game.GameList;
 import net.starype.quiz.discordimpl.game.GameLobby;
@@ -24,6 +25,7 @@ public class CreateLobbyCommand implements QuizCommand {
         Member author = context.getAuthor();
         String playerId = author.getId();
         MessageChannel channel = context.getChannel();
+        CommandInteraction interaction = context.getInteraction();
 
         Map<Supplier<Boolean>, String> stopConditions = createStopConditions(
                 context.getGameList(),
@@ -31,13 +33,16 @@ public class CreateLobbyCommand implements QuizCommand {
                 playerId,
                 author.getEffectiveName());
 
-        if(StopConditions.shouldStop(stopConditions, channel)) {
+        if(StopConditions.shouldStop(stopConditions, interaction)) {
             lobbyLimiter.unregisterIfPresent(context.getAuthor().getIdLong());
             return;
         }
-
         LobbyList lobbies = context.getLobbyList();
-        lobbies.registerLobby(channel, author, () -> lobbyLimiter.unregister(playerId.hashCode()), context.getInteraction().getGuild().getId());
+
+        lobbies.registerLobby(
+                interaction, channel, author,
+                () -> lobbyLimiter.unregister(playerId.hashCode()),
+                interaction.getGuild().getId());
     }
 
     private Map<Supplier<Boolean>, String> createStopConditions(

@@ -2,8 +2,10 @@ package net.starype.quiz.discordimpl.input;
 
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.starype.quiz.discordimpl.command.*;
 import net.starype.quiz.discordimpl.game.GameList;
 import net.starype.quiz.discordimpl.game.LobbyList;
@@ -13,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class MessageInputListener extends ListenerAdapter {
 
@@ -27,6 +30,7 @@ public class MessageInputListener extends ListenerAdapter {
         this.commands.add(new HelpCommand(this.commands));
     }
 
+
     @Override
     public void onSlashCommand(@NotNull SlashCommandEvent event) {
 
@@ -37,6 +41,7 @@ public class MessageInputListener extends ListenerAdapter {
         String commandName = event.getName();
         Optional<? extends QuizCommand> optCommand = findByName(commandName);
 
+        event.deferReply().queue();
         optCommand.ifPresent(command -> processCommand(
                 command,
                 event));
@@ -70,5 +75,12 @@ public class MessageInputListener extends ListenerAdapter {
                 new ClearQueryCommand(),
                 new RoundAddCommand()
         ));
+    }
+
+    public Collection<? extends CommandData> getCommandsData() {
+        return commands
+                .stream()
+                .map(DisplayableCommand::getData)
+                .collect(Collectors.toList());
     }
 }

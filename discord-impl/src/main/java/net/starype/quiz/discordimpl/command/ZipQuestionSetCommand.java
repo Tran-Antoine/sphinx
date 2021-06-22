@@ -1,8 +1,5 @@
 package net.starype.quiz.discordimpl.command;
 
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.Message.Attachment;
-import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -29,7 +26,6 @@ public class ZipQuestionSetCommand implements QuizCommand {
 
         LobbyList lobbyList = context.getLobbyList();
         String authorId = context.getAuthor().getId();
-        MessageChannel channel = context.getChannel();
         CommandInteraction interaction = context.getInteraction();
 
         Map<Supplier<Boolean>, String> conditions = createStopConditions(
@@ -37,12 +33,12 @@ public class ZipQuestionSetCommand implements QuizCommand {
                 authorId
         );
 
-        if(StopConditions.shouldStop(conditions, channel)) {
+        if(StopConditions.shouldStop(conditions, interaction)) {
             return;
         }
 
         String url = interaction.getOption("link").getAsString();
-        Collection<? extends EntryUpdater> updaters = InputUtils.loadEntryUpdaters(url, channel);
+        Collection<? extends EntryUpdater> updaters = InputUtils.loadEntryUpdaters(url, interaction);
         SerializedIO serializedIO = new ByteSerializedIO(new byte[0], new AtomicReference<>());
 
         GameLobby lobby = lobbyList.findByAuthor(authorId).get();
@@ -50,7 +46,7 @@ public class ZipQuestionSetCommand implements QuizCommand {
         try {
             database.sync();
         } catch (Exception ignored) {
-            MessageUtils.createTemporaryMessage("Invalid file", channel);
+            MessageUtils.createTemporaryMessage("Invalid file", interaction);
             return;
         }
 
@@ -58,7 +54,7 @@ public class ZipQuestionSetCommand implements QuizCommand {
 
         MessageUtils.sendAndTrack(
                 "Successfully registered the database",
-                channel,
+                interaction,
                 lobby
         );
     }

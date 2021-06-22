@@ -2,6 +2,7 @@ package net.starype.quiz.discordimpl.command;
 
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.starype.quiz.discordimpl.game.GameLobby;
 import net.starype.quiz.discordimpl.game.LobbyList;
@@ -18,10 +19,10 @@ public class ClearQueryCommand implements QuizCommand {
 
         LobbyList lobbyList = context.getLobbyList();
         String authorId = context.getAuthor().getId();
-        MessageChannel channel = context.getChannel();
+        CommandInteraction interaction = context.getInteraction();
 
         Map<Supplier<Boolean>, String> conditions = createStopConditions(lobbyList, authorId);
-        if(StopConditions.shouldStop(conditions, channel)) {
+        if(StopConditions.shouldStop(conditions, interaction)) {
             return;
         }
 
@@ -30,7 +31,7 @@ public class ClearQueryCommand implements QuizCommand {
 
         MessageUtils.sendAndTrack(
                 "Successfully reset the current query",
-                channel,
+                interaction,
                 lobby);
     }
 

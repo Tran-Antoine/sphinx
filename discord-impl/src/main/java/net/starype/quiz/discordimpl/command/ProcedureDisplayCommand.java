@@ -27,7 +27,7 @@ public class ProcedureDisplayCommand implements QuizCommand {
             builder.addBlankField(false);
             builder.addField(":small_orange_diamond: Step " + i, field, false);
         }
-        context.getChannel().sendMessage(builder.build()).queue(null, null);
+        context.getChannel().sendMessageEmbeds(builder.build()).queue(null, null);
     }
 
     private String readFromFile() {

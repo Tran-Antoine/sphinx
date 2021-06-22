@@ -3,6 +3,7 @@ package net.starype.quiz.discordimpl.game;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.starype.quiz.api.database.QuestionQueries;
 import net.starype.quiz.api.database.QuestionQuery;
@@ -30,12 +31,12 @@ public class GameLobby extends DiscordLogContainer {
 
     private final Runnable destructLobbyCallback;
     private final String guildId;
-    private String name;
-    private MessageChannel channel;
-    private Set<String> playersId;
+    private final String name;
+    private final MessageChannel channel;
+    private final Set<String> playersId;
     private String authorId;
 
-    private Queue<PartialRound> partialRounds;
+    private final Queue<PartialRound> partialRounds;
     private QuizQueryable queryObject;
     private QuestionQuery query;
 
@@ -88,9 +89,9 @@ public class GameLobby extends DiscordLogContainer {
         return playersId.contains(authorId);
     }
 
-    public boolean start(GameList gameList, Runnable onGameEndedCallback) {
+    public boolean start(GameList gameList, Runnable onGameEndedCallback, CommandInteraction interaction) {
 
-        if(noQueryObject()) {
+        if(noQueryObject(interaction)) {
             return false;
         }
 
@@ -98,13 +99,13 @@ public class GameLobby extends DiscordLogContainer {
             this.query = QuestionQueries.ALL;
         }
 
-        if(noRounds()) {
+        if(noRounds(interaction)) {
             return false;
         }
 
         Queue<Question> questions = new LinkedList<>(queryObject.listQuery(query));
 
-        if(notEnoughQuestions(questions)) {
+        if(notEnoughQuestions(questions, interaction)) {
             return false;
         }
 
@@ -113,38 +114,38 @@ public class GameLobby extends DiscordLogContainer {
                 .map(partial -> partial.apply(questions.poll()))
                 .collect(Collectors.toCollection(LinkedList::new));
 
-        
+
         deleteMessages();
         destructLobbyCallback.run();
         gameList.startNewGame(playersId, rounds, channel, authorId, onGameEndedCallback, guildId);
         return true;
     }
 
-    private boolean noQueryObject() {
+    private boolean noQueryObject(CommandInteraction interaction) {
         if(queryObject == null) {
             MessageUtils.createTemporaryMessage(
-                    "Please specify which questions you want to play with", channel
+                    "Please specify which questions you want to play with", interaction
             );
             return true;
         }
         return false;
     }
 
-    private boolean notEnoughQuestions(Queue<Question> questions) {
+    private boolean notEnoughQuestions(Queue<Question> questions, CommandInteraction interaction) {
         if(questions.size() < partialRounds.size()) {
             MessageUtils.createTemporaryMessage(
                     "Not enough questions matching the query",
-                    channel);
+                    interaction);
             return true;
         }
         return false;
     }
 
-    private boolean noRounds() {
+    private boolean noRounds(CommandInteraction interaction) {
         if(partialRounds.isEmpty()) {
             MessageUtils.createTemporaryMessage(
                     "Cannot start a game with no rounds. Use ?add-round to queue a round",
-                    channel);
+                    interaction);
             return true;
         }
         return false;
@@ -162,9 +163,9 @@ public class GameLobby extends DiscordLogContainer {
         return name;
     }
 
-    public void sendJoinImage(ReactionInputListener reactionListener) {
+    public void sendJoinImage(ReactionInputListener reactionListener, CommandInteraction interaction) {
 
-        Optional<Message> optMessage = sendImage();
+        Optional<Message> optMessage = sendImage(interaction);
 
         if(optMessage.isEmpty()) {
             System.err.println("Error: Image could not be sent");
@@ -188,7 +189,7 @@ public class GameLobby extends DiscordLogContainer {
         );
     }
 
-    private Optional<Message> sendImage() {
+    private Optional<Message> sendImage(CommandInteraction interaction) {
 
         BufferedImage image;
         try {
@@ -198,7 +199,7 @@ public class GameLobby extends DiscordLogContainer {
         }
 
         InputStream stream = ImageUtils.toInputStream(image);
-        Message optMessage = channel
+        Message optMessage = interaction.getHook()
                 .sendFile(stream, "image.png")
                 .complete();
         return Optional.ofNullable(optMessage);

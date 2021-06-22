@@ -22,7 +22,7 @@ public class SubmitCommand implements QuizCommand {
 
     @Override
     public String getDescription() {
-        return "Submit an answer. The format for answer submission is: `?submit ||your answer||`";
+        return "Submit an answer";
     }
 
     @Override
@@ -34,12 +34,14 @@ public class SubmitCommand implements QuizCommand {
 
         Map<Supplier<Boolean>, String> conditions = createStopConditions(authorId, gameList);
 
-        if(StopConditions.shouldStop(conditions, context.getChannel())) {
+        if(StopConditions.shouldStop(conditions, interaction)) {
             return;
         }
 
         QuizGame game = gameList.getFromPlayer(authorId).get();
         game.sendInput(authorId, interaction.getOption("answer").getAsString());
+
+        interaction.getHook().deleteOriginal().queue();
     }
 
     private static Map<Supplier<Boolean>, String> createStopConditions(String authorId, GameList gameList) {

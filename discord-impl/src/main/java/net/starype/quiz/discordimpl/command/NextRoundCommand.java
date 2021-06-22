@@ -18,10 +18,9 @@ public class NextRoundCommand implements QuizCommand {
 
         GameList gameList = context.getGameList();
         String playerId = context.getAuthor().getId();
-        MessageChannel channel = context.getChannel();
 
         Map<Supplier<Boolean>, String> conditions = createStopConditions(gameList, playerId);
-        if(StopConditions.shouldStop(conditions, channel)) {
+        if(StopConditions.shouldStop(conditions, context.getInteraction())) {
             return;
         }
 

@@ -30,7 +30,6 @@ public class CompiledQuestionSetCommand implements QuizCommand {
     public void execute(CommandContext context) {
         LobbyList lobbyList = context.getLobbyList();
         Member author = context.getAuthor();
-        MessageChannel channel = context.getChannel();
         String authorId = author.getId();
         CommandInteraction interaction = context.getInteraction();
 
@@ -39,7 +38,7 @@ public class CompiledQuestionSetCommand implements QuizCommand {
                 authorId
         );
 
-        if(StopConditions.shouldStop(conditions, channel)) {
+        if(StopConditions.shouldStop(conditions, interaction)) {
             return;
         }
 
@@ -52,7 +51,7 @@ public class CompiledQuestionSetCommand implements QuizCommand {
                     .openStream()
                     .readNBytes(MAX_BYTES_READ);
         } catch (IOException e) {
-            channel.sendMessage("Error: Couldn't load .sphinx file").queue();
+            interaction.getHook().sendMessage("Error: Couldn't load .sphinx file").queue();
             return;
         }
 
@@ -61,14 +60,15 @@ public class CompiledQuestionSetCommand implements QuizCommand {
         try {
             database.sync();
         } catch (Exception ignored) {
-            MessageUtils.createTemporaryMessage("Sadly, the provided file is too long or invalid <:pandaisu:805381728805453874>", channel);
+            MessageUtils.createTemporaryMessage(
+                    "Sadly, the provided file is too long or invalid <:pandaisu:805381728805453874>", interaction);
             return;
         }
         lobby.setQueryObject(database);
 
         MessageUtils.sendAndTrack(
                 "Successfully registered the database",
-                channel,
+                interaction,
                 lobby
         );
     }

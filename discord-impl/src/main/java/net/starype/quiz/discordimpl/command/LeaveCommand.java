@@ -23,7 +23,7 @@ public class LeaveCommand implements QuizCommand {
 
         Map<Supplier<Boolean>, String> stopConditions = createStopConditions(gameList, lobbyList, authorId);
 
-        if(StopConditions.shouldStop(stopConditions, channel)) {
+        if(StopConditions.shouldStop(stopConditions, context.getInteraction())) {
             return;
         }
         gameList.getFromPlayer(authorId).ifPresent(game -> game.removePlayer(authorId));

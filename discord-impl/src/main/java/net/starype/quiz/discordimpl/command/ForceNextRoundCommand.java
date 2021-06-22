@@ -17,7 +17,7 @@ public class ForceNextRoundCommand implements QuizCommand {
 
         Map<Supplier<Boolean>, String> conditions = createStopConditions(gameList, playerId);
 
-        if(StopConditions.shouldStop(conditions, context.getChannel())) {
+        if(StopConditions.shouldStop(conditions, context.getInteraction())) {
             return;
         }
 

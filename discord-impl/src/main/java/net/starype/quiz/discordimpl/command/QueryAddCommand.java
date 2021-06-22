@@ -27,11 +27,10 @@ public class QueryAddCommand implements QuizCommand {
 
         LobbyList lobbyList = context.getLobbyList();
         String authorId = context.getAuthor().getId();
-        MessageChannel channel = context.getChannel();
         CommandInteraction interaction = context.getInteraction();
 
         Map<Supplier<Boolean>, String> conditions = createStopConditions(lobbyList, authorId);
-        if (StopConditions.shouldStop(conditions, channel)) {
+        if (StopConditions.shouldStop(conditions, interaction)) {
             return;
         }
 
@@ -41,7 +40,7 @@ public class QueryAddCommand implements QuizCommand {
         Function<String, QuestionQuery> queryType = findQueryType(interaction);
 
         queryAction.accept(lobby, queryType.apply(interaction.getOption("query-value").getAsString())); // both guaranteed non-null
-        channel.sendMessage("Successfully added query").queue(null, null);
+        interaction.getHook().sendMessage("Successfully added query").queue(null, null);
     }
 
     private static BiConsumer<GameLobby, QuestionQuery> findQueryAction(CommandInteraction interaction) {
@@ -89,23 +88,24 @@ public class QueryAddCommand implements QuizCommand {
 
     @Override
     public String getDescription() {
-        return "Add a query filtering the questions. Syntax: ?add-query [and-query|or-query] [directory|tag|difficulty] <value>";
+        return "Add a query filtering the questions";
     }
 
     @Override
     public CommandData getData() {
         return dataTemplate()
                 .addOptions(
-                        new OptionData(OptionType.STRING, "query-operator", "query chaining operator (and / or)", false)
-                                .addChoices(
-                                        new Command.Choice("and", "and"),
-                                        new Command.Choice("or", "or")),
                         new OptionData(OptionType.STRING, "query-type", "query type", true)
                                 .addChoices(
                                         new Command.Choice("directory", "directory"),
                                         new Command.Choice("tag", "tag"),
                                         new Command.Choice("difficulty", "difficulty")),
-                        new OptionData(OptionType.STRING, "query-value", "value of the query, i.e HARD", true)
+                        new OptionData(OptionType.STRING, "query-value", "value of the query, i.e HARD", true),
+
+                        new OptionData(OptionType.STRING, "query-operator", "query chaining operator (and / or)", false)
+                                .addChoices(
+                                        new Command.Choice("and", "and"),
+                                        new Command.Choice("or", "or"))
                 );
     }
 }

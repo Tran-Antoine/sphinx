@@ -29,32 +29,31 @@ public class GenerateDatabaseCommand implements QuizCommand {
     public void execute(CommandContext context) {
 
         CommandInteraction interaction = context.getInteraction();
-        MessageChannel channel = context.getChannel();
 
         String inputName = interaction.getOption("link").getAsString();
         String outputName = Optional.ofNullable(interaction.getOption("name"))
                 .map(OptionMapping::getAsString)
                 .orElse("database");
 
-        Optional<InputStream> database = generateFile(inputName, channel);
+        Optional<InputStream> database = generateFile(inputName, interaction);
         if(database.isEmpty()) {
             return;
         }
-        channel
+        interaction.getHook()
                 .sendMessage("Here is your output <:pandasoda:839152193462337576>")
                 .addFile(database.get(), outputName + ".sphinx")
                 .queue(null, null);
     }
 
-    private static Optional<InputStream> generateFile(String urlName, MessageChannel channel) {
-        Collection<? extends EntryUpdater> updaters = InputUtils.loadEntryUpdaters(urlName, channel);
+    private static Optional<InputStream> generateFile(String urlName, CommandInteraction interaction) {
+        Collection<? extends EntryUpdater> updaters = InputUtils.loadEntryUpdaters(urlName, interaction);
         AtomicReference<ByteBuffer> output = new AtomicReference<>();
         SerializedIO serializedIO = new ByteSerializedIO(new byte[0], output);
         TrackedDatabase db = new QuestionDatabase(updaters, serializedIO, false);
         try {
             db.sync();
         } catch(RuntimeException ignored) {
-            channel.sendMessage("Error: couldn't parse the given zip archive").queue(null, null);
+            interaction.getHook().sendMessage("Error: couldn't parse the given zip archive").queue(null, null);
             return Optional.empty();
         }
         return Optional.of(new ByteArrayInputStream(output.get().array()));
@@ -73,7 +72,7 @@ public class GenerateDatabaseCommand implements QuizCommand {
     @Override
     public CommandData getData() {
         return dataTemplate().addOptions(
-                new OptionData(OptionType.STRING, "name", "name of the output file").setRequired(false),
-                new OptionData(OptionType.STRING, "link", "link to download the file").setRequired(true));
+                new OptionData(OptionType.STRING, "link", "link to download the file").setRequired(true),
+                new OptionData(OptionType.STRING, "name", "name of the output file").setRequired(false));
     }
 }
