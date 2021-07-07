@@ -73,7 +73,8 @@ public class MessageInputListener extends ListenerAdapter {
                 new ZipQuestionSetCommand(),
                 new QueryAddCommand(),
                 new ClearQueryCommand(),
-                new RoundAddCommand()
+                new RoundAddCommand(),
+                new InfoCommand()
         ));
     }
 

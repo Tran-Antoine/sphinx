@@ -3,6 +3,7 @@ package net.starype.quiz.discordimpl.game;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.starype.quiz.api.database.QuestionQueries;
@@ -22,6 +23,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Member;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -246,5 +248,20 @@ public class GameLobby extends DiscordLogContainer {
         if(partialRounds.size() < 100) {
             partialRounds.add(round);
         }
+    }
+
+    public List<String> retrieveNames() {
+        return playersId
+                .stream()
+                .map(id -> channel.getJDA().retrieveUserById(id).complete())
+                .map(User::getName)
+                .collect(Collectors.toList());
+    }
+
+    public int questionsCount() {
+        if(queryObject == null) {
+            return 0;
+        }
+        return queryObject.listQuery(query == null ? QuestionQueries.ALL : query).size();
     }
 }
