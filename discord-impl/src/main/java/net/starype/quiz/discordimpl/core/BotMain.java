@@ -27,13 +27,8 @@ public class BotMain {
         jda.addEventListener(messageListener);
         jda.addEventListener(reactionListener);
 
-        // 804522009518145566
-        jda.updateCommands().queue();
-        jda.awaitReady()
-                .getGuildById("804522009518145566")
-                .updateCommands()
+        jda.updateCommands()
                 .addCommands(messageListener.getCommandsData())
-                .addCommands()
                 .queue();
     }
 }
