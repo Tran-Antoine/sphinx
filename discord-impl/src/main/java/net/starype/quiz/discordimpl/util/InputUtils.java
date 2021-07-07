@@ -14,9 +14,6 @@ import java.util.zip.ZipInputStream;
 
 public class InputUtils {
 
-    private static final long maxFileSize = 1024;
-    private static final int MAX_BYTES_READ = 1 << 15;
-
     private static final CounterLimiter downloadingLimiter = new CounterLimiter(5);
 
     public static Collection<? extends EntryUpdater> loadEntryUpdaters(String urlName, CommandInteraction interaction) {
@@ -32,10 +29,9 @@ public class InputUtils {
 
             ZipInputStream zipStream = new ZipInputStream(url.openStream());
             ZipEntry current;
-            int totalBytesRead = 0;
 
-            while ((current = zipStream.getNextEntry()) != null && totalBytesRead < MAX_BYTES_READ) {
-                totalBytesRead += readEntry(zipStream, current, updaters, MAX_BYTES_READ-totalBytesRead);
+            while ((current = zipStream.getNextEntry()) != null) {
+                readEntry(zipStream, current, updaters);
             }
         } catch (IOException ignored) {
             interaction.getHook().sendMessage("Error: couldn't load the provided zip archive").queue(null, null);
@@ -46,15 +42,15 @@ public class InputUtils {
         return updaters;
     }
 
-    private static int readEntry(ZipInputStream zipStream, ZipEntry current, Set<EntryUpdater> updaters, int max) throws IOException {
+    private static int readEntry(ZipInputStream zipStream, ZipEntry current, Set<EntryUpdater> updaters) throws IOException {
 
         long size = current.getSize();
 
-        if(size == 0 || size > max) {
-            return max;
+        if(size == 0) {
+            return 0;
         }
 
-        byte[] fileData = zipStream.readNBytes(max);
+        byte[] fileData = zipStream.readAllBytes();
         String virtualPath = current.getName();
         updaters.add(new ByteEntryUpdater(virtualPath, fileData));
         return fileData.length;
