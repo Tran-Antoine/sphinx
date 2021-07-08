@@ -117,6 +117,7 @@ public class GameLobby extends DiscordLogContainer {
                 .collect(Collectors.toCollection(LinkedList::new));
 
 
+        interaction.getHook().deleteOriginal().queue();
         deleteMessages();
         destructLobbyCallback.run();
         gameList.startNewGame(playersId, rounds, channel, authorId, onGameEndedCallback, guildId);
@@ -258,7 +259,7 @@ public class GameLobby extends DiscordLogContainer {
                 .collect(Collectors.toList());
     }
 
-    public int questionsCount() {
+    public int questionCount() {
         if(queryObject == null) {
             return 0;
         }

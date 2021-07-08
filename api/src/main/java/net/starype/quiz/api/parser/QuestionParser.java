@@ -61,7 +61,7 @@ public class QuestionParser {
         return new DefaultQuestion.Builder()
                 .withAnswerEvaluator(evaluator)
                 .withRawText(rawText)
-                .withRawAnswer(String.join(",", rawAnswers))
+                .withRawAnswer(String.join(", ", rawAnswers))
                 .withTags(tags)
                 .withDifficulty(difficulty)
                 .build();

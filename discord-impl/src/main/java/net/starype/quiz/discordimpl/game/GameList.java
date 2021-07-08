@@ -3,7 +3,6 @@ package net.starype.quiz.discordimpl.game;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.starype.quiz.api.round.QuizRound;
 import net.starype.quiz.api.server.ServerGate;
 import net.starype.quiz.discordimpl.user.DiscordPlayer;
@@ -32,10 +31,11 @@ public class GameList {
             onGameEndedCallback.run();
         };
 
-        Collection<DiscordPlayer> gamePlayers = asGamePlayers(playersId, channel, guildId);
+        Guild guild = fromId(channel, guildId);
+        Collection<DiscordPlayer> gamePlayers = asGamePlayers(playersId, guild);
         DiscordGameServer server = new DiscordGameServer(channel, naturalEndAction, guildId);
         ServerGate<DiscordQuizGame> gate = server.createGate();
-        DiscordQuizGame game = new DiscordQuizGame(rounds, gamePlayers, gate, authorId, server);
+        DiscordQuizGame game = new DiscordQuizGame(rounds, gamePlayers, gate, authorId, server, guild);
 
         Runnable forcedEndAction = () -> {
             stopGame(game, true, channel);
@@ -43,7 +43,7 @@ public class GameList {
         };
 
         ScheduledExecutorService autoCancel = Executors.newScheduledThreadPool(1);
-        autoCancel.schedule(forcedEndAction, 60, TimeUnit.MINUTES);
+        autoCancel.schedule(forcedEndAction, 120, TimeUnit.MINUTES);
 
         ScheduledExecutorService autoUpdate = Executors.newScheduledThreadPool(1);
         ScheduledFuture<?> future = autoUpdate.scheduleAtFixedRate(game::update, 0, 250, TimeUnit.MILLISECONDS);
@@ -51,8 +51,11 @@ public class GameList {
         ongoingGames.put(game, future);
     }
 
-    private Collection<DiscordPlayer> asGamePlayers(Collection<? extends String> playersId, MessageChannel channel, String guildId) {
-        Guild guild = channel.getJDA().getGuildById(guildId);
+    private Guild fromId(MessageChannel channel, String guildId) {
+        return channel.getJDA().getGuildById(guildId);
+    }
+
+    private Collection<DiscordPlayer> asGamePlayers(Collection<? extends String> playersId, Guild guild) {
         return playersId
                 .stream()
                 .map(id -> guild.retrieveMemberById(id).complete())

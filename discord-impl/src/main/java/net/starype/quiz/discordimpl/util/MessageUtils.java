@@ -2,10 +2,12 @@ package net.starype.quiz.discordimpl.util;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.starype.quiz.discordimpl.game.GameLobby;
 import net.starype.quiz.discordimpl.game.LogContainer;
 
 import java.io.InputStream;
@@ -44,21 +46,18 @@ public class MessageUtils {
     }
 
     public static void createTemporaryMessage(String value, CommandInteraction channel) {
-        Message message = channel.getHook().editOriginal(value).complete();
-        if(message == null) {
-            return;
-        }
-        ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
-        service.schedule(() -> delete(message.getId(), channel), 5, TimeUnit.SECONDS);
+        channel.getHook()
+                .editOriginal(value)
+                .delay(5, TimeUnit.SECONDS)
+                .flatMap(Message::delete)
+                .queue();
     }
 
     public static void createTemporaryMessage(String value, MessageChannel channel) {
-        Message message = channel.sendMessage(value).complete();
-        if(message == null) {
-            return;
-        }
-        ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
-        service.schedule(() -> delete(message.getId(), channel), 5, TimeUnit.SECONDS);
+        channel.sendMessage(value)
+                .delay(5, TimeUnit.SECONDS)
+                .flatMap(Message::delete)
+                .queue();
     }
 
     public static void makeTemporary(CommandInteraction channel, Message message) {
@@ -78,5 +77,11 @@ public class MessageUtils {
                 .retrieveMessageById(messageId)
                 .flatMap(Message::delete)
                 .queue();
+    }
+
+    public static void sendAndTrack(MessageEmbed embed, CommandInteraction interaction, GameLobby lobby) {
+        interaction.getHook().editOriginalEmbeds(embed)
+                .map(Message::getId)
+                .queue(lobby::trackMessage);
     }
 }

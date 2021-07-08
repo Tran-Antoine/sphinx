@@ -15,7 +15,8 @@ public class BotMain {
 
     public static void main(String[] args) throws Exception {
         
-        JDABuilder builder = JDABuilder.createDefault(System.getenv("BOT_TOKEN"));
+        //JDABuilder builder = JDABuilder.createDefault(System.getenv("BOT_TOKEN"));
+        JDABuilder builder = JDABuilder.createDefault("Nzc4MDAwOTU0NjI0MzExMzc2.X7Ln2g.Qimi6JYrIUYvc_j4oOefwR-HMqA");
 
         JDA jda = builder.disableCache(CacheFlag.MEMBER_OVERRIDES, CacheFlag.VOICE_STATE)
                 .setBulkDeleteSplittingEnabled(false)
@@ -27,7 +28,12 @@ public class BotMain {
         jda.addEventListener(messageListener);
         jda.addEventListener(reactionListener);
 
-        jda.updateCommands()
+        /*jda.updateCommands()
+                .addCommands(messageListener.getCommandsData())
+                .queue();
+         */
+        jda.awaitReady().getGuildById(768474461472948225L)
+                .updateCommands()
                 .addCommands(messageListener.getCommandsData())
                 .queue();
     }

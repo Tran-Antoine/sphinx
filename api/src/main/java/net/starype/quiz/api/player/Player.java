@@ -5,11 +5,11 @@ import java.util.Collection;
 
 public class Player<T> implements IDHolder<T>, Comparable<Player<?>> {
 
-    private String username;
-    private String nickname;
-    private Score score;
-    private T id;
-    private Collection<Player<?>> children = new ArrayList<>();
+    private final String username;
+    private final String nickname;
+    private final Score score;
+    private final T id;
+    private final Collection<Player<?>> children = new ArrayList<>();
 
     public Player(T id, String username, String nickname) {
         this.username = username;

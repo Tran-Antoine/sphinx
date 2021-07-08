@@ -30,11 +30,11 @@ import java.util.function.Supplier;
 public class SimpleGame<T extends QuizGame> implements QuizGame {
 
     private ServerGate<T> gate;
-    private Queue<? extends QuizRound> rounds;
-    private Collection<? extends Player<?>> players;
+    private final Queue<? extends QuizRound> rounds;
+    private final Collection<? extends Player<?>> players;
     private final AtomicBoolean paused;
     private boolean waitingForNextRound;
-    private UpdatableHandler updatableHandler = new GameUpdatableHandler();
+    private final UpdatableHandler updatableHandler = new GameUpdatableHandler();
     private boolean over;
 
     public SimpleGame(Queue<? extends QuizRound> rounds, Collection<? extends Player<?>> players) {
@@ -233,8 +233,8 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
                 .orElseThrow(error);
     }
 
-    protected Collection<? extends Player<?>> getPlayers() {
-        return players;
+    protected QuizRound getCurrentRound() {
+        return rounds.peek();
     }
 
     public boolean isWaitingForNextRound() {

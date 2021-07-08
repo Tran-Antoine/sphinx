@@ -36,7 +36,7 @@ public class StartGameCommand implements QuizCommand {
                 .findByAuthor(authorId)
                 .map(name -> name.getName().hashCode())
                 .orElse(0);
-        Map<Supplier<Boolean>, String> conditions = createStopConditions(lobbyList, authorId, author.getEffectiveName(), uniqueId);
+        Map<Supplier<Boolean>, String> conditions = createStopConditions(lobbyList, authorId, author.getNickname(), uniqueId);
 
         if(StopConditions.shouldStop(conditions, interaction)) {
             return;

@@ -1,8 +1,5 @@
 package net.starype.quiz.discordimpl.command;
 
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.starype.quiz.discordimpl.game.DiscordQuizGame;
 import net.starype.quiz.discordimpl.game.GameList;
@@ -24,6 +21,10 @@ public class NextRoundCommand implements QuizCommand {
             return;
         }
 
+        context.getInteraction()
+                .getHook()
+                .deleteOriginal()
+                .queue();
         DiscordQuizGame game = gameList.getFromPlayer(playerId).get(); // value guaranteed to be present in our case
         game.addVote(playerId, null);
     }

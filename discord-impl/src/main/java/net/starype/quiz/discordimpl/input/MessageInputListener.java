@@ -74,7 +74,8 @@ public class MessageInputListener extends ListenerAdapter {
                 new QueryAddCommand(),
                 new ClearQueryCommand(),
                 new RoundAddCommand(),
-                new InfoCommand()
+                new InfoCommand(),
+                new KickPlayerCommand()
         ));
     }
 

@@ -27,8 +27,8 @@ import java.util.function.Consumer;
  */
 public class ServerGate<T extends QuizGame> {
 
-    private GameServer<? super T> server;
-    private T game;
+    private final GameServer<? super T> server;
+    private final T game;
 
     /**
      * Initialize a gate with the given server and no game.

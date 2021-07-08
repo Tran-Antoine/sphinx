@@ -31,6 +31,9 @@ public class ForceNextRoundCommand implements QuizCommand {
                 authorId
         );
         conditions.put(
+                () -> gameList.getFromPlayer(authorId).isEmpty(),
+                "You need to be in a game to use this");
+        conditions.put(
                 () -> !gameList.getFromPlayer(authorId).get().isAuthor(authorId),
                 "Only the game creator can use this command");
         return conditions;
