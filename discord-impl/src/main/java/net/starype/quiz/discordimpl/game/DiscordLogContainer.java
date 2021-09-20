@@ -1,6 +1,7 @@
 package net.starype.quiz.discordimpl.game;
 
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
 
 import java.util.HashSet;
@@ -9,9 +10,9 @@ import java.util.Set;
 public class DiscordLogContainer implements LogContainer {
 
     private final Set<String> logs;
-    private TextChannel channel;
+    private final MessageChannel channel;
 
-    public DiscordLogContainer(TextChannel channel) {
+    public DiscordLogContainer(MessageChannel channel) {
         this.channel = channel;
         this.logs = new HashSet<>();
     }

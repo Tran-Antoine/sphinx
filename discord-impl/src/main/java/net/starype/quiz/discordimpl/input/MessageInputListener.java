@@ -1,13 +1,12 @@
 package net.starype.quiz.discordimpl.input;
 
 import net.dv8tion.jda.api.entities.ChannelType;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.starype.quiz.discordimpl.command.*;
-import net.starype.quiz.discordimpl.command.CommandContext.MessageContext;
 import net.starype.quiz.discordimpl.game.GameList;
 import net.starype.quiz.discordimpl.game.LobbyList;
 import org.jetbrains.annotations.NotNull;
@@ -16,14 +15,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class MessageInputListener extends ListenerAdapter {
 
-    public static final String PREFIX = "?";
-
-    private Collection<QuizCommand> commands;
-    private LobbyList lobbyList;
-    private GameList gameList;
+    private final Collection<QuizCommand> commands;
+    private final LobbyList lobbyList;
+    private final GameList gameList;
 
     public MessageInputListener(LobbyList lobbyList, GameList gameList) {
         this.lobbyList = lobbyList;
@@ -32,37 +30,25 @@ public class MessageInputListener extends ListenerAdapter {
         this.commands.add(new HelpCommand(this.commands));
     }
 
+
     @Override
-    public void onMessageReceived(@NotNull MessageReceivedEvent event) {
+    public void onSlashCommand(@NotNull SlashCommandEvent event) {
 
-        if(event.getAuthor().isBot()) {
+        if(event.getGuild() == null || event.getChannelType() != ChannelType.TEXT || event.getUser().isBot()) {
             return;
         }
 
-        if(event.getChannelType() != ChannelType.TEXT) {
-            return;
-        }
+        String commandName = event.getName();
+        Optional<? extends QuizCommand> optCommand = findByName(commandName);
 
-        Message message = event.getMessage();
-        String content = message.getContentDisplay();
-        if(!content.startsWith(PREFIX)) {
-            return;
-        }
-
-        String[] args = content.split(" ");
-
-        Optional<? extends QuizCommand> optCommand = findByName(args[0].replace(PREFIX, ""));
+        event.deferReply().queue();
         optCommand.ifPresent(command -> processCommand(
                 command,
-                message.getTextChannel(),
-                message,
-                event.getMember(), // Optional guaranteed to be present because of the filter
-                args));
+                event));
     }
 
-    private void processCommand(QuizCommand command, TextChannel channel, Message message, Member member, String... args) {
-        MessageContext messageContext = new MessageContext(channel, message, member, args);
-        CommandContext context = new CommandContext(messageContext, gameList, lobbyList);
+    private void processCommand(QuizCommand command, CommandInteraction interaction) {
+        CommandContext context = new CommandContext(interaction, gameList, lobbyList);
         command.execute(context);
     }
 
@@ -89,5 +75,12 @@ public class MessageInputListener extends ListenerAdapter {
                 new ClearQueryCommand(),
                 new RoundAddCommand()
         ));
+    }
+
+    public Collection<? extends CommandData> getCommandsData() {
+        return commands
+                .stream()
+                .map(DisplayableCommand::getData)
+                .collect(Collectors.toList());
     }
 }

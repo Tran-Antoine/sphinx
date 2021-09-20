@@ -1,7 +1,9 @@
 package net.starype.quiz.discordimpl.game;
 
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import net.starype.quiz.discordimpl.input.ReactionInputListener;
 
 import java.util.HashSet;
@@ -20,10 +22,10 @@ public class LobbyList {
         this.nextId = 0;
     }
 
-    public GameLobby registerLobby(TextChannel channel, Member author, Runnable destructLobbyCallback) {
-        String id = "lobby" + nextId++;
-        GameLobby lobby = new GameLobby(channel, id, destructLobbyCallback);
-        lobby.sendJoinImage(reactionListener);
+    public GameLobby registerLobby(CommandInteraction interaction, MessageChannel channel, Member author, Runnable destructLobbyCallback, String guildId) {
+        String lobbyId = "lobby" + nextId++;
+        GameLobby lobby = new GameLobby(channel, lobbyId, destructLobbyCallback, guildId);
+        lobby.sendJoinImage(reactionListener, interaction);
         lobby.registerAuthor(author.getId(), author.getEffectiveName());
         lobbies.add(lobby);
         return lobby;

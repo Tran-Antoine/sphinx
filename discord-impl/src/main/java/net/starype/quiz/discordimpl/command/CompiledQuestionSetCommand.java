@@ -2,8 +2,12 @@ package net.starype.quiz.discordimpl.command;
 
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.Message.Attachment;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.starype.quiz.api.database.ByteSerializedIO;
 import net.starype.quiz.api.database.QuestionDatabase;
 import net.starype.quiz.api.database.SerializedIO;
@@ -13,44 +17,41 @@ import net.starype.quiz.discordimpl.util.MessageUtils;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 
 public class CompiledQuestionSetCommand implements QuizCommand {
 
+    private static final int MAX_BYTES_READ = 1 << 15;
+
     @Override
     public void execute(CommandContext context) {
         LobbyList lobbyList = context.getLobbyList();
         Member author = context.getAuthor();
-        TextChannel channel = context.getChannel();
-        Message message = context.getMessage();
         String authorId = author.getId();
-        String[] args = context.getArgs();
+        CommandInteraction interaction = context.getInteraction();
 
         Map<Supplier<Boolean>, String> conditions = createStopConditions(
                 lobbyList,
-                message,
-                authorId,
-                args);
+                authorId
+        );
 
-        if(StopConditions.shouldStop(conditions, channel, message)) {
+        if(StopConditions.shouldStop(conditions, interaction)) {
             return;
         }
 
         GameLobby lobby = lobbyList.findByAuthor(authorId).get();
-        String url = findUrl(message, args);
+        String url = interaction.getOption("link").getAsString();
+
         byte[] dbData;
         try {
             dbData = new URL(url)
                     .openStream()
-                    .readAllBytes();
+                    .readNBytes(MAX_BYTES_READ);
         } catch (IOException e) {
-            channel.sendMessage("Error: Couldn't load .sphinx file").queue();
+            interaction.getHook().sendMessage("Error: Couldn't load .sphinx file").queue();
             return;
         }
 
@@ -59,40 +60,25 @@ public class CompiledQuestionSetCommand implements QuizCommand {
         try {
             database.sync();
         } catch (Exception ignored) {
-            MessageUtils.makeTemporary(channel, message);
-            MessageUtils.createTemporaryMessage("Invalid file", channel);
+            MessageUtils.createTemporaryMessage(
+                    "Sadly, the provided file is too long or invalid <:pandaisu:805381728805453874>", interaction);
             return;
         }
         lobby.setQueryObject(database);
 
-        lobby.trackMessage(message.getId());
         MessageUtils.sendAndTrack(
                 "Successfully registered the database",
-                channel,
+                interaction,
                 lobby
         );
     }
 
-    private String findUrl(Message message, String[] args) {
-        Collection<Attachment> attachments = message.getAttachments();
-        if(attachments.size() == 1) {
-            return attachments
-                    .iterator()
-                    .next()
-                    .getUrl();
-        }
-        return args[1];
-    }
-
     private static Map<Supplier<Boolean>, String> createStopConditions(
-            LobbyList lobbyList, Message message, String authorId, String[] args) {
+            LobbyList lobbyList, String authorId) {
         Map<Supplier<Boolean>, String> conditions = new LinkedHashMap<>();
         conditions.put(
                 () -> lobbyList.findByAuthor(authorId).isEmpty(),
                 "You are not the author of any lobby");
-
-        conditions.put(() -> message.getAttachments().size() != 1 && args.length != 2,
-                "You need to attach a single .sphinx file or a link to the file as second argument");
 
         return conditions;
     }
@@ -105,5 +91,11 @@ public class CompiledQuestionSetCommand implements QuizCommand {
     @Override
     public String getDescription() {
         return "Set the set of questions used for the game from a .sphinx file";
+    }
+
+    @Override
+    public CommandData getData() {
+        return dataTemplate()
+                .addOptions(new OptionData(OptionType.STRING, "link", "link to download the file").setRequired(true));
     }
 }

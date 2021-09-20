@@ -1,7 +1,9 @@
 package net.starype.quiz.discordimpl.command;
 
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import net.starype.quiz.discordimpl.util.MessageUtils;
 
 import java.util.Map;
@@ -10,7 +12,11 @@ import java.util.function.Supplier;
 
 public class StopConditions {
 
-    public static boolean shouldStop(Map<Supplier<Boolean>, String> stopConditions, TextChannel channel, Message original) {
+    public static boolean shouldStop(Map<Supplier<Boolean>, String> stopConditions, CommandInteraction channel) {
+        return shouldStop(stopConditions, channel, null);
+    }
+
+    public static boolean shouldStop(Map<Supplier<Boolean>, String> stopConditions, CommandInteraction channel, Message original) {
         for(Entry<Supplier<Boolean>, String> entry : stopConditions.entrySet()) {
             if(entry.getKey().get()) {
                 createTemporaryMessage(channel, entry.getValue(), original);
@@ -20,8 +26,10 @@ public class StopConditions {
         return false;
     }
 
-    private static void createTemporaryMessage(TextChannel channel, String value, Message original) {
+    private static void createTemporaryMessage(CommandInteraction channel, String value, Message original) {
         MessageUtils.createTemporaryMessage(value, channel);
-        MessageUtils.makeTemporary(channel, original);
+        if(original != null) {
+            MessageUtils.makeTemporary(channel, original);
+        }
     }
 }

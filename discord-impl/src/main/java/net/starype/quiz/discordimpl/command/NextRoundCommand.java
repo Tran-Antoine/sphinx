@@ -1,7 +1,9 @@
 package net.starype.quiz.discordimpl.command;
 
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.starype.quiz.discordimpl.game.DiscordQuizGame;
 import net.starype.quiz.discordimpl.game.GameList;
 
@@ -16,18 +18,13 @@ public class NextRoundCommand implements QuizCommand {
 
         GameList gameList = context.getGameList();
         String playerId = context.getAuthor().getId();
-        TextChannel channel = context.getChannel();
-        Message message = context.getMessage();
 
         Map<Supplier<Boolean>, String> conditions = createStopConditions(gameList, playerId);
-        if(StopConditions.shouldStop(conditions, channel, message)) {
+        if(StopConditions.shouldStop(conditions, context.getInteraction())) {
             return;
         }
 
         DiscordQuizGame game = gameList.getFromPlayer(playerId).get(); // value guaranteed to be present in our case
-
-        game.addLog(message.getId());
-        message.addReaction("\uD83D\uDC4D").queue(null, null);
         game.addVote(playerId, null);
     }
 
@@ -52,5 +49,10 @@ public class NextRoundCommand implements QuizCommand {
     @Override
     public String getDescription() {
         return "Mention that you are ready for the next round";
+    }
+
+    @Override
+    public CommandData getData() {
+        return dataTemplate();
     }
 }

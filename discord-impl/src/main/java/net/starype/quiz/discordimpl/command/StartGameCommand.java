@@ -1,7 +1,8 @@
 package net.starype.quiz.discordimpl.command;
 
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.starype.quiz.discordimpl.game.GameLobby;
 import net.starype.quiz.discordimpl.game.LobbyList;
 import net.starype.quiz.discordimpl.util.CounterLimiter;
@@ -29,7 +30,7 @@ public class StartGameCommand implements QuizCommand {
         LobbyList lobbyList = context.getLobbyList();
         Member author = context.getAuthor();
         String authorId = author.getId();
-        Message message = context.getMessage();
+        CommandInteraction interaction = context.getInteraction();
 
         long uniqueId = lobbyList
                 .findByAuthor(authorId)
@@ -37,13 +38,12 @@ public class StartGameCommand implements QuizCommand {
                 .orElse(0);
         Map<Supplier<Boolean>, String> conditions = createStopConditions(lobbyList, authorId, author.getEffectiveName(), uniqueId);
 
-        if(StopConditions.shouldStop(conditions, context.getChannel(), message)) {
+        if(StopConditions.shouldStop(conditions, interaction)) {
             return;
         }
 
         GameLobby lobby = lobbyList.findByAuthor(authorId).get();
-        lobby.trackMessage(message.getId());
-        if(lobby.start(context.getGameList(), () -> gameLimiter.unregister(uniqueId))) {
+        if(lobby.start(context.getGameList(), () -> gameLimiter.unregister(uniqueId), interaction)) {
             lobbyList.unregisterLobby(lobby);
         }
     }
@@ -66,5 +66,10 @@ public class StartGameCommand implements QuizCommand {
 
 
         return conditions;
+    }
+
+    @Override
+    public CommandData getData() {
+        return dataTemplate();
     }
 }
