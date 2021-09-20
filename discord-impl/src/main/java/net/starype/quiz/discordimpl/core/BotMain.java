@@ -30,6 +30,5 @@ public class BotMain {
         jda.updateCommands()
                 .addCommands(messageListener.getCommandsData())
                 .queue();
-
     }
 }

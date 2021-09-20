@@ -33,6 +33,7 @@ public class GameList {
 
         Guild guild = fromId(channel, guildId);
         Collection<DiscordPlayer> gamePlayers = asGamePlayers(playersId, guild);
+
         DiscordGameServer server = new DiscordGameServer(channel, naturalEndAction, guildId);
         ServerGate<DiscordQuizGame> gate = server.createGate();
         DiscordQuizGame game = new DiscordQuizGame(rounds, gamePlayers, gate, authorId, server, guild);
@@ -56,6 +57,7 @@ public class GameList {
     }
 
     private Collection<DiscordPlayer> asGamePlayers(Collection<? extends String> playersId, Guild guild) {
+
         return playersId
                 .stream()
                 .map(id -> guild.retrieveMemberById(id).complete())

@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
+
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.starype.quiz.api.database.QuestionQueries;
@@ -115,7 +116,6 @@ public class GameLobby extends DiscordLogContainer {
                 .stream()
                 .map(partial -> partial.apply(questions.poll()))
                 .collect(Collectors.toCollection(LinkedList::new));
-
 
         interaction.getHook().deleteOriginal().queue();
         deleteMessages();
