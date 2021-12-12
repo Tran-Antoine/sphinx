@@ -3,8 +3,6 @@ package net.starype.quiz.discordimpl.command;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.starype.quiz.discordimpl.game.DiscordQuizGame;
 import net.starype.quiz.discordimpl.game.GameList;
 import net.starype.quiz.discordimpl.game.GameLobby;
@@ -56,11 +54,11 @@ public class InfoCommand implements QuizCommand {
         EmbedBuilder builder = new EmbedBuilder();
         builder.setColor(Color.ORANGE);
 
-        if(game.isCurrentRoundFinished()) {
+        if(!game.hasRoundStarted()) {
             builder.addField("Game Status", "Waiting for next round", false);
             builder.addBlankField(false);
-            builder.addField("Not ready yet", String.join(", ", game.haveVoted()), false);
-        } else {
+            builder.addField("Not ready yet", String.join(", ", game.haveNotVoted()), false);
+        } else if(!game.isCurrentRoundFinished()){
             builder.addField("Game Status", "Round in progress", false);
             builder.addBlankField(false);
             builder.addField("Waiting for", String.join(", ", game.waitingFor()), false);

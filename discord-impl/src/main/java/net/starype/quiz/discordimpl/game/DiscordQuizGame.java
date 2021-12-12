@@ -7,7 +7,6 @@ import net.starype.quiz.api.round.QuizRound;
 import net.starype.quiz.api.server.ServerGate;
 import net.starype.quiz.discordimpl.user.DiscordPlayer;
 
-import java.lang.reflect.Member;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -79,8 +78,12 @@ public class DiscordQuizGame extends SimpleGame<DiscordQuizGame> {
         return retrievePlayers(p -> true);
     }
 
-    public List<String> haveVoted() {
+    public List<String> haveNotVoted() {
         return retrievePlayers(p -> !votesForNext.contains(p.getId()));
+    }
+
+    public boolean hasRoundStarted() {
+        return getCurrentRound().hasStarted();
     }
 
     private List<String> retrievePlayers(Predicate<DiscordPlayer> filter) {
