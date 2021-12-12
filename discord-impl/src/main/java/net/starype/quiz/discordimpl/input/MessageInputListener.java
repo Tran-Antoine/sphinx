@@ -2,7 +2,6 @@ package net.starype.quiz.discordimpl.input;
 
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -62,7 +61,8 @@ public class MessageInputListener extends ListenerAdapter {
     private Collection<QuizCommand> initCommands() {
         return new ArrayList<>(Arrays.asList(
                 new CreateLobbyCommand(),
-                new StartGameCommand(),
+                new StandardStartCommand(),
+                new QuickStartCommand(),
                 new SubmitCommand(),
                 new LeaveCommand(),
                 new NextRoundCommand(),

@@ -12,6 +12,7 @@ import net.starype.quiz.api.database.QuestionQuery;
 import net.starype.quiz.api.database.QuizQueryable;
 import net.starype.quiz.api.question.Question;
 import net.starype.quiz.api.round.QuizRound;
+import net.starype.quiz.discordimpl.command.RoundAddCommand;
 import net.starype.quiz.discordimpl.command.RoundAddCommand.PartialRound;
 import net.starype.quiz.discordimpl.input.ReactionInputListener;
 import net.starype.quiz.discordimpl.input.ReactionInputListener.ReactionContext;
@@ -264,5 +265,15 @@ public class GameLobby extends DiscordLogContainer {
             return 0;
         }
         return queryObject.listQuery(query == null ? QuestionQueries.ALL : query).size();
+    }
+
+    public void resetRounds() {
+        partialRounds.clear();
+    }
+
+    public void queueRound(PartialRound round, int repeat) {
+        for(int i = 0; i < repeat; i++) {
+            queueRound(round);
+        }
     }
 }
