@@ -21,9 +21,9 @@ public class MessageInputListener extends ListenerAdapter {
 
     public static final String PREFIX = "?";
 
-    private Collection<QuizCommand> commands;
-    private LobbyList lobbyList;
-    private GameList gameList;
+    private final Collection<QuizCommand> commands;
+    private final LobbyList lobbyList;
+    private final GameList gameList;
 
     public MessageInputListener(LobbyList lobbyList, GameList gameList) {
         this.lobbyList = lobbyList;
