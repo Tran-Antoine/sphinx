@@ -3,13 +3,7 @@ package net.starype.quiz.discordimpl.command;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
-import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
-import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.starype.quiz.api.database.*;
 import net.starype.quiz.discordimpl.util.InputUtils;
 
@@ -27,36 +21,50 @@ public class GenerateDatabaseCommand implements QuizCommand {
 
     @Override
     public void execute(CommandContext context) {
+        Message message = context.getMessage();
+        Collection<Attachment> files = message.getAttachments();
+        Map<Supplier<Boolean>, String> conditions = createStopConditions(message);
+        TextChannel channel = context.getChannel();
 
-        CommandInteraction interaction = context.getInteraction();
+        if(StopConditions.shouldStop(conditions, channel, message)) {
+            return;
+        }
 
-        String inputName = interaction.getOption("link").getAsString();
-        String outputName = Optional.ofNullable(interaction.getOption("name"))
-                .map(OptionMapping::getAsString)
-                .orElse("database");
+        String[] args = context.getArgs();
+        String fileName = args.length == 2
+                ? args[1]
+                : "database";
 
-        Optional<InputStream> database = generateFile(inputName, interaction);
+        Optional<InputStream> database = generateFile(files.iterator().next().getUrl(), channel);
         if(database.isEmpty()) {
             return;
         }
-        interaction.getHook()
-                .sendMessage("Here is your output <:pandasoda:839152193462337576>")
-                .addFile(database.get(), outputName + ".sphinx")
+        channel
+                .sendMessage("Here is your output!")
+                .addFile(database.get(), fileName + ".sphinx")
                 .queue(null, null);
     }
 
-    private static Optional<InputStream> generateFile(String urlName, CommandInteraction interaction) {
-        Collection<? extends EntryUpdater> updaters = InputUtils.loadEntryUpdaters(urlName, interaction);
+    private static Optional<InputStream> generateFile(String urlName, TextChannel channel) {
+        Collection<? extends EntryUpdater> updaters = InputUtils.loadEntryUpdaters(urlName, channel);
         AtomicReference<ByteBuffer> output = new AtomicReference<>();
         SerializedIO serializedIO = new ByteSerializedIO(new byte[0], output);
         TrackedDatabase db = new QuestionDatabase(updaters, serializedIO, false);
         try {
             db.sync();
         } catch(RuntimeException ignored) {
-            interaction.getHook().sendMessage("Error: couldn't parse the given zip archive").queue(null, null);
+            channel.sendMessage("Error: couldn't parse the given zip archive").queue(null, null);
             return Optional.empty();
         }
         return Optional.of(new ByteArrayInputStream(output.get().array()));
+    }
+
+    private Map<Supplier<Boolean>, String> createStopConditions(Message message) {
+        Map<Supplier<Boolean>, String> conditions = new HashMap<>();
+        conditions.put(
+                () -> message.getAttachments().size() != 1,
+                "Please attach one unique file");
+        return conditions;
     }
 
     @Override
@@ -67,12 +75,5 @@ public class GenerateDatabaseCommand implements QuizCommand {
     @Override
     public String getDescription() {
         return "Generate a DB file from a zip of questions put into TOML files";
-    }
-
-    @Override
-    public CommandData getData() {
-        return dataTemplate().addOptions(
-                new OptionData(OptionType.STRING, "link", "link to download the file").setRequired(true),
-                new OptionData(OptionType.STRING, "name", "name of the output file").setRequired(false));
     }
 }

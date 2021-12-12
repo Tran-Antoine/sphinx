@@ -1,9 +1,7 @@
 package net.starype.quiz.discordimpl.game;
 
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.starype.quiz.api.database.QuestionQueries;
 import net.starype.quiz.api.database.QuestionQuery;
@@ -30,24 +28,22 @@ import java.util.stream.Collectors;
 public class GameLobby extends DiscordLogContainer {
 
     private final Runnable destructLobbyCallback;
-    private final String guildId;
-    private final String name;
-    private final MessageChannel channel;
-    private final Set<String> playersId;
+    private String name;
+    private TextChannel channel;
+    private Set<String> playersId;
     private String authorId;
 
-    private final Queue<PartialRound> partialRounds;
+    private Queue<PartialRound> partialRounds;
     private QuizQueryable queryObject;
     private QuestionQuery query;
 
     private String lobbyMessageId;
 
-    public GameLobby(MessageChannel channel, String name, Runnable destructLobbyCallback, String guildId) {
+    public GameLobby(TextChannel channel, String name, Runnable destructLobbyCallback) {
         super(channel);
         this.channel = channel;
         this.name = name;
         this.destructLobbyCallback = destructLobbyCallback;
-        this.guildId = guildId;
         this.partialRounds = new LinkedList<>();
         this.playersId = new HashSet<>();
     }
@@ -89,9 +85,9 @@ public class GameLobby extends DiscordLogContainer {
         return playersId.contains(authorId);
     }
 
-    public boolean start(GameList gameList, Runnable onGameEndedCallback, CommandInteraction interaction) {
+    public boolean start(GameList gameList, Runnable onGameEndedCallback) {
 
-        if(noQueryObject(interaction)) {
+        if(noQueryObject()) {
             return false;
         }
 
@@ -99,13 +95,13 @@ public class GameLobby extends DiscordLogContainer {
             this.query = QuestionQueries.ALL;
         }
 
-        if(noRounds(interaction)) {
+        if(noRounds()) {
             return false;
         }
 
         Queue<Question> questions = new LinkedList<>(queryObject.listQuery(query));
 
-        if(notEnoughQuestions(questions, interaction)) {
+        if(notEnoughQuestions(questions)) {
             return false;
         }
 
@@ -114,38 +110,38 @@ public class GameLobby extends DiscordLogContainer {
                 .map(partial -> partial.apply(questions.poll()))
                 .collect(Collectors.toCollection(LinkedList::new));
 
-
+        
         deleteMessages();
         destructLobbyCallback.run();
-        gameList.startNewGame(playersId, rounds, channel, authorId, onGameEndedCallback, guildId);
+        gameList.startNewGame(playersId, rounds, channel, authorId, onGameEndedCallback);
         return true;
     }
 
-    private boolean noQueryObject(CommandInteraction interaction) {
+    private boolean noQueryObject() {
         if(queryObject == null) {
             MessageUtils.createTemporaryMessage(
-                    "Please specify which questions you want to play with", interaction
+                    "Please specify which questions you want to play with", channel
             );
             return true;
         }
         return false;
     }
 
-    private boolean notEnoughQuestions(Queue<Question> questions, CommandInteraction interaction) {
+    private boolean notEnoughQuestions(Queue<Question> questions) {
         if(questions.size() < partialRounds.size()) {
             MessageUtils.createTemporaryMessage(
                     "Not enough questions matching the query",
-                    interaction);
+                    channel);
             return true;
         }
         return false;
     }
 
-    private boolean noRounds(CommandInteraction interaction) {
+    private boolean noRounds() {
         if(partialRounds.isEmpty()) {
             MessageUtils.createTemporaryMessage(
                     "Cannot start a game with no rounds. Use ?add-round to queue a round",
-                    interaction);
+                    channel);
             return true;
         }
         return false;
@@ -163,9 +159,9 @@ public class GameLobby extends DiscordLogContainer {
         return name;
     }
 
-    public void sendJoinImage(ReactionInputListener reactionListener, CommandInteraction interaction) {
+    public void sendJoinImage(ReactionInputListener reactionListener) {
 
-        Optional<Message> optMessage = sendImage(interaction);
+        Optional<Message> optMessage = sendImage();
 
         if(optMessage.isEmpty()) {
             System.err.println("Error: Image could not be sent");
@@ -189,7 +185,7 @@ public class GameLobby extends DiscordLogContainer {
         );
     }
 
-    private Optional<Message> sendImage(CommandInteraction interaction) {
+    private Optional<Message> sendImage() {
 
         BufferedImage image;
         try {
@@ -199,7 +195,7 @@ public class GameLobby extends DiscordLogContainer {
         }
 
         InputStream stream = ImageUtils.toInputStream(image);
-        Message optMessage = interaction.getHook()
+        Message optMessage = channel
                 .sendFile(stream, "image.png")
                 .complete();
         return Optional.ofNullable(optMessage);
