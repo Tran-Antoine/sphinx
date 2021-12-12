@@ -74,7 +74,11 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
             return true;
         }
 
-        return rounds.peek()
+        QuizRound current = rounds.peek();
+        if(!current.hasStarted()) {
+            return false;
+        }
+        return current
                 .getEndingCondition()
                 .ends();
     }
