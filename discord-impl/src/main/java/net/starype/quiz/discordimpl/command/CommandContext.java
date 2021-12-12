@@ -8,9 +8,9 @@ import net.starype.quiz.discordimpl.game.LobbyList;
 
 public class CommandContext {
 
-    private MessageContext messageContext;
-    private GameList gameList;
-    private LobbyList lobbyList;
+    private final MessageContext messageContext;
+    private final GameList gameList;
+    private final LobbyList lobbyList;
 
     public CommandContext(MessageContext messageContext, GameList gameList, LobbyList lobbyList) {
         this.messageContext = messageContext;
