@@ -13,7 +13,7 @@ public class BotMain {
 
     public static void main(String[] args) throws Exception {
         
-        JDABuilder builder = JDABuilder.createDefault("Nzc4MDAwOTU0NjI0MzExMzc2.X7Ln2g.xMr90VdMzhupjnsBuDiCjh_r8XQ");
+        JDABuilder builder = JDABuilder.createDefault(System.getenv("BOT_TOKEN"));
         JDA jda = builder.disableCache(CacheFlag.MEMBER_OVERRIDES, CacheFlag.VOICE_STATE)
                 .setBulkDeleteSplittingEnabled(false)
                 .setActivity(Activity.playing("supervising the quiz world championship"))

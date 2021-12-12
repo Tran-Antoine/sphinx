@@ -28,12 +28,12 @@ import java.util.stream.Collectors;
 public class GameLobby extends DiscordLogContainer {
 
     private final Runnable destructLobbyCallback;
-    private String name;
-    private TextChannel channel;
-    private Set<String> playersId;
+    private final String name;
+    private final TextChannel channel;
+    private final Set<String> playersId;
     private String authorId;
 
-    private Queue<PartialRound> partialRounds;
+    private final Queue<PartialRound> partialRounds;
     private QuizQueryable queryObject;
     private QuestionQuery query;
 

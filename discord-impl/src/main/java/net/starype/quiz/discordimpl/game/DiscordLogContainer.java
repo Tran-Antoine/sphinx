@@ -9,7 +9,7 @@ import java.util.Set;
 public class DiscordLogContainer implements LogContainer {
 
     private final Set<String> logs;
-    private TextChannel channel;
+    private final TextChannel channel;
 
     public DiscordLogContainer(TextChannel channel) {
         this.channel = channel;
