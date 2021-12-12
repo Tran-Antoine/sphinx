@@ -25,6 +25,7 @@ public class StandardRound implements QuizRound {
 
     private GuessReceivedAction guessReceivedAction;
     private GuessReceivedAction giveUpReceivedAction;
+    private boolean started = false;
 
     public StandardRound(Question pickedQuestion,
                          GuessReceivedAction GuessReceivedAction,
@@ -46,11 +47,17 @@ public class StandardRound implements QuizRound {
     @Override
     public void start(QuizGame game, Collection<? extends Player<?>> players,
                       UpdatableHandler updatableHandler) {
+        this.started = true;
         roundState.initPlayers(players);
         this.game = Objects.requireNonNull(game, "Game cannot be null");
         game.sendInputToServer(server -> server.onQuestionReleased(pickedQuestion));
         updatables.forEach(updatableHandler::registerEvent);
         updatables.forEach(event -> event.start(updatableHandler));
+    }
+
+    @Override
+    public boolean hasStarted() {
+        return started;
     }
 
     @Override

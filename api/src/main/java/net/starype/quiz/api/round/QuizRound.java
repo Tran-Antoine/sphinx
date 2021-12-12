@@ -10,6 +10,8 @@ public interface QuizRound extends GameRound {
 
     void start(QuizGame game, Collection<? extends Player<?>> players, UpdatableHandler eventHandler);
 
+    boolean hasStarted();
+
     void onGuessReceived(Player<?> source, String message);
     void onGiveUpReceived(Player<?> source);
     default void onRoundStopped(){}
