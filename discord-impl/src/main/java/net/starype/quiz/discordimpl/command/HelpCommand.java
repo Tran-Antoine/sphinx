@@ -2,18 +2,18 @@ package net.starype.quiz.discordimpl.command;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.awt.*;
+import java.util.ArrayDeque;
 import java.util.Collection;
-import java.util.List;
+import java.util.Collections;
 
 public class HelpCommand implements QuizCommand {
 
     private final Collection<? extends DisplayableCommand> commands;
 
     public HelpCommand(Collection<? extends DisplayableCommand> commands) {
-        this.commands = List.copyOf(commands);
+        this.commands = commands;
     }
 
     @Override
@@ -44,10 +44,5 @@ public class HelpCommand implements QuizCommand {
     @Override
     public String getDescription() {
         return "Display the list of all commands";
-    }
-
-    @Override
-    public CommandData getData() {
-        return dataTemplate();
     }
 }

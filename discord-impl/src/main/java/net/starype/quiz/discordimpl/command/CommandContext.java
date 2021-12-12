@@ -2,30 +2,32 @@ package net.starype.quiz.discordimpl.command;
 
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import net.starype.quiz.discordimpl.game.GameList;
 import net.starype.quiz.discordimpl.game.LobbyList;
 
 public class CommandContext {
 
-    private final CommandInteraction interaction;
+    private final MessageContext messageContext;
     private final GameList gameList;
     private final LobbyList lobbyList;
 
-    public CommandContext(CommandInteraction interaction, GameList gameList, LobbyList lobbyList) {
-        this.interaction = interaction;
+    public CommandContext(MessageContext messageContext, GameList gameList, LobbyList lobbyList) {
+        this.messageContext = messageContext;
         this.gameList = gameList;
         this.lobbyList = lobbyList;
     }
 
-    public MessageChannel getChannel() {
-        return interaction.getChannel();
+    public TextChannel getChannel() {
+        return messageContext.textChannel;
     }
 
     public Member getAuthor() {
-        return interaction.getMember();
+        return messageContext.author;
+    }
+
+    public String[] getArgs() {
+        return messageContext.args;
     }
 
     public GameList getGameList() {
@@ -36,7 +38,22 @@ public class CommandContext {
         return lobbyList;
     }
 
-    public CommandInteraction getInteraction() {
-        return interaction;
+    public Message getMessage() {
+        return messageContext.message;
+    }
+
+    public static class MessageContext {
+
+        private TextChannel textChannel;
+        private Message message;
+        private Member author;
+        private String[] args;
+
+        public MessageContext(TextChannel textChannel, Message message, Member author, String[] args) {
+            this.textChannel = textChannel;
+            this.message = message;
+            this.author = author;
+            this.args = args;
+        }
     }
 }
