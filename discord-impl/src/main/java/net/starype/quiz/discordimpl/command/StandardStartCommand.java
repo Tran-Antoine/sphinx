@@ -15,12 +15,6 @@ public class StandardStartCommand extends StartCommand {
         return "Start a game. Must follow /create";
     }
 
-
-    @Override
-    public CommandData getData() {
-        return dataTemplate();
-    }
-
     @Override
     protected void onPreStart(GameLobby lobby) {
 

@@ -28,7 +28,7 @@ public class InfoCommand implements QuizCommand {
         String id = context.getAuthor().getId();
 
         Map<Supplier<Boolean>, String> conditions = createStopConditions(lobbyList, gameList, id);
-        if(StopConditions.shouldStop(conditions, channel)) {
+        if(StopConditions.shouldStop(conditions, channel, context.getMessage())) {
             return;
         }
 

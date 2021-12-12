@@ -1,15 +1,13 @@
 package net.starype.quiz.discordimpl.command;
 
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.starype.quiz.discordimpl.game.DiscordQuizGame;
 import net.starype.quiz.discordimpl.game.GameList;
+import net.starype.quiz.discordimpl.util.MessageUtils;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -22,22 +20,23 @@ public class KickPlayerCommand implements QuizCommand {
 
         Member author = context.getAuthor();
         String id = author.getId();
-        CommandInteraction interaction = context.getInteraction();
+        TextChannel channel = context.getChannel();
         GameList gameList = context.getGameList();
-        User target = interaction.getOption("name").getAsUser();
+        String[] args = context.getArgs();
 
-        Map<Supplier<Boolean>, String> conditions = createStopConditions(gameList, id);
-        if(StopConditions.shouldStop(conditions, interaction)) {
+        Map<Supplier<Boolean>, String> conditions = createStopConditions(gameList, id, args, channel);
+        if(StopConditions.shouldStop(conditions, channel, context.getMessage())) {
             return;
         }
 
+        User target = channel.getGuild().getMemberByTag(args[0]).getUser();
         DiscordQuizGame game = gameList.getFromPlayer(id).get();
         game.removePlayer(target.getId());
         game.checkEndOfRound();
 
-        interaction.getHook().editOriginal("Player successfully excluded from the game")
+        channel.sendMessage("Player successfully excluded from the game")
                 .map(Message::getId)
-                .queue(game::addLog);
+                .queue(game::addLog, null);
     }
 
 
@@ -51,15 +50,8 @@ public class KickPlayerCommand implements QuizCommand {
         return "kick a player from a game";
     }
 
-    @Override
-    public CommandData getData() {
-        return dataTemplate()
-                .addOptions(new OptionData(OptionType.USER, "name", "name of the player to kick")
-                        .setRequired(true));
-    }
-
     private static Map<Supplier<Boolean>, String> createStopConditions(GameList gameList,
-                                                                       String authorId) {
+                                                                       String authorId, String[] args, TextChannel channel) {
         Map<Supplier<Boolean>, String> conditions = new LinkedHashMap<>();
         conditions.put(
                 () -> gameList.getFromPlayer(authorId).isEmpty(),
@@ -67,6 +59,13 @@ public class KickPlayerCommand implements QuizCommand {
         conditions.put(
                 () -> !gameList.getFromPlayer(authorId).get().isAuthor(authorId),
                 "You must be the other of the game to use this");
+        conditions.put(
+                () -> args.length != 1,
+                "You need to tag the member you want to kick");
+
+        conditions.put(
+                () -> channel.getGuild().getMemberByTag(args[0]) == null,
+                "Invalid selected member");
         return conditions;
     }
 }

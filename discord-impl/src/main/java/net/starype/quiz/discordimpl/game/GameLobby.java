@@ -41,12 +41,12 @@ public class GameLobby extends DiscordLogContainer {
 
     private String lobbyMessageId;
 
-    public GameLobby(TextChannel channel, String name, Runnable destructLobbyCallback, String guildId) {
+    public GameLobby(TextChannel channel, String name, Runnable destructLobbyCallback) {
         super(channel);
         this.channel = channel;
         this.name = name;
         this.destructLobbyCallback = destructLobbyCallback;
-        this.guildId = guildId;
+        this.guildId = channel.getGuild().getId();
         this.partialRounds = new LinkedList<>();
         this.playersId = new HashSet<>();
     }
