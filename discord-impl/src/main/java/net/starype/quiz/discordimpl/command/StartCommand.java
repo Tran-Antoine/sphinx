@@ -1,7 +1,7 @@
 package net.starype.quiz.discordimpl.command;
 
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
+import net.dv8tion.jda.api.entities.Message;
 import net.starype.quiz.discordimpl.game.GameLobby;
 import net.starype.quiz.discordimpl.game.LobbyList;
 import net.starype.quiz.discordimpl.util.CounterLimiter;
@@ -12,29 +12,33 @@ import java.util.function.Supplier;
 
 public abstract class StartCommand implements QuizCommand {
 
-    private static final CounterLimiter gameLimiter = new CounterLimiter(5);
+    private final static CounterLimiter gameLimiter = new CounterLimiter(5);
+
+    protected abstract void onPreStart(GameLobby lobby);
 
     @Override
     public void execute(CommandContext context) {
         LobbyList lobbyList = context.getLobbyList();
         Member author = context.getAuthor();
         String authorId = author.getId();
-        CommandInteraction interaction = context.getInteraction();
+        Message message = context.getMessage();
 
         long uniqueId = lobbyList
                 .findByAuthor(authorId)
                 .map(name -> name.getName().hashCode())
                 .orElse(0);
-        Map<Supplier<Boolean>, String> conditions = createStopConditions(lobbyList, authorId, author.getNickname(), uniqueId);
+        Map<Supplier<Boolean>, String> conditions = createStopConditions(lobbyList, authorId, author.getEffectiveName(), uniqueId);
 
-        if(StopConditions.shouldStop(conditions, interaction)) {
+        if(StopConditions.shouldStop(conditions, context.getChannel(), message)) {
             return;
         }
 
         GameLobby lobby = lobbyList.findByAuthor(authorId).get();
+        lobby.trackMessage(message.getId());
+
         onPreStart(lobby);
 
-        if(lobby.start(context.getGameList(), () -> gameLimiter.unregister(uniqueId), interaction)) {
+        if(lobby.start(context.getGameList(), () -> gameLimiter.unregister(uniqueId))) {
             lobbyList.unregisterLobby(lobby);
         }
     }
@@ -58,6 +62,4 @@ public abstract class StartCommand implements QuizCommand {
 
         return conditions;
     }
-
-    protected abstract void onPreStart(GameLobby lobby);
 }

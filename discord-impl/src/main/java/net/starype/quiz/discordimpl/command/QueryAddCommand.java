@@ -1,13 +1,6 @@
 package net.starype.quiz.discordimpl.command;
 
-import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
-import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.starype.quiz.api.database.QuestionQueries;
 import net.starype.quiz.api.database.QuestionQuery;
 import net.starype.quiz.api.question.QuestionDifficulty;
@@ -27,55 +20,48 @@ public class QueryAddCommand implements QuizCommand {
 
         LobbyList lobbyList = context.getLobbyList();
         String authorId = context.getAuthor().getId();
-        CommandInteraction interaction = context.getInteraction();
+        String[] args = context.getArgs();
+        TextChannel channel = context.getChannel();
 
-        Map<Supplier<Boolean>, String> conditions = createStopConditions(lobbyList, authorId);
-        if (StopConditions.shouldStop(conditions, interaction)) {
+        Map<Supplier<Boolean>, String> conditions = createStopConditions(lobbyList, authorId, args);
+        if(StopConditions.shouldStop(conditions, channel, context.getMessage())) {
             return;
         }
 
-        BiConsumer<GameLobby, QuestionQuery> queryAction = findQueryAction(interaction);
+        BiConsumer<GameLobby, QuestionQuery> queryAction = findQueryAction(args[1]);
 
         GameLobby lobby = lobbyList.findByAuthor(authorId).get();
-        Function<String, QuestionQuery> queryType = findQueryType(interaction);
+        Function<String, QuestionQuery> queryType = findQueryType(args[2]);
 
-        queryAction.accept(lobby, queryType.apply(interaction.getOption("query-value").getAsString())); // both guaranteed non-null
-        interaction.getHook().sendMessage("Successfully added query").queue(null, null);
+        queryAction.accept(lobby, queryType.apply(args[3])); // both guaranteed non-null
+        channel.sendMessage("Successfully added query").queue(null, null);
     }
 
-    private static BiConsumer<GameLobby, QuestionQuery> findQueryAction(CommandInteraction interaction) {
-
-        OptionMapping operator = interaction.getOption("query-operator");
-        if(operator == null) {
-            return GameLobby::andQuery;
-        }
-
-        switch (operator.getAsString()) {
-            case "and":
-                return GameLobby::andQuery;
-            case "or":
-                return GameLobby::orQuery;
-            default:
-                return null;
+    private static BiConsumer<GameLobby, QuestionQuery> findQueryAction(String arg) {
+        switch (arg) {
+            case "and-query": return GameLobby::andQuery;
+            case "or-query": return GameLobby::orQuery;
+            default: return null;
         }
     }
 
-    private static Function<String, QuestionQuery> findQueryType(CommandInteraction interaction) {
-        switch (interaction.getOption("query-type").getAsString()) {
-            case "directory":
-                return QuestionQueries::allFromDirectory;
-            case "tag":
-                return QuestionQueries::allWithTag;
-            case "difficulty":
-                return diff -> QuestionQueries.allWithDifficulty(QuestionDifficulty.valueOf(diff));
-            default:
-                return null;
+    private static Function<String, QuestionQuery> findQueryType(String arg) {
+        switch (arg) {
+            case "directory": return QuestionQueries::allFromDirectory;
+            case "tag": return QuestionQueries::allWithTag;
+            case "difficulty": return diff -> QuestionQueries.allWithDifficulty(QuestionDifficulty.valueOf(diff));
+            default: return null;
         }
     }
 
     private static Map<Supplier<Boolean>, String> createStopConditions(
-            LobbyList lobbyList, String authorId) {
+            LobbyList lobbyList, String authorId, String[] args) {
         Map<Supplier<Boolean>, String> conditions = new LinkedHashMap<>();
+        String syntax = "Syntax: ?add-query [and-query|or-query] [directory|tag|difficulty] <value>";
+        conditions.put(
+                () -> args.length != 4 || findQueryAction(args[1]) == null || findQueryType(args[2]) == null,
+                syntax);
+
         conditions.put(() -> lobbyList.findByAuthor(authorId).isEmpty(),
                 "You must be the creator of the lobby to use this");
         return conditions;
@@ -88,24 +74,6 @@ public class QueryAddCommand implements QuizCommand {
 
     @Override
     public String getDescription() {
-        return "Add a query filtering the questions";
-    }
-
-    @Override
-    public CommandData getData() {
-        return dataTemplate()
-                .addOptions(
-                        new OptionData(OptionType.STRING, "query-type", "query type", true)
-                                .addChoices(
-                                        new Command.Choice("directory", "directory"),
-                                        new Command.Choice("tag", "tag"),
-                                        new Command.Choice("difficulty", "difficulty")),
-                        new OptionData(OptionType.STRING, "query-value", "value of the query, i.e HARD", true),
-
-                        new OptionData(OptionType.STRING, "query-operator", "query chaining operator (and / or)", false)
-                                .addChoices(
-                                        new Command.Choice("and", "and"),
-                                        new Command.Choice("or", "or"))
-                );
+        return "Add a query filtering the questions. Syntax: ?add-query [and-query|or-query] [directory|tag|difficulty] <value>";
     }
 }

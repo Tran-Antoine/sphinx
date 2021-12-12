@@ -2,6 +2,7 @@ package net.starype.quiz.discordimpl.command;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.starype.quiz.discordimpl.game.DiscordQuizGame;
@@ -23,23 +24,23 @@ public class InfoCommand implements QuizCommand {
 
         GameList gameList = context.getGameList();
         LobbyList lobbyList = context.getLobbyList();
-        CommandInteraction interaction = context.getInteraction();
+        TextChannel channel = context.getChannel();
         String id = context.getAuthor().getId();
 
         Map<Supplier<Boolean>, String> conditions = createStopConditions(lobbyList, gameList, id);
-        if(StopConditions.shouldStop(conditions, interaction)) {
+        if(StopConditions.shouldStop(conditions, channel)) {
             return;
         }
 
         Optional<GameLobby> lobby = lobbyList.findByPlayer(id);
         if(lobby.isPresent()) {
-            displayLobbyInfo(lobby.get(), interaction);
+            displayLobbyInfo(lobby.get(), channel);
         } else {
-            displayGameInfo(gameList.getFromPlayer(id).get(), interaction);
+            displayGameInfo(gameList.getFromPlayer(id).get(), channel);
         }
     }
 
-    private static void displayLobbyInfo(GameLobby lobby, CommandInteraction interaction) {
+    private static void displayLobbyInfo(GameLobby lobby, TextChannel channel) {
         EmbedBuilder builder = new EmbedBuilder();
         builder.setColor(Color.CYAN);
 
@@ -48,10 +49,10 @@ public class InfoCommand implements QuizCommand {
         builder.addField("Players", String.join(", ", lobby.retrieveNames()), false);
         builder.addField("Question count", String.valueOf(lobby.questionCount()), false);
 
-        MessageUtils.sendAndTrack(builder.build(), interaction, lobby);
+        MessageUtils.sendAndTrack(builder.build(), channel, lobby);
     }
 
-    private static void displayGameInfo(DiscordQuizGame game, CommandInteraction interaction) {
+    private static void displayGameInfo(DiscordQuizGame game, TextChannel channel) {
         EmbedBuilder builder = new EmbedBuilder();
         builder.setColor(Color.ORANGE);
 
@@ -66,7 +67,7 @@ public class InfoCommand implements QuizCommand {
             builder.addField("Have answered", String.join(", ", game.haveAnswered()), false);
         }
 
-        interaction.getHook().editOriginalEmbeds(builder.build())
+        channel.sendMessageEmbeds(builder.build())
                 .map(Message::getId)
                 .queue(game::addLog);
     }
@@ -87,10 +88,5 @@ public class InfoCommand implements QuizCommand {
     @Override
     public String getDescription() {
         return "Get relevant information on your lobby/game";
-    }
-
-    @Override
-    public CommandData getData() {
-        return dataTemplate();
     }
 }
