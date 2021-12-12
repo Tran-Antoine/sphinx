@@ -5,7 +5,10 @@ plugins {
 group 'net.starype.quiz.discordimpl'
 
 repositories {
-    jcenter()
+    maven {
+        name 'm2-dv8tion'
+        url 'https://m2.dv8tion.net/releases'
+    }
 }
 
 dependencies {
@@ -13,7 +16,7 @@ dependencies {
 
     compile project(':api')
     compile group: 'org.scilab.forge', name: 'jlatexmath', version: '1.0.7'
-    implementation 'net.dv8tion:JDA:4.2.0_228'
+    implementation 'net.dv8tion:JDA:4.3.0_280'
     implementation 'org.scala-lang.modules:scala-parser-combinators_2.11:1.0.2'
 }
 
