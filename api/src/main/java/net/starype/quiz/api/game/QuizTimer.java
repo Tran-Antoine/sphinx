@@ -40,4 +40,8 @@ public class QuizTimer extends GameUpdatable {
     public void shutDown() {
         updatableHandler.unregisterEvent(this);
     }
+
+    public long millisLeft() {
+        return unit.toMillis(time) - Duration.between(startingInstant, currentInstant).toMillis();
+    }
 }

@@ -25,4 +25,11 @@ public interface UpdatableHandler {
      * @see Updatable
      */
     void runAllEvents();
+
+    /**
+     * Resets the last millis value.
+     * Should be called at the beginning of each new round, since delta times are not calculated between rounds
+     * and would thus cause a huge time gap at the beginning of each round.
+     */
+    void reset();
 }

@@ -97,6 +97,7 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
         }
 
         paused.set(false);
+        updatableHandler.reset();
         startHead(false);
         return true;
     }

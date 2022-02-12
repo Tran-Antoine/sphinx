@@ -33,6 +33,7 @@ public class TimedRaceRoundFactory {
                 .addEvent(quizTimer)
                 .withEndingCondition(timeOutEnding)
                 .withPlayerEligibility(new MaxGuess(counter))
+                .addEvent(quizTimer)
                 .build();
 
         quizTimer.addEventListener(round::checkEndOfRound);

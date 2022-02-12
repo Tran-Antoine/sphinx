@@ -21,8 +21,8 @@ import java.util.stream.Collectors;
 
 public class DiscordGameServer extends DiscordLogContainer implements GameServer<DiscordQuizGame> {
 
-    private TextChannel channel;
-    private Consumer<DiscordQuizGame> endAction;
+    private final TextChannel channel;
+    private final Consumer<DiscordQuizGame> endAction;
 
     public DiscordGameServer(TextChannel channel, Consumer<DiscordQuizGame> endAction) {
         super(channel);
