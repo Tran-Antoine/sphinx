@@ -1,5 +1,6 @@
 package net.starype.quiz.discordimpl.command;
 
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.starype.quiz.api.game.QuizGame;
 import net.starype.quiz.discordimpl.game.GameList;
@@ -24,19 +25,20 @@ public class SubmitCommand implements QuizCommand {
     @Override
     public void execute(CommandContext context) {
 
-        String authorId = context.getAuthor().getId();
+        Member author = context.getAuthor();
         GameList gameList = context.getGameList();
         String[] args = reconstructArgs(context.getArgs());
+        String guildId = context.getChannel().getGuild().getId();
 
-        Map<Supplier<Boolean>, String> conditions = createStopConditions(authorId, gameList, args);
+        Map<Supplier<Boolean>, String> conditions = createStopConditions(author, gameList, args);
         Message message = context.getMessage();
 
         if(StopConditions.shouldStop(conditions, context.getChannel(), message)) {
             return;
         }
 
-        QuizGame game = gameList.getFromPlayer(authorId).get();
-        game.sendInput(authorId, args[1].substring(2, args[1].length()-2));
+        QuizGame game = gameList.findGameFor(author, true).get();
+        game.sendInput(author.getId(), args[1].substring(2, args[1].length()-2));
         message.delete().queue(null, null);
     }
 
@@ -51,10 +53,10 @@ public class SubmitCommand implements QuizCommand {
         return newArgs;
     }
 
-    private static Map<Supplier<Boolean>, String> createStopConditions(String authorId, GameList gameList, String[] args) {
+    private static Map<Supplier<Boolean>, String> createStopConditions(Member author, GameList gameList, String[] args) {
         Map<Supplier<Boolean>, String> conditions = new LinkedHashMap<>();
         conditions.put(
-                () -> !gameList.isPlaying(authorId),
+                () -> !gameList.canPlay(author),
                 "You can't submit an answer if you're not in a game");
         conditions.put(
                 () -> args.length != 2 || !args[1].matches("\\|\\|.*?\\|\\|"),

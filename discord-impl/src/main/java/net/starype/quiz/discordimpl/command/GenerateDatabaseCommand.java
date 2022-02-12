@@ -46,7 +46,7 @@ public class GenerateDatabaseCommand implements QuizCommand {
     }
 
     private static Optional<InputStream> generateFile(String urlName, TextChannel channel) {
-        Collection<? extends EntryUpdater> updaters = InputUtils.loadEntryUpdaters(urlName, channel);
+        Collection<? extends EntryUpdater> updaters = InputUtils.loadEntryUpdatersFromUrl(urlName, channel);
         AtomicReference<ByteBuffer> output = new AtomicReference<>();
         SerializedIO serializedIO = new ByteSerializedIO(new byte[0], output);
         TrackedDatabase db = new QuestionDatabase(updaters, serializedIO, false);

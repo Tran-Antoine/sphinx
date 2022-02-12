@@ -40,7 +40,7 @@ public class ZipQuestionSetCommand implements QuizCommand {
         }
 
         String url = findUrl(message, args);
-        Collection<? extends EntryUpdater> updaters = InputUtils.loadEntryUpdaters(url, channel);
+        Collection<? extends EntryUpdater> updaters = InputUtils.loadEntryUpdatersFromUrl(url, channel);
         SerializedIO serializedIO = new ByteSerializedIO(new byte[0], new AtomicReference<>());
 
         GameLobby lobby = lobbyList.findByAuthor(authorId).get();

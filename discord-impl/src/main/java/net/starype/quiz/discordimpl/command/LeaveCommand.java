@@ -19,20 +19,20 @@ public class LeaveCommand implements QuizCommand {
         LobbyList lobbyList = context.getLobbyList();
         TextChannel channel = context.getChannel();
 
-        Map<Supplier<Boolean>, String> stopConditions = createStopConditions(gameList, lobbyList, authorId);
+        Map<Supplier<Boolean>, String> stopConditions = createStopConditions(gameList, lobbyList, author);
 
         if(StopConditions.shouldStop(stopConditions, channel, context.getMessage())) {
             return;
         }
-        gameList.getFromPlayer(authorId).ifPresent(game -> game.removePlayer(authorId));
+        gameList.getFromPlayer(author).ifPresent(game -> game.removePlayer(authorId));
         lobbyList.findByPlayer(authorId).ifPresent(lobby -> lobby.unregisterPlayer(authorId, author.getEffectiveName()));
         channel.sendMessage("Successfully left the game/lobby").queue(null, null);
     }
 
-    private static Map<Supplier<Boolean>, String> createStopConditions(GameList gameList, LobbyList lobbyList, String authorId) {
+    private static Map<Supplier<Boolean>, String> createStopConditions(GameList gameList, LobbyList lobbyList, Member author) {
         Map<Supplier<Boolean>, String> conditions = new HashMap<>();
         conditions.put(
-                () -> !gameList.isPlaying(authorId) && lobbyList.findByPlayer(authorId).isEmpty(),
+                () -> !gameList.isPlaying(author) && lobbyList.findByPlayer(author.getId()).isEmpty(),
                 "You are not registered in any game or lobby");
         return conditions;
     }

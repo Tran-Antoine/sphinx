@@ -16,15 +16,16 @@ public class DiscordQuizGame extends SimpleGame<DiscordQuizGame> {
     private final Set<String> votesForNext;
     private final String authorId;
     private final LogContainer container;
-    private final Collection<? extends DiscordPlayer> players;
+    private final Collection<DiscordPlayer> players;
     private final Guild guild;
+    private final boolean fixedPlayerList;
 
     public DiscordQuizGame(
             Queue<? extends QuizRound> rounds,
-            Collection<? extends DiscordPlayer> players,
+            Collection<DiscordPlayer> players,
             ServerGate<DiscordQuizGame> gate,
             String authorId,
-            LogContainer container, Guild guild) {
+            LogContainer container, Guild guild, boolean fixedPlayerList) {
 
         super(rounds, players);
         this.players = players;
@@ -32,6 +33,7 @@ public class DiscordQuizGame extends SimpleGame<DiscordQuizGame> {
         this.container = container;
         this.votesForNext = new HashSet<>();
         this.guild = guild;
+        this.fixedPlayerList = fixedPlayerList;
         this.setGate(gate.withGame(this));
     }
 
@@ -97,5 +99,20 @@ public class DiscordQuizGame extends SimpleGame<DiscordQuizGame> {
 
     public void checkEndOfRound() {
         getCurrentRound().checkEndOfRound();
+    }
+
+    public void insertNewPlayer(DiscordPlayer player) {
+        if(fixedPlayerList) {
+            throw new IllegalStateException("Cannot insert player in a fixed player list setting");
+        }
+        players.add(player);
+    }
+
+    public boolean supportsNonFixedPlayerList() {
+        return !fixedPlayerList;
+    }
+
+    public Guild assignedGuild() {
+        return guild;
     }
 }

@@ -25,7 +25,7 @@ public class GameList {
     }
 
     public void startNewGame(Collection<? extends String> playersId, Queue<? extends QuizRound> rounds, TextChannel channel, String authorId,
-                             Runnable onGameEndedCallback, String guildId) {
+                             Runnable onGameEndedCallback, String guildId, boolean fixedPlayerList) {
 
         Consumer<DiscordQuizGame> naturalEndAction = game -> {
             this.stopGame(game);
@@ -37,7 +37,7 @@ public class GameList {
         DiscordGameServer server = new DiscordGameServer(channel, naturalEndAction);
         ServerGate<DiscordQuizGame> gate = server.createGate();
         Guild guild = fromId(channel, guildId);
-        DiscordQuizGame game = new DiscordQuizGame(rounds, gamePlayers, gate, authorId, server, guild);
+        DiscordQuizGame game = new DiscordQuizGame(rounds, gamePlayers, gate, authorId, server, guild, fixedPlayerList);
 
         Runnable forcedEndAction = () -> {
             stopGame(game, true, channel);
@@ -66,19 +66,41 @@ public class GameList {
                 .collect(Collectors.toList());
     }
 
-    public boolean isPlaying(String playerId) {
+    public boolean isPlaying(Member player) {
         return ongoingGames
                 .keySet()
                 .stream()
-                .anyMatch((game) -> game.containsPlayerId(playerId));
+                .anyMatch((game) -> game.containsPlayerId(player.getId()));
     }
 
-    public Optional<DiscordQuizGame> getFromPlayer(String playerId) {
+    public boolean canPlay(Member player) {
+        return findGameFor(player, false).isPresent();
+    }
+
+    public Optional<DiscordQuizGame> getFromPlayer(Member player) {
         return ongoingGames
                 .keySet()
                 .stream()
-                .filter(game -> game.containsPlayerId(playerId))
+                .filter(game -> game.containsPlayerId(player.getId()))
                 .findAny();
+    }
+
+    public Optional<DiscordQuizGame> findGameFor(Member player, boolean addIfFound) {
+        return getFromPlayer(player)
+                .or(() -> findNewGameFor(player, player.getGuild().getId(), addIfFound));
+    }
+
+    private Optional<DiscordQuizGame> findNewGameFor(Member player, String guildId, boolean addIfFound) {
+        Optional<DiscordQuizGame> potentialGame = ongoingGames
+                .keySet()
+                .stream()
+                .filter(DiscordQuizGame::supportsNonFixedPlayerList)
+                .filter(game -> game.assignedGuild().getId().equals(guildId))
+                .findAny();
+        if(addIfFound) {
+            potentialGame.ifPresent(game -> game.insertNewPlayer(asPlayer(player)));
+        }
+        return potentialGame;
     }
 
     public void stopGame(DiscordQuizGame game) {

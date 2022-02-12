@@ -19,18 +19,17 @@ public class KickPlayerCommand implements QuizCommand {
     public void execute(CommandContext context) {
 
         Member author = context.getAuthor();
-        String id = author.getId();
         TextChannel channel = context.getChannel();
         GameList gameList = context.getGameList();
         String[] args = context.getArgs();
 
-        Map<Supplier<Boolean>, String> conditions = createStopConditions(gameList, id, args, channel);
+        Map<Supplier<Boolean>, String> conditions = createStopConditions(gameList, author, args, channel);
         if(StopConditions.shouldStop(conditions, channel, context.getMessage())) {
             return;
         }
 
         User target = channel.getGuild().getMemberByTag(args[0]).getUser();
-        DiscordQuizGame game = gameList.getFromPlayer(id).get();
+        DiscordQuizGame game = gameList.getFromPlayer(author).get();
         game.removePlayer(target.getId());
         game.checkEndOfRound();
 
@@ -51,13 +50,13 @@ public class KickPlayerCommand implements QuizCommand {
     }
 
     private static Map<Supplier<Boolean>, String> createStopConditions(GameList gameList,
-                                                                       String authorId, String[] args, TextChannel channel) {
+                                                                       Member author, String[] args, TextChannel channel) {
         Map<Supplier<Boolean>, String> conditions = new LinkedHashMap<>();
         conditions.put(
-                () -> gameList.getFromPlayer(authorId).isEmpty(),
+                () -> gameList.getFromPlayer(author).isEmpty(),
                 "You must be in a game to use this");
         conditions.put(
-                () -> !gameList.getFromPlayer(authorId).get().isAuthor(authorId),
+                () -> !gameList.getFromPlayer(author).get().isAuthor(author.getId()),
                 "You must be the other of the game to use this");
         conditions.put(
                 () -> args.length != 1,

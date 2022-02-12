@@ -1,6 +1,7 @@
 package net.starype.quiz.discordimpl.command;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.starype.quiz.discordimpl.game.DiscordQuizGame;
@@ -23,18 +24,18 @@ public class InfoCommand implements QuizCommand {
         GameList gameList = context.getGameList();
         LobbyList lobbyList = context.getLobbyList();
         TextChannel channel = context.getChannel();
-        String id = context.getAuthor().getId();
+        Member member = context.getAuthor();
 
-        Map<Supplier<Boolean>, String> conditions = createStopConditions(lobbyList, gameList, id);
+        Map<Supplier<Boolean>, String> conditions = createStopConditions(lobbyList, gameList, member);
         if(StopConditions.shouldStop(conditions, channel, context.getMessage())) {
             return;
         }
 
-        Optional<GameLobby> lobby = lobbyList.findByPlayer(id);
+        Optional<GameLobby> lobby = lobbyList.findByPlayer(member.getId());
         if(lobby.isPresent()) {
             displayLobbyInfo(lobby.get(), channel);
         } else {
-            displayGameInfo(gameList.getFromPlayer(id).get(), channel);
+            displayGameInfo(gameList.getFromPlayer(member).get(), channel);
         }
     }
 
@@ -70,10 +71,10 @@ public class InfoCommand implements QuizCommand {
                 .queue(game::addLog);
     }
 
-    private static Map<Supplier<Boolean>, String> createStopConditions(LobbyList lobbyList, GameList gameList, String authorId) {
+    private static Map<Supplier<Boolean>, String> createStopConditions(LobbyList lobbyList, GameList gameList, Member author) {
         Map<Supplier<Boolean>, String> conditions = new LinkedHashMap<>();
         conditions.put(
-                () -> lobbyList.findByPlayer(authorId).isEmpty() && gameList.getFromPlayer(authorId).isEmpty(),
+                () -> lobbyList.findByPlayer(author.getId()).isEmpty() && gameList.getFromPlayer(author).isEmpty(),
                 "You must belong to either a lobby or a game");
         return conditions;
     }
