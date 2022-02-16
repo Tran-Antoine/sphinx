@@ -216,6 +216,9 @@ public class SimpleGame<T extends QuizGame> implements QuizGame {
                 .filter(player -> player.getId().equals(playerId))
                 .findAny();
         optPlayer.ifPresent(players::remove);
+        if(!rounds.isEmpty() && !paused.get()) {
+            rounds.element().checkEndOfRound();
+        }
     }
 
     @Override

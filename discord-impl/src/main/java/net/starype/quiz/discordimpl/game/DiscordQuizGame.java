@@ -56,6 +56,12 @@ public class DiscordQuizGame extends SimpleGame<DiscordQuizGame> {
         return true;
     }
 
+    @Override
+    public void removePlayer(Object playerId) {
+        addVote((String) playerId, null);
+        super.removePlayer(playerId);
+    }
+
     public boolean isAuthor(String playerId) {
         return playerId.equals(authorId);
     }

@@ -76,7 +76,7 @@ public class WeeklyQuizCommand implements QuizCommand {
     private Queue<QuizRound> findQuestions(int week, TextChannel channel) {
 
         if(!isAvailable(week, channel)) {
-            return new LinkedList<>();
+            //return new LinkedList<>();
         }
 
         String path = PATH + week + ".zip";
@@ -91,6 +91,7 @@ public class WeeklyQuizCommand implements QuizCommand {
 
         return db.listQuery(QuestionQueries.ALL)
                 .stream()
+                .sorted(Comparator.comparingInt(a -> a.getDifficulty().ordinal()))
                 .map(q -> new FlexiblePlayersRoundFactory().create(q, mapDifficulty(q.getDifficulty()), channel))
                 .collect(Collectors.toCollection(LinkedList::new));
     }

@@ -15,13 +15,12 @@ public class FlexiblePlayersRoundFactory {
     public QuizRound create(Question question, double maxToAward, TextChannel channel) {
 
         IsGuessValid isGuessValid = new IsGuessValid();
-
         GuessCounter counter = new GuessCounter(1);
         RoundState roundState = new RoundState(counter);
 
         SwitchPredicate timeOutEnding = new SwitchPredicate(false, roundState);
-        GameUpdatable quizTimer = new DiscordQuizTimer(TimeUnit.SECONDS, 120, channel);
-        quizTimer.addEventListener(timeOutEnding);
+        QuizTimer quizTimer = new DiscordQuizTimer(TimeUnit.SECONDS, 150, 20, channel);
+        GameUpdatable shortener = new TimeShortener(counter);
 
         GuessReceivedAction consumer =
                 new InvalidateCurrentPlayerCorrectness().withCondition(isGuessValid.negate())
@@ -38,8 +37,12 @@ public class FlexiblePlayersRoundFactory {
                 .withPlayerEligibility(new ModifiedMaxGuess(counter))
                 .withScoreDistribution(new OneTryDistribution(maxToAward, roundState.getLeaderboard()))
                 .addEvent(quizTimer)
+                .addEvent(shortener)
                 .build();
 
+        shortener.addEventListener(quizTimer);
+        shortener.addEventListener(round::checkEndOfRound);
+        quizTimer.addEventListener(timeOutEnding);
         quizTimer.addEventListener(round::checkEndOfRound);
         return round;
     }

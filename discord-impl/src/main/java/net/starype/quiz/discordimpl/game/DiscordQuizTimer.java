@@ -11,7 +11,11 @@ public class DiscordQuizTimer extends QuizTimer {
     private boolean sent = false;
 
     public DiscordQuizTimer(TimeUnit unit, long time, TextChannel channel) {
-        super(unit, time);
+        this(unit, time, time, channel);
+    }
+
+    public DiscordQuizTimer(TimeUnit unit, long time, long shortenedTime, TextChannel channel) {
+        super(unit, time, shortenedTime);
         this.channel = channel;
     }
 

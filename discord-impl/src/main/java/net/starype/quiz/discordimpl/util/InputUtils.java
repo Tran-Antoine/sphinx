@@ -3,14 +3,12 @@ package net.starype.quiz.discordimpl.util;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.starype.quiz.api.database.ByteEntryUpdater;
 import net.starype.quiz.api.database.EntryUpdater;
+import scala.collection.LinearSeq;
 
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -51,7 +49,7 @@ public class InputUtils {
     }
 
     public static Collection<? extends EntryUpdater> loadEntryUpdaters(InputStream input, TextChannel channel) {
-        Set<EntryUpdater> updaters = new HashSet<>();
+        List<EntryUpdater> updaters = new ArrayList<>();
         try {
             ZipInputStream zipStream = new ZipInputStream(input, StandardCharsets.UTF_8);
             ZipEntry current;
@@ -64,7 +62,7 @@ public class InputUtils {
         return updaters;
     }
 
-    private static void readEntry(ZipInputStream zipStream, ZipEntry current, Set<EntryUpdater> updaters) throws IOException {
+    private static void readEntry(ZipInputStream zipStream, ZipEntry current, List<EntryUpdater> updaters) throws IOException {
 
         long size = current.getSize();
 
