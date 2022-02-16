@@ -31,6 +31,6 @@ public class DiscordLogContainer implements LogContainer {
     private void deleteLog(String id) {
         channel.retrieveMessageById(id)
                 .flatMap(Message::delete)
-                .queue(message -> logs.remove(id), null);
+                .queue(message -> logs.remove(id), e -> {});
     }
 }

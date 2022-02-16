@@ -19,7 +19,7 @@ public class FlexiblePlayersRoundFactory {
         RoundState roundState = new RoundState(counter);
 
         SwitchPredicate timeOutEnding = new SwitchPredicate(false, roundState);
-        QuizTimer quizTimer = new DiscordQuizTimer(TimeUnit.SECONDS, 150, 20, channel);
+        QuizTimer quizTimer = new DiscordQuizTimer(TimeUnit.SECONDS, 480, 20, channel);
         GameUpdatable shortener = new TimeShortener(counter);
 
         GuessReceivedAction consumer =
