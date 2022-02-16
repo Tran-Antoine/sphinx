@@ -6,6 +6,7 @@ import net.starype.quiz.api.database.EntryUpdater;
 
 import java.io.*;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -52,7 +53,7 @@ public class InputUtils {
     public static Collection<? extends EntryUpdater> loadEntryUpdaters(InputStream input, TextChannel channel) {
         Set<EntryUpdater> updaters = new HashSet<>();
         try {
-            ZipInputStream zipStream = new ZipInputStream(input);
+            ZipInputStream zipStream = new ZipInputStream(input, StandardCharsets.UTF_8);
             ZipEntry current;
             while ((current = zipStream.getNextEntry()) != null) {
                 readEntry(zipStream, current, updaters);
