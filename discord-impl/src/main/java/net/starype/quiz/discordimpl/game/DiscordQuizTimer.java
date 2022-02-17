@@ -2,6 +2,7 @@ package net.starype.quiz.discordimpl.game;
 
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.starype.quiz.api.game.QuizTimer;
+import net.starype.quiz.discordimpl.util.MessageUtils;
 
 import java.util.concurrent.TimeUnit;
 
@@ -23,7 +24,7 @@ public class DiscordQuizTimer extends QuizTimer {
     public void update(long deltaMillis) {
         double left = millisLeft() / 1000.0;
         if(left <= 30 && !sent) {
-            channel.sendMessage("> :warning: 20 seconds left!").queue(null, null);
+            MessageUtils.createTemporaryMessage("> :warning: 20 seconds left!", channel);
             sent = true;
         }
         super.update(deltaMillis);
