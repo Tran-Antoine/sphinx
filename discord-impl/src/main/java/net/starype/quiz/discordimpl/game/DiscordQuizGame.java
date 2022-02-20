@@ -1,6 +1,7 @@
 package net.starype.quiz.discordimpl.game;
 
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.starype.quiz.api.game.SimpleGame;
 import net.starype.quiz.api.round.QuizRound;
@@ -16,6 +17,7 @@ public class DiscordQuizGame extends SimpleGame<DiscordQuizGame> {
     private final Set<String> votesForNext;
     private final String authorId;
     private final LogContainer container;
+    private final TextChannel channel;
     private final Collection<DiscordPlayer> players;
     private final Guild guild;
     private final boolean fixedPlayerList;
@@ -25,12 +27,13 @@ public class DiscordQuizGame extends SimpleGame<DiscordQuizGame> {
             Collection<DiscordPlayer> players,
             ServerGate<DiscordQuizGame> gate,
             String authorId,
-            LogContainer container, Guild guild, boolean fixedPlayerList) {
+            LogContainer container, Guild guild, TextChannel channel, boolean fixedPlayerList) {
 
         super(rounds, players);
         this.players = players;
         this.authorId = authorId;
         this.container = container;
+        this.channel = channel;
         this.votesForNext = new HashSet<>();
         this.guild = guild;
         this.fixedPlayerList = fixedPlayerList;
@@ -118,7 +121,11 @@ public class DiscordQuizGame extends SimpleGame<DiscordQuizGame> {
         return !fixedPlayerList;
     }
 
-    public Guild assignedGuild() {
-        return guild;
+    public String assignedGuildId() {
+        return guild.getId();
+    }
+
+    public String assignedChannelId() {
+        return channel.getId();
     }
 }

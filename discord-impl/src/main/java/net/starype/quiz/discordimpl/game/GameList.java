@@ -37,7 +37,7 @@ public class GameList {
         DiscordGameServer server = new DiscordGameServer(channel, naturalEndAction);
         ServerGate<DiscordQuizGame> gate = server.createGate();
         Guild guild = fromId(channel, guildId);
-        DiscordQuizGame game = new DiscordQuizGame(rounds, gamePlayers, gate, authorId, server, guild, fixedPlayerList);
+        DiscordQuizGame game = new DiscordQuizGame(rounds, gamePlayers, gate, authorId, server, guild, channel, fixedPlayerList);
 
         Runnable forcedEndAction = () -> {
             stopGame(game, true, channel);
@@ -73,8 +73,8 @@ public class GameList {
                 .anyMatch((game) -> game.containsPlayerId(player.getId()));
     }
 
-    public boolean canPlay(Member player) {
-        return findGameFor(player, false).isPresent();
+    public boolean canPlay(Member player, TextChannel channel) {
+        return findGameFor(player, channel, false).isPresent();
     }
 
     public Optional<DiscordQuizGame> getFromPlayer(Member player) {
@@ -85,17 +85,17 @@ public class GameList {
                 .findAny();
     }
 
-    public Optional<DiscordQuizGame> findGameFor(Member player, boolean addIfFound) {
+    public Optional<DiscordQuizGame> findGameFor(Member player, TextChannel channel, boolean addIfFound) {
         return getFromPlayer(player)
-                .or(() -> findNewGameFor(player, player.getGuild().getId(), addIfFound));
+                .or(() -> findNewGameFor(player, channel, addIfFound));
     }
 
-    private Optional<DiscordQuizGame> findNewGameFor(Member player, String guildId, boolean addIfFound) {
+    private Optional<DiscordQuizGame> findNewGameFor(Member player, TextChannel channel, boolean addIfFound) {
         Optional<DiscordQuizGame> potentialGame = ongoingGames
                 .keySet()
                 .stream()
                 .filter(DiscordQuizGame::supportsNonFixedPlayerList)
-                .filter(game -> game.assignedGuild().getId().equals(guildId))
+                .filter(game -> game.assignedChannelId().equals(channel.getId()))
                 .findAny();
         if(addIfFound) {
             potentialGame.ifPresent(game -> game.insertNewPlayer(asPlayer(player)));
