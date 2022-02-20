@@ -98,14 +98,14 @@ public class WeeklyQuizCommand implements QuizCommand {
     private boolean isAvailable(int week, TextChannel channel) {
         LocalDate now = LocalDate.now();
         LocalDate required = START_TIME.plusWeeks(week - 1);
-        if(now.isAfter(required)) {
-            return true;
+        if(now.isBefore(required)) {
+            String format = required
+                    .format(DateTimeFormatter.ofPattern("MMMM d", Locale.ENGLISH));
+            channel.sendMessage("Access denied <:pandadiablotin:843123536825548810>\n" +
+                    "This quiz will be available on `" + format + "` . Stay tuned!").queue(null, null);
+            return false;
         }
-        String format = required
-                .format(DateTimeFormatter.ofPattern("MMMM d", Locale.ENGLISH));
-        channel.sendMessage("Access denied <:pandadiablotin:843123536825548810>\n" +
-                "This quiz will be available on `" + format + "` . Stay tuned!").queue(null, null);
-        return false;
+        return true;
     }
 
     private static double mapDifficulty(QuestionDifficulty diff) {
