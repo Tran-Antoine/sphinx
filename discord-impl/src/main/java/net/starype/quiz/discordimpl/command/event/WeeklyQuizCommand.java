@@ -16,6 +16,7 @@ import net.starype.quiz.discordimpl.util.InputUtils;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -96,7 +97,7 @@ public class WeeklyQuizCommand implements QuizCommand {
     }
 
     private boolean isAvailable(int week, TextChannel channel) {
-        LocalDate now = LocalDate.now();
+        LocalDate now = LocalDate.now(ZoneId.of("UTC+1"));
         LocalDate required = START_TIME.plusWeeks(week - 1);
         if(now.isBefore(required)) {
             String format = required
