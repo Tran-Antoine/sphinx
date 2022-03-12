@@ -36,6 +36,8 @@ public class DiscordGameServer extends DiscordLogContainer implements GameServer
         sendLeaderboard(report.orderedStandings());
         if(game.isOutOfRounds()) {
             sendAsText("This was the last round. Use ?next to vote for displaying the game results");
+        } else {
+            sendAsText("Use ?next to go to the next round");
         }
     }
 
