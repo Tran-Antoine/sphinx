@@ -47,6 +47,9 @@ public class DiscordQuizGame extends SimpleGame<DiscordQuizGame> {
     }
 
     public boolean addVote(String playerId, Runnable ifReady) {
+        if(!isWaitingForNextRound()) {
+            return false;
+        }
         votesForNext.add(playerId);
         if(votesForNext.size() < players.size()) {
             return false;
