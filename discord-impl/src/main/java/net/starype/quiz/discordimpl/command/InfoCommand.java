@@ -55,7 +55,12 @@ public class InfoCommand implements QuizCommand {
         EmbedBuilder builder = new EmbedBuilder();
         builder.setColor(Color.ORANGE);
 
-        if(!game.hasRoundStarted()) {
+        if(game.isOutOfRounds() && game.isWaitingForNextRound()) {
+            builder.addField("Game Status", "Waiting to display results", false);
+            builder.addBlankField(false);
+            builder.addField("Not ready yet", String.join(", ", game.haveNotVoted()), false);
+        }
+        else if(!game.hasRoundStarted()) {
             builder.addField("Game Status", "Waiting for next round", false);
             builder.addBlankField(false);
             builder.addField("Not ready yet", String.join(", ", game.haveNotVoted()), false);
