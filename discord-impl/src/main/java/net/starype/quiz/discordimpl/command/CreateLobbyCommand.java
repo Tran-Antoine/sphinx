@@ -26,7 +26,7 @@ public class CreateLobbyCommand implements QuizCommand {
         Map<Supplier<Boolean>, String> stopConditions = createStopConditions(
                 context.getGameList(),
                 context.getLobbyList(),
-                playerId,
+                author,
                 author.getEffectiveName());
 
         Message message = context.getMessage();
@@ -42,19 +42,19 @@ public class CreateLobbyCommand implements QuizCommand {
     }
 
     private Map<Supplier<Boolean>, String> createStopConditions(
-            GameList gameList, LobbyList lobbyList, String authorId, String nickName) {
+            GameList gameList, LobbyList lobbyList, Member author, String nickName) {
 
         Map<Supplier<Boolean>, String> conditions = new LinkedHashMap<>();
         conditions.put(
-                () -> lobbyList.findByPlayer(authorId).isPresent(),
+                () -> lobbyList.findByPlayer(author.getId()).isPresent(),
                 nickName + ", you are already in a lobby");
 
         conditions.put(
-                () -> gameList.isPlaying(authorId),
+                () -> gameList.isPlaying(author),
                 nickName + ", you are already playing a game");
 
         conditions.put(
-               () -> !lobbyLimiter.register(authorId.hashCode()),
+               () -> !lobbyLimiter.register(author.hashCode()),
                "Error: Cannot create a new lobby as the maximum number of lobbies has been reached");
 
 

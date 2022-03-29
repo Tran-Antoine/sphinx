@@ -1,5 +1,6 @@
 package net.starype.quiz.discordimpl.command;
 
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.starype.quiz.discordimpl.game.DiscordQuizGame;
@@ -15,30 +16,31 @@ public class NextRoundCommand implements QuizCommand {
     public void execute(CommandContext context) {
 
         GameList gameList = context.getGameList();
-        String playerId = context.getAuthor().getId();
+        Member player = context.getAuthor();
         TextChannel channel = context.getChannel();
         Message message = context.getMessage();
 
-        Map<Supplier<Boolean>, String> conditions = createStopConditions(gameList, playerId);
+        Map<Supplier<Boolean>, String> conditions = createStopConditions(gameList, player);
         if(StopConditions.shouldStop(conditions, channel, message)) {
             return;
         }
 
-        DiscordQuizGame game = gameList.getFromPlayer(playerId).get(); // value guaranteed to be present in our case
+
+        DiscordQuizGame game = gameList.getFromPlayer(player).get(); // value guaranteed to be present in our case
 
         game.addLog(message.getId());
         message.addReaction("\uD83D\uDC4D").queue(null, null);
-        game.addVote(playerId, null);
+        game.addVote(player.getId(), null);
     }
 
-    public static Map<Supplier<Boolean>, String> createStopConditions(GameList gameList, String playerId) {
+    public static Map<Supplier<Boolean>, String> createStopConditions(GameList gameList, Member player) {
         Map<Supplier<Boolean>, String> conditions = new LinkedHashMap<>();
         conditions.put(
-                () -> gameList.getFromPlayer(playerId).isEmpty(),
+                () -> gameList.getFromPlayer(player).isEmpty(),
                 "You are not in any game");
 
         conditions.put(
-                () -> !gameList.getFromPlayer(playerId).get().isWaitingForNextRound(),
+                () -> !gameList.getFromPlayer(player).get().isWaitingForNextRound(),
                 "You can't vote to begin the next round, since the current one is not finished yet");
 
         return conditions;

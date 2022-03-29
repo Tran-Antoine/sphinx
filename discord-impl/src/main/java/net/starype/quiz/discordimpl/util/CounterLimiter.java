@@ -26,7 +26,8 @@ public class CounterLimiter {
 
     public synchronized void unregister(long uniqueId) {
         if(!instances.contains(uniqueId)) {
-            throw new RuntimeException("Cannot unregister a non-registered id");
+            //throw new RuntimeException("Cannot unregister a non-registered id");
+            return;
         }
         instances.removeIf(i -> i.equals(Thread.currentThread().getId()));
     }

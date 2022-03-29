@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.starype.quiz.discordimpl.command.*;
 import net.starype.quiz.discordimpl.command.CommandContext.MessageContext;
+import net.starype.quiz.discordimpl.command.event.WeeklyQuizCommand;
 import net.starype.quiz.discordimpl.game.GameList;
 import net.starype.quiz.discordimpl.game.LobbyList;
 import org.jetbrains.annotations.NotNull;
@@ -76,7 +77,8 @@ public class MessageInputListener extends ListenerAdapter {
     private Collection<QuizCommand> initCommands() {
         return new ArrayList<>(Arrays.asList(
                 new CreateLobbyCommand(),
-                new StartGameCommand(),
+                new StandardStartCommand(),
+                new QuickStartCommand(),
                 new SubmitCommand(),
                 new LeaveCommand(),
                 new NextRoundCommand(),
@@ -87,7 +89,10 @@ public class MessageInputListener extends ListenerAdapter {
                 new ZipQuestionSetCommand(),
                 new QueryAddCommand(),
                 new ClearQueryCommand(),
-                new RoundAddCommand()
+                new RoundAddCommand(),
+                new InfoCommand(),
+                new KickPlayerCommand(),
+                new WeeklyQuizCommand()
         ));
     }
 }

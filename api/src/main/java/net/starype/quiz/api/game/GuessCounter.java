@@ -30,4 +30,8 @@ public class GuessCounter {
     public boolean maxReached(IDHolder<?> holder) {
         return getPlayerGuess(holder) < maxGuesses;
     }
+
+    public boolean isEmpty() {
+        return guessesPerPlayer.isEmpty();
+    }
 }

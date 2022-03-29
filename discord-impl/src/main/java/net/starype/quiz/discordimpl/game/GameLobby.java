@@ -2,6 +2,7 @@ package net.starype.quiz.discordimpl.game;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.starype.quiz.api.database.QuestionQueries;
 import net.starype.quiz.api.database.QuestionQuery;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 public class GameLobby extends DiscordLogContainer {
 
     private final Runnable destructLobbyCallback;
+    private final String guildId;
     private final String name;
     private final TextChannel channel;
     private final Set<String> playersId;
@@ -44,6 +46,7 @@ public class GameLobby extends DiscordLogContainer {
         this.channel = channel;
         this.name = name;
         this.destructLobbyCallback = destructLobbyCallback;
+        this.guildId = channel.getGuild().getId();
         this.partialRounds = new LinkedList<>();
         this.playersId = new HashSet<>();
     }
@@ -110,10 +113,9 @@ public class GameLobby extends DiscordLogContainer {
                 .map(partial -> partial.apply(questions.poll()))
                 .collect(Collectors.toCollection(LinkedList::new));
 
-        
         deleteMessages();
         destructLobbyCallback.run();
-        gameList.startNewGame(playersId, rounds, channel, authorId, onGameEndedCallback);
+        gameList.startNewGame(playersId, rounds, channel, authorId, onGameEndedCallback, guildId, true);
         return true;
     }
 
@@ -241,6 +243,31 @@ public class GameLobby extends DiscordLogContainer {
     public void queueRound(PartialRound round) {
         if(partialRounds.size() < 100) {
             partialRounds.add(round);
+        }
+    }
+
+    public List<String> retrieveNames() {
+        return playersId
+                .stream()
+                .map(id -> channel.getJDA().retrieveUserById(id).complete())
+                .map(User::getName)
+                .collect(Collectors.toList());
+    }
+
+    public int questionCount() {
+        if(queryObject == null) {
+            return 0;
+        }
+        return queryObject.listQuery(query == null ? QuestionQueries.ALL : query).size();
+    }
+
+    public void resetRounds() {
+        partialRounds.clear();
+    }
+
+    public void queueRound(PartialRound round, int repeat) {
+        for(int i = 0; i < repeat; i++) {
+            queueRound(round);
         }
     }
 }

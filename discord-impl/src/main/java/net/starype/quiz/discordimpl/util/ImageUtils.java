@@ -8,15 +8,14 @@ import net.starype.quiz.api.game.ScoreDistribution.Standing;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.util.List;
 import java.util.Random;
 
 public class ImageUtils {
+
+    private static final String FONT_PATH = "discord-impl/src/main/resources/bowlby-one-sc/BowlbyOneSC-Regular.ttf";
 
     public static InputStream toInputStream(BufferedImage image) {
 
@@ -50,8 +49,15 @@ public class ImageUtils {
         graphics.clearRect(0, 0, width, height);
         graphics.setColor(Color.WHITE);
         graphics.addRenderingHints(new RenderingHints(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON));
-        graphics.setFont(new Font("Bowlby One SC", Font.PLAIN, height / 9)); // Bowlby One SC
-        graphics.drawString("Results", width / 2 - 210, height / 7);
+        Font font;
+        try {
+            font = Font.createFont(Font.TRUETYPE_FONT, new FileInputStream(FONT_PATH));
+            font = font.deriveFont(130.0f);
+        } catch (FontFormatException | IOException e) {
+            font = new Font("Bowlby One SC", Font.PLAIN, height / 9);
+        }
+        graphics.setFont(font); // Bowlby One SC
+        graphics.drawString("Results", width / 2 - 280, height / 7);
     }
 
     private static void initLeaderboard(int width, int height, Graphics2D graphics, Guild guild, List<Standing> standings) {

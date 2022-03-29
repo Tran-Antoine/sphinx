@@ -10,8 +10,8 @@ import java.util.Set;
 
 public class LobbyList {
 
-    private Set<GameLobby> lobbies;
-    private ReactionInputListener reactionListener;
+    private final Set<GameLobby> lobbies;
+    private final ReactionInputListener reactionListener;
     private int nextId;
 
     public LobbyList(ReactionInputListener reactionListener) {

@@ -37,4 +37,9 @@ public class GameUpdatableHandler implements UpdatableHandler {
         this.lastMillis = currentTime;
         eventsList.forEach((updatable -> updatable.update(deltaMillis)));
     }
+
+    @Override
+    public void reset() {
+        this.lastMillis = System.currentTimeMillis();
+    }
 }

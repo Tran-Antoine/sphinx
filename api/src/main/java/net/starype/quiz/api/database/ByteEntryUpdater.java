@@ -4,6 +4,7 @@ import net.starype.quiz.api.parser.QuestionParser;
 import net.starype.quiz.api.util.CheckSum;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Set;
 
@@ -38,7 +39,7 @@ public class ByteEntryUpdater implements EntryUpdater {
 
     @Override
     public Set<DatabaseEntry> generateNewEntries(DatabaseEntryFactory factory) {
-        String text = new String(data);
+        String text = new String(data, StandardCharsets.UTF_8);
         return QuestionParser.getDatabaseEntries(text, factory);
     }
 }

@@ -7,16 +7,22 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 
-public class QuizTimer extends GameUpdatable {
+public class QuizTimer extends GameUpdatable implements EventListener {
     private long time;
-    private TimeUnit unit;
+    private final long shortenedTime;
+    private final TimeUnit unit;
     private Instant startingInstant;
     private Instant currentInstant;
     private UpdatableHandler updatableHandler;
 
     public QuizTimer(TimeUnit unit, long time) {
+        this(unit, time, time);
+    }
+
+    public QuizTimer(TimeUnit unit, long time, long shortenedTime) {
         this.unit = unit;
         this.time = time;
+        this.shortenedTime = shortenedTime;
     }
 
     @Override
@@ -37,7 +43,25 @@ public class QuizTimer extends GameUpdatable {
         }
     }
 
+    @Override
     public void shutDown() {
         updatableHandler.unregisterEvent(this);
+    }
+
+    public long millisLeft() {
+        return unit.toMillis(time) - Duration.between(startingInstant, currentInstant).toMillis();
+    }
+
+    private void shortenRemaining() {
+        if(millisLeft() < unit.toMillis(shortenedTime)) {
+            return;
+        }
+        this.time = shortenedTime;
+        this.startingInstant = Instant.now();
+    }
+
+    @Override
+    public void onNotified() {
+        shortenRemaining();
     }
 }
