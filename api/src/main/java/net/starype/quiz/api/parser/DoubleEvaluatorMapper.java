@@ -28,7 +28,7 @@ public class DoubleEvaluatorMapper implements ConfigMapper<PartialEvaluator> {
     @Override
     public PartialEvaluator map(ReadableRawMap config) {
         RangedAnswerFactory factory = new DoubleAnswerFactory()
-                .withAcceptedRange(StringUtils.mapOptionalNoThrow(config.get("answer.evaluator.range"), Float::parseFloat).orElse(0.1f))
+                .withAcceptedRange(config.getDouble("answer.evaluator.range").orElse(0.1))
                 .withInterpolation(LOSS_FUNCTIONS_MATCHER.loadFromKey("answer.evaluator.interpolation", config).orElse(new LinearLossFunction()));
         return factory::createCorrectAnswer;
     }
